@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="32dp"
+    android:height="32dp"
+    android:viewportWidth="32"
+    android:viewportHeight="32">
+    <!-- V-taper lats -->
+    <path
+        android:fillColor="#FF1B1B1A"
+        android:pathData="M16,5 L28,22 L22,22 L16,14 L10,22 L4,22 Z" />
+    <!-- Spine -->
+    <path
+        android:pathData="M16,14 L16,26"
+        android:strokeColor="#FF1B1B1A"
+        android:strokeWidth="1.8"
+        android:strokeLineCap="round" />
+    <!-- Rib hints -->
+    <path
+        android:pathData="M13,18 L19,18 M13,22 L19,22"
+        android:strokeColor="#FF1B1B1A"
+        android:strokeWidth="1.2"
+        android:strokeLineCap="round" />
+</vector>

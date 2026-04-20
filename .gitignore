@@ -1,0 +1,39 @@
+# Built application files
+*.apk
+*.aar
+*.ap_
+*.aab
+
+# Gradle
+.gradle/
+build/
+/android/.gradle/
+/android/build/
+/android/app/build/
+/android/**/build/
+
+# IDE
+**/.idea/
+*.iml
+.vscode/
+
+# Local config
+local.properties
+/android/local.properties
+
+# Crashlytics / NDK
+.externalNativeBuild
+.cxx
+
+# Misc
+.DS_Store
+captures/
+
+# Claude Code local state
+.claude/
+.claude.json
+.wtx-pptx-tmp/
+
+# Keystores (never commit)
+*.jks
+*.keystore

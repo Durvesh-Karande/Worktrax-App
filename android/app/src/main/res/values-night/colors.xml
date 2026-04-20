@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="paper">#121211</color>
+    <color name="surface">#1C1C1B</color>
+    <color name="surface_2">#222221</color>
+    <color name="card">#1C1C1B</color>
+    <color name="line">#2A2A28</color>
+    <color name="line_2">#3A3A37</color>
+    <color name="hairline">#2A2A28</color>
+    <color name="ink">#F4F1EA</color>
+    <color name="ink_2">#B4B0A5</color>
+    <color name="ink_3">#7F7C74</color>
+    <color name="ink_4">#555249</color>
+    <color name="muted">#7F7C74</color>
+    <color name="accent">#FF7A4A</color>
+    <color name="ok">#5EAD70</color>
+</resources>

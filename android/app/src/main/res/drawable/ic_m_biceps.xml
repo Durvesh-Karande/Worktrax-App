@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="32dp"
+    android:height="32dp"
+    android:viewportWidth="32"
+    android:viewportHeight="32">
+    <!-- Flexed arm: upper arm bulge + forearm -->
+    <path
+        android:fillColor="#FF1B1B1A"
+        android:pathData="M7,26 Q5,18 10,14 Q16,10 20,6 L24,8 Q20,12 18,16 Q22,18 24,24 L22,26 Q18,22 14,22 Q10,24 9,28 Z" />
+    <!-- Fist/wrist -->
+    <path
+        android:fillColor="#FF1B1B1A"
+        android:pathData="M22,4 m-3,0 a3,3 0 1,0 6,0 a3,3 0 1,0 -6,0 z" />
+</vector>

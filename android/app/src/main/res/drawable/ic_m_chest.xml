@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="32dp"
+    android:height="32dp"
+    android:viewportWidth="32"
+    android:viewportHeight="32">
+    <!-- Two pectoral shapes -->
+    <path
+        android:fillColor="#FF1B1B1A"
+        android:pathData="M5,12 Q6,7 12,7 Q15,7 15,11 Q15,18 10,20 Q5,20 5,14 Z" />
+    <path
+        android:fillColor="#FF1B1B1A"
+        android:pathData="M27,12 Q26,7 20,7 Q17,7 17,11 Q17,18 22,20 Q27,20 27,14 Z" />
+    <!-- Neckline -->
+    <path
+        android:pathData="M13,6 Q16,8 19,6"
+        android:strokeColor="#FF1B1B1A"
+        android:strokeWidth="1.5"
+        android:strokeLineCap="round" />
+</vector>

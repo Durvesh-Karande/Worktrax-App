@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/paper">
+
+    <include
+        android:id="@+id/include_top_bar"
+        layout="@layout/view_top_bar" />
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingHorizontal="20dp"
+            android:paddingTop="8dp"
+            android:paddingBottom="24dp">
+
+            <TextView
+                style="@style/TextKicker"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Account" />
+
+            <TextView
+                style="@style/TextH1Serif"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:layout_marginBottom="16dp"
+                android:text="Settings." />
+
+            <!-- Name -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="14dp"
+                android:gravity="center_vertical"
+                android:background="@drawable/shape_field">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Name"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/ink" />
+
+                <EditText
+                    android:id="@+id/et_name"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@android:color/transparent"
+                    android:gravity="end"
+                    android:hint="Your name"
+                    android:textColorHint="@color/ink_3"
+                    android:inputType="textPersonName"
+                    android:singleLine="true"
+                    android:textSize="14sp"
+                    android:textColor="@color/ink" />
+            </LinearLayout>
+
+            <View android:layout_width="match_parent" android:layout_height="8dp" />
+
+            <!-- Units -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="14dp"
+                android:gravity="center_vertical"
+                android:background="@drawable/shape_field">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Units"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/ink" />
+
+                <include
+                    android:id="@+id/segmented_units"
+                    layout="@layout/view_segmented_control" />
+            </LinearLayout>
+
+            <View android:layout_width="match_parent" android:layout_height="8dp" />
+
+            <!-- Appearance -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="14dp"
+                android:gravity="center_vertical"
+                android:background="@drawable/shape_field">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Appearance"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/ink" />
+
+                <include
+                    android:id="@+id/segmented_appearance"
+                    layout="@layout/view_segmented_control" />
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingVertical="28dp"
+                android:gravity="center"
+                android:text="Sign out"
+                android:textSize="13sp"
+                android:textColor="@color/ink_3" />
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+</LinearLayout>

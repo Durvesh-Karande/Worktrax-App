@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/paper">
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingHorizontal="20dp"
+            android:paddingBottom="16dp">
+
+            <!-- Header: date + greeting + profile btn -->
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="36dp"
+                android:paddingBottom="20dp">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_centerVertical="true">
+
+                    <TextView
+                        android:id="@+id/tv_date_kicker"
+                        style="@style/TextKicker"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="MONDAY, 20 APRIL" />
+
+                    <TextView
+                        android:id="@+id/tv_greeting"
+                        style="@style/TextHeroSerif"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:text="Hi, Amal" />
+                </LinearLayout>
+
+                <FrameLayout
+                    android:id="@+id/btn_profile"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:background="@drawable/shape_circle_card">
+
+                    <ImageView
+                        android:layout_width="18dp"
+                        android:layout_height="18dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_user"
+                        android:contentDescription="Profile"
+                        app:tint="@color/ink" />
+                </FrameLayout>
+            </RelativeLayout>
+
+            <TextView
+                style="@style/TextKicker"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/picker_type_kicker" />
+
+            <TextView
+                android:id="@+id/card_start_workout"
+                style="@style/TextH1Serif"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:text="@string/picker_type_header" />
+
+            <LinearLayout
+                android:id="@+id/grid_workout_types"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginTop="20dp">
+
+                <LinearLayout
+                    android:id="@+id/row_types_top"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal" />
+
+                <LinearLayout
+                    android:id="@+id/row_types_bottom"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:orientation="horizontal" />
+            </LinearLayout>
+
+            <!-- Hidden legacy containers kept so existing binding code doesn't NPE -->
+            <LinearLayout
+                android:id="@+id/list_recent_workouts"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:orientation="vertical"
+                android:visibility="gone" />
+
+            <include
+                android:id="@+id/stat_workouts"
+                layout="@layout/view_stat_tile"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:visibility="gone" />
+
+            <include
+                android:id="@+id/stat_volume"
+                layout="@layout/view_stat_tile"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:visibility="gone" />
+
+            <include
+                android:id="@+id/stat_reps"
+                layout="@layout/view_stat_tile"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/btn_all_history"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:visibility="gone" />
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <!-- btn_continue retained hidden for binding compatibility -->
+    <Button
+        android:id="@+id/btn_continue"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="gone" />
+</LinearLayout>

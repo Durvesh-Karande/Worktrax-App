@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/homeFragment">
+
+    <fragment
+        android:id="@+id/homeFragment"
+        android:name="com.worktrax.app.ui.fragments.Home_Logic"
+        android:label="Home"
+        tools:layout="@layout/home_design">
+        <action
+            android:id="@+id/action_home_to_history"
+            app:destination="@id/historyFragment" />
+        <action
+            android:id="@+id/action_home_to_profile"
+            app:destination="@id/profileFragment" />
+        <action
+            android:id="@+id/action_home_to_exercise"
+            app:destination="@id/exercisePickerFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/historyFragment"
+        android:name="com.worktrax.app.ui.fragments.History_Logic"
+        android:label="History"
+        tools:layout="@layout/history_design">
+        <action
+            android:id="@+id/action_history_to_detail"
+            app:destination="@id/workoutDetailFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/profileFragment"
+        android:name="com.worktrax.app.ui.fragments.Profile_Logic"
+        android:label="Profile"
+        tools:layout="@layout/profile_design">
+        <action
+            android:id="@+id/action_profile_to_settings"
+            app:destination="@id/settingsFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/exercisePickerFragment"
+        android:name="com.worktrax.app.ui.fragments.Picker_Exercise_Logic"
+        android:label="Exercise Picker"
+        tools:layout="@layout/picker_exercise_design">
+        <action
+            android:id="@+id/action_exercise_to_log"
+            app:destination="@id/logFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/logFragment"
+        android:name="com.worktrax.app.ui.fragments.Workout_Logger_Logic"
+        android:label="Log"
+        tools:layout="@layout/workout_logger_design">
+        <action
+            android:id="@+id/action_log_to_summary"
+            app:destination="@id/summaryFragment" />
+        <action
+            android:id="@+id/action_log_to_exercise"
+            app:destination="@id/exercisePickerFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/summaryFragment"
+        android:name="com.worktrax.app.ui.fragments.Workout_Summary_Logic"
+        android:label="Summary"
+        tools:layout="@layout/workout_summary_design" />
+
+    <fragment
+        android:id="@+id/workoutDetailFragment"
+        android:name="com.worktrax.app.ui.fragments.Workout_Detail_Logic"
+        android:label="Workout Detail"
+        tools:layout="@layout/workout_detail_design" />
+
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="com.worktrax.app.ui.fragments.App_Settings_Logic"
+        android:label="Settings"
+        tools:layout="@layout/app_settings_design" />
+
+</navigation>

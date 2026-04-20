@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="32dp"
+    android:height="32dp"
+    android:viewportWidth="32"
+    android:viewportHeight="32">
+    <!-- Arm pressing down (tricep extension silhouette) -->
+    <path
+        android:fillColor="#FF1B1B1A"
+        android:pathData="M10,4 Q9,10 11,16 Q13,22 17,26 L21,24 Q19,20 18,16 Q17,12 19,8 Q20,6 18,4 Z" />
+    <!-- Elbow highlight -->
+    <path
+        android:fillColor="#FF1B1B1A"
+        android:pathData="M13,15 m-2,0 a2,2 0 1,0 4,0 a2,2 0 1,0 -4,0 z" />
+</vector>

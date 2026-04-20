@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="8dp"
+    android:orientation="horizontal"
+    android:padding="14dp"
+    android:gravity="center_vertical"
+    android:background="@drawable/shape_field">
+
+    <FrameLayout
+        android:id="@+id/ex_thumb"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:background="@drawable/shape_field"
+        android:backgroundTint="@color/thumb_a">
+
+        <ImageView
+            android:id="@+id/iv_thumb_icon"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_gravity="center"
+            android:src="@drawable/ic_plus"
+            app:tint="@color/paper" />
+    </FrameLayout>
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:layout_marginStart="16dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tv_ex_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/ink"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:letterSpacing="-0.01" />
+
+        <TextView
+            android:id="@+id/tv_ex_meta"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:textColor="@color/ink_3"
+            android:textSize="12sp" />
+    </LinearLayout>
+
+    <FrameLayout
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:background="@drawable/shape_circle_card">
+
+        <View
+            android:layout_width="8dp"
+            android:layout_height="8dp"
+            android:layout_gravity="center"
+            android:background="@drawable/shape_circle_accent"
+            android:backgroundTint="@color/ink" />
+    </FrameLayout>
+</LinearLayout>

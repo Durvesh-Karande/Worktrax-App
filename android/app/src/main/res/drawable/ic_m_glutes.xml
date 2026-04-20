@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="32dp"
+    android:height="32dp"
+    android:viewportWidth="32"
+    android:viewportHeight="32">
+    <!-- Two glute globes -->
+    <path
+        android:fillColor="#FF1B1B1A"
+        android:pathData="M10,16 m-6,0 a6,7 0 1,0 12,0 a6,7 0 1,0 -12,0 z" />
+    <path
+        android:fillColor="#FF1B1B1A"
+        android:pathData="M22,16 m-6,0 a6,7 0 1,0 12,0 a6,7 0 1,0 -12,0 z" />
+    <!-- Center fold -->
+    <path
+        android:pathData="M16,10 L16,22"
+        android:strokeColor="#FFF2EFE9"
+        android:strokeWidth="1.5"
+        android:strokeLineCap="round" />
+</vector>

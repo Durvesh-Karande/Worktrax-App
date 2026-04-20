@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.Worktrax" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="android:windowBackground">@color/paper</item>
+        <item name="android:statusBarColor">@color/paper</item>
+        <item name="android:navigationBarColor">@color/paper</item>
+
+        <item name="colorPrimary">@color/ink</item>
+        <item name="colorOnPrimary">@color/paper</item>
+        <item name="colorSecondary">@color/accent</item>
+        <item name="colorOnSecondary">@color/paper</item>
+        <item name="android:textColorPrimary">@color/ink</item>
+        <item name="colorSurface">@color/surface</item>
+        <item name="colorOnSurface">@color/ink</item>
+        <item name="colorOutline">@color/line</item>
+    </style>
+
+    <!-- Small uppercase kicker / eyebrow label -->
+    <style name="TextKicker">
+        <item name="android:textSize">10.5sp</item>
+        <item name="android:fontFamily">Arial</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:letterSpacing">0.16</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/ink_3</item>
+    </style>
+
+    <style name="TextEyebrow" parent="TextKicker" />
+
+    <!-- Display: serif, large, italic accent via spans in code. Uses system serif. -->
+    <style name="TextH1Serif">
+        <item name="android:textSize">28.5sp</item>
+        <item name="android:fontFamily">Georgia</item>
+        <item name="android:textColor">@color/ink</item>
+        <item name="android:letterSpacing">-0.02</item>
+        <item name="android:lineSpacingMultiplier">1.0</item>
+    </style>
+
+    <style name="TextH1SerifItalic" parent="TextH1Serif">
+        <item name="android:textStyle">italic</item>
+    </style>
+
+    <style name="TextHeroSerif">
+        <item name="android:textSize">24sp</item>
+        <item name="android:fontFamily">Georgia</item>
+        <item name="android:textColor">@color/ink</item>
+        <item name="android:letterSpacing">-0.02</item>
+    </style>
+
+    <style name="TextLogTitle">
+        <item name="android:textSize">24sp</item>
+        <item name="android:fontFamily">Georgia</item>
+        <item name="android:textColor">@color/ink</item>
+        <item name="android:letterSpacing">-0.02</item>
+    </style>
+
+    <!-- Section title (h2) -->
+    <style name="TextH2">
+        <item name="android:textSize">18sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:fontFamily">Arial</item>
+        <item name="android:textColor">@color/ink</item>
+        <item name="android:letterSpacing">-0.025</item>
+    </style>
+
+    <style name="TextBody">
+        <item name="android:textSize">13.5sp</item>
+        <item name="android:fontFamily">Arial</item>
+        <item name="android:textColor">@color/ink</item>
+    </style>
+
+    <style name="TextMuted">
+        <item name="android:textSize">10.5sp</item>
+        <item name="android:fontFamily">Arial</item>
+        <item name="android:textColor">@color/ink_3</item>
+    </style>
+
+    <style name="TextMono">
+        <item name="android:textSize">13.5sp</item>
+        <item name="android:fontFamily">monospace</item>
+        <item name="android:textColor">@color/ink</item>
+    </style>
+
+    <!-- Pill buttons -->
+    <style name="BtnPillBase">
+        <item name="android:minHeight">52dp</item>
+        <item name="android:paddingStart">22dp</item>
+        <item name="android:paddingEnd">22dp</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:gravity">center</item>
+    </style>
+
+    <style name="BtnPillPrimary" parent="BtnPillBase">
+        <item name="android:background">@drawable/shape_button_primary</item>
+        <item name="android:textColor">@color/paper</item>
+        <item name="android:drawableEnd">@drawable/ic_arrow_right</item>
+        <item name="android:drawableTint">@color/paper</item>
+        <item name="android:drawablePadding">8dp</item>
+    </style>
+
+    <style name="BtnPillSecondary" parent="BtnPillBase">
+        <item name="android:background">@drawable/shape_button_secondary</item>
+        <item name="android:textColor">@color/ink</item>
+    </style>
+
+    <style name="BtnPillAccent" parent="BtnPillBase">
+        <item name="android:background">@drawable/shape_button_accent</item>
+        <item name="android:textColor">#FFFFFF</item>
+    </style>
+</resources>

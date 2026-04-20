@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/paper">
+
+    <!-- Top bar: back + step kicker + unit chip -->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="64dp"
+        android:paddingHorizontal="20dp"
+        android:paddingVertical="12dp">
+
+        <FrameLayout
+            android:id="@+id/btn_back"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_centerVertical="true"
+            android:background="@drawable/shape_circle_card">
+
+            <ImageView
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_chevron_left"
+                android:contentDescription="Back"
+                app:tint="@color/ink" />
+        </FrameLayout>
+
+        <TextView
+            android:id="@+id/tv_title"
+            style="@style/TextKicker"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="4 of 4" />
+
+        <FrameLayout
+            android:id="@+id/btn_unit_toggle"
+            android:layout_width="wrap_content"
+            android:layout_height="32dp"
+            android:minWidth="48dp"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:background="@drawable/shape_chip"
+            android:paddingHorizontal="14dp">
+
+            <TextView
+                android:id="@+id/tv_unit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="KG"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:textColor="@color/ink" />
+        </FrameLayout>
+    </RelativeLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingHorizontal="20dp"
+            android:paddingBottom="16dp">
+
+            <TextView
+                android:id="@+id/tv_muscle_kicker"
+                style="@style/TextKicker"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="CHEST · LOGGING" />
+
+            <TextView
+                android:id="@+id/tv_exercise_name"
+                style="@style/TextH1Serif"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:text="Bench press"
+                android:textSize="32sp" />
+
+            <TextView
+                android:id="@+id/tv_set_counter"
+                style="@style/TextMuted"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:layout_marginBottom="18dp"
+                android:text="Set 2 of 4 · enter values, then Next." />
+
+            <!-- Field grid: reps | weight -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <include
+                    android:id="@+id/stepper_reps"
+                    layout="@layout/view_stepper"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
+
+                <View
+                    android:layout_width="10dp"
+                    android:layout_height="match_parent" />
+
+                <include
+                    android:id="@+id/stepper_weight"
+                    layout="@layout/view_stepper"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="10dp" />
+
+            <!-- Total sets stepper (wide) -->
+            <include
+                android:id="@+id/stepper_total_sets"
+                layout="@layout/view_stepper"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="16dp" />
+
+            <!-- Rest-timer placeholder (kept for compatibility, hidden) -->
+            <FrameLayout
+                android:id="@+id/container_rest_timer"
+                android:layout_width="match_parent"
+                android:layout_height="0dp" />
+
+            <!-- Set log table -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@drawable/shape_field">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:paddingHorizontal="14dp"
+                    android:paddingVertical="12dp">
+
+                    <TextView
+                        style="@style/TextKicker"
+                        android:layout_width="60dp"
+                        android:layout_height="wrap_content"
+                        android:text="SET" />
+
+                    <TextView
+                        style="@style/TextKicker"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="REPS" />
+
+                    <TextView
+                        style="@style/TextKicker"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="KG" />
+
+                    <ImageView
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:src="@drawable/ic_check"
+                        app:tint="@color/ink_4" />
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/line" />
+
+                <LinearLayout
+                    android:id="@+id/list_logged_sets"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical" />
+            </LinearLayout>
+
+            <!-- Button row: Done (secondary) + Next set (primary) -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/btn_finish_workout"
+                    style="@style/BtnPillSecondary"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Done" />
+
+                <View
+                    android:layout_width="8dp"
+                    android:layout_height="match_parent" />
+
+                <Button
+                    android:id="@+id/btn_log_set"
+                    style="@style/BtnPillPrimary"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1.4"
+                    android:text="Next set" />
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/btn_add_exercise"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:visibility="gone" />
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+</LinearLayout>

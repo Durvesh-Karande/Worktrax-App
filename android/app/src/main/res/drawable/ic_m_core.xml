@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="32dp"
+    android:height="32dp"
+    android:viewportWidth="32"
+    android:viewportHeight="32">
+    <!-- Torso outline -->
+    <path
+        android:pathData="M8,6 Q16,4 24,6 L24,26 Q16,28 8,26 Z"
+        android:strokeColor="#FF1B1B1A"
+        android:strokeWidth="1.8"
+        android:strokeLineJoin="round" />
+    <!-- Six-pack grid -->
+    <path
+        android:fillColor="#FF1B1B1A"
+        android:pathData="M11,8 h4 v4 h-4 z M17,8 h4 v4 h-4 z M11,14 h4 v4 h-4 z M17,14 h4 v4 h-4 z M11,20 h4 v4 h-4 z M17,20 h4 v4 h-4 z" />
+</vector>

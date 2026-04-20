@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Worktrax</string>
+    <string name="picker_type_title">STEP 1</string>
+    <string name="picker_type_kicker">START A WORKOUT</string>
+    <string name="picker_type_header">Pick a <i>type.</i></string>
+    <string name="picker_muscle_title">2 OF 4</string>
+    <string name="picker_muscle_header">Target <i>muscle.</i></string>
+    <string name="picker_exercise_title">3 OF 4</string>
+    <string name="picker_exercise_header">Pick a <i>move.</i></string>
+    <string name="workout_logger_title">4 OF 4</string>
+    <string name="summary_header">Nice <i>work.</i></string>
+    <string name="profile_name_last">Okafor</string>
+</resources>

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="64dp"
+    android:paddingHorizontal="20dp"
+    android:paddingTop="12dp"
+    android:paddingBottom="12dp">
+
+    <FrameLayout
+        android:id="@+id/btn_back"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_centerVertical="true"
+        android:background="@drawable/shape_circle_card">
+
+        <ImageView
+            android:layout_width="18dp"
+            android:layout_height="18dp"
+            android:layout_gravity="center"
+            android:src="@drawable/ic_chevron_left"
+            android:contentDescription="Back"
+            app:tint="@color/ink" />
+    </FrameLayout>
+
+    <TextView
+        android:id="@+id/tv_top_bar_title"
+        style="@style/TextKicker"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:textColor="@color/ink_3" />
+
+    <FrameLayout
+        android:id="@+id/right_slot"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:background="@drawable/shape_circle_card">
+
+        <ImageView
+            android:id="@+id/btn_delete"
+            android:layout_width="18dp"
+            android:layout_height="18dp"
+            android:layout_gravity="center"
+            android:src="@drawable/ic_close"
+            android:visibility="gone"
+            android:contentDescription="Delete"
+            app:tint="@color/accent" />
+    </FrameLayout>
+</RelativeLayout>

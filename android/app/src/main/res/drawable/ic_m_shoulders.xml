@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="32dp"
+    android:height="32dp"
+    android:viewportWidth="32"
+    android:viewportHeight="32">
+    <!-- Neck -->
+    <path
+        android:fillColor="#FF1B1B1A"
+        android:pathData="M14,5 h4 v6 h-4 z" />
+    <!-- Left deltoid -->
+    <path
+        android:fillColor="#FF1B1B1A"
+        android:pathData="M14,10 Q8,10 5,16 Q5,21 10,21 Q14,21 14,15 Z" />
+    <!-- Right deltoid -->
+    <path
+        android:fillColor="#FF1B1B1A"
+        android:pathData="M18,10 Q24,10 27,16 Q27,21 22,21 Q18,21 18,15 Z" />
+</vector>

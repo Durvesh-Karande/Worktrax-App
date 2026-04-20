@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:minWidth="92dp"
+    android:paddingHorizontal="14dp"
+    android:paddingVertical="12dp"
+    android:background="@drawable/shape_field">
+
+    <ImageView
+        android:id="@+id/iv_muscle_icon"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:contentDescription="Muscle"
+        app:tint="@color/ink" />
+
+    <TextView
+        android:id="@+id/tv_muscle_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        android:textColor="@color/ink_2"
+        android:letterSpacing="0.02" />
+</LinearLayout>

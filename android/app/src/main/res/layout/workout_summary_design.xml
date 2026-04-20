@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/paper">
+
+    <!-- Close row -->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="64dp"
+        android:paddingHorizontal="20dp"
+        android:paddingVertical="12dp">
+
+        <FrameLayout
+            android:id="@+id/btn_close"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_centerVertical="true"
+            android:background="@drawable/shape_circle_card">
+
+            <ImageView
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_close"
+                android:contentDescription="Close"
+                app:tint="@color/ink" />
+        </FrameLayout>
+    </RelativeLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingHorizontal="20dp"
+            android:paddingBottom="16dp">
+
+            <!-- Centered hero -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center_horizontal"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp">
+
+                <FrameLayout
+                    android:layout_width="58dp"
+                    android:layout_height="58dp"
+                    android:background="@drawable/shape_sum_mark">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_clock"
+                        android:contentDescription="Saved"
+                        app:tint="#FFFFFF" />
+                </FrameLayout>
+
+                <TextView
+                    style="@style/TextKicker"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:text="Saved to log" />
+
+                <TextView
+                    style="@style/TextH1Serif"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="Nice work." />
+
+                <TextView
+                    android:id="@+id/tv_summary_meta"
+                    style="@style/TextMuted"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp" />
+            </LinearLayout>
+
+            <!-- Stat 3 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="18dp"
+                android:layout_marginBottom="24dp"
+                android:orientation="horizontal"
+                android:background="@drawable/shape_border_card"
+                android:paddingVertical="4dp">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:padding="14dp"
+                    android:gravity="center">
+
+                    <TextView
+                        android:id="@+id/tv_sum_sets"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="serif"
+                        android:textSize="24sp"
+                        android:letterSpacing="-0.02"
+                        android:textColor="@color/ink"
+                        android:text="0" />
+
+                    <TextView
+                        style="@style/TextKicker"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:text="Sets" />
+                </LinearLayout>
+
+                <View
+                    android:layout_width="1dp"
+                    android:layout_height="match_parent"
+                    android:background="@color/line" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:padding="14dp"
+                    android:gravity="center">
+
+                    <TextView
+                        android:id="@+id/tv_sum_reps"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="serif"
+                        android:textSize="24sp"
+                        android:letterSpacing="-0.02"
+                        android:textColor="@color/ink"
+                        android:text="0" />
+
+                    <TextView
+                        style="@style/TextKicker"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:text="Reps" />
+                </LinearLayout>
+
+                <View
+                    android:layout_width="1dp"
+                    android:layout_height="match_parent"
+                    android:background="@color/line" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:padding="14dp"
+                    android:gravity="center">
+
+                    <TextView
+                        android:id="@+id/tv_sum_volume"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="serif"
+                        android:textSize="24sp"
+                        android:letterSpacing="-0.02"
+                        android:textColor="@color/ink"
+                        android:text="0" />
+
+                    <TextView
+                        style="@style/TextKicker"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:text="Volume" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/btn_save"
+                style="@style/BtnPillPrimary"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Log another exercise" />
+
+            <Button
+                android:id="@+id/btn_discard"
+                style="@style/BtnPillSecondary"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="Finish workout" />
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+</LinearLayout>

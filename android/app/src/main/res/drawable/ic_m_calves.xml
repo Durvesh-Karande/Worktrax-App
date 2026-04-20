@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="32dp"
+    android:height="32dp"
+    android:viewportWidth="32"
+    android:viewportHeight="32">
+    <!-- Lower-leg silhouette: calf bulge tapering to ankle -->
+    <path
+        android:fillColor="#FF1B1B1A"
+        android:pathData="M9,4 Q14,5 13,12 Q15,18 12,24 L10,28 L8,28 Q7,22 6,16 Q7,9 9,4 Z" />
+    <path
+        android:fillColor="#FF1B1B1A"
+        android:pathData="M23,4 Q18,5 19,12 Q17,18 20,24 L22,28 L24,28 Q25,22 26,16 Q25,9 23,4 Z" />
+</vector>

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="paper">#F2EFE9</color>
+    <color name="surface">#FFFFFF</color>
+    <color name="surface_2">#F6F3ED</color>
+    <color name="card">#FFFFFF</color>
+    <color name="line">#E6E1D7</color>
+    <color name="line_2">#D7D1C4</color>
+    <color name="hairline">#E6E1D7</color>
+    <color name="ink">#1B1B1A</color>
+    <color name="ink_2">#5A5854</color>
+    <color name="ink_3">#8E8B83</color>
+    <color name="ink_4">#BDB9AE</color>
+    <color name="muted">#8E8B83</color>
+    <color name="accent">#E85D2A</color>
+    <color name="ok">#4A7F58</color>
+
+    <color name="type_strength_top">#7A5D2E</color>
+    <color name="type_strength_bottom">#3A2D17</color>
+    <color name="type_cardio_top">#2E5A6A</color>
+    <color name="type_cardio_bottom">#17333E</color>
+    <color name="type_aerobic_top">#C24A1E</color>
+    <color name="type_aerobic_bottom">#6A1D08</color>
+    <color name="type_yoga_top">#5A3E7A</color>
+    <color name="type_yoga_bottom">#2A1A3A</color>
+
+    <color name="thumb_a">#B08A42</color>
+    <color name="thumb_b">#4A7488</color>
+    <color name="thumb_c">#C24A1E</color>
+    <color name="thumb_d">#7A5BA0</color>
+    <color name="thumb_e">#4A7F58</color>
+    <color name="thumb_f">#1B1B1A</color>
+
+    <color name="paper_dark">#121211</color>
+    <color name="surface_dark">#1C1C1B</color>
+    <color name="card_dark">#1C1C1B</color>
+    <color name="ink_dark">#F4F1EA</color>
+    <color name="hairline_dark">#2A2A28</color>
+    <color name="accent_dark">#FF7A4A</color>
+</resources>
