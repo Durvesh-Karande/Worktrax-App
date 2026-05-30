@@ -85,8 +85,15 @@ class Workout_Detail_Logic : Fragment() {
                 
                 setView.findViewById<TextView>(R.id.tv_set_number).text = (index + 1).toString()
                 setView.findViewById<TextView>(R.id.tv_reps).text = set.reps.toString()
-                setView.findViewById<TextView>(R.id.tv_weight).text = set.weight.toString()
+                val rpeSuffix = if (set.rpe != null) " @${set.rpe}" else ""
+                setView.findViewById<TextView>(R.id.tv_weight).text = "${set.weight}$rpeSuffix"
                 setView.findViewById<TextView>(R.id.tv_unit).text = set.unit.code
+                if (set.warmup) {
+                    setView.alpha = 0.6f
+                    setView.findViewById<TextView>(R.id.tv_set_number).setTextColor(
+                        resources.getColor(R.color.ink_3, null)
+                    )
+                }
                 
                 if (index == exercise.sets.size - 1) {
                     setView.findViewById<View>(R.id.divider).visibility = View.GONE

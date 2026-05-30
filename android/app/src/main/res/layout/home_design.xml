@@ -50,15 +50,15 @@
 
                 <FrameLayout
                     android:id="@+id/btn_profile"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
                     android:layout_alignParentEnd="true"
                     android:layout_centerVertical="true"
                     android:background="@drawable/shape_circle_card">
 
                     <ImageView
-                        android:layout_width="18dp"
-                        android:layout_height="18dp"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
                         android:layout_gravity="center"
                         android:src="@drawable/ic_user"
                         android:contentDescription="Profile"
@@ -101,47 +101,6 @@
                     android:orientation="horizontal" />
             </LinearLayout>
 
-            <!-- Hidden legacy containers kept so existing binding code doesn't NPE -->
-            <LinearLayout
-                android:id="@+id/list_recent_workouts"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:orientation="vertical"
-                android:visibility="gone" />
-
-            <include
-                android:id="@+id/stat_workouts"
-                layout="@layout/view_stat_tile"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:visibility="gone" />
-
-            <include
-                android:id="@+id/stat_volume"
-                layout="@layout/view_stat_tile"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:visibility="gone" />
-
-            <include
-                android:id="@+id/stat_reps"
-                layout="@layout/view_stat_tile"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:visibility="gone" />
-
-            <TextView
-                android:id="@+id/btn_all_history"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:visibility="gone" />
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
-
-    <!-- btn_continue retained hidden for binding compatibility -->
-    <Button
-        android:id="@+id/btn_continue"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:visibility="gone" />
 </LinearLayout>

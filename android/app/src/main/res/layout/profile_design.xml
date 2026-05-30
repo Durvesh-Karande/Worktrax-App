@@ -13,22 +13,7 @@
         android:paddingHorizontal="20dp"
         android:paddingVertical="12dp">
 
-        <FrameLayout
-            android:id="@+id/btn_back"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_centerVertical="true"
-            android:background="@drawable/shape_circle_card">
-
-            <ImageView
-                android:layout_width="18dp"
-                android:layout_height="18dp"
-                android:layout_gravity="center"
-                android:src="@drawable/ic_chevron_left"
-                android:contentDescription="Back"
-                app:tint="@color/ink" />
-        </FrameLayout>
-
+        <!-- Back button removed: Profile is a root tab -->
         <TextView
             style="@style/TextKicker"
             android:layout_width="wrap_content"
@@ -38,15 +23,15 @@
 
         <FrameLayout
             android:id="@+id/btn_settings"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
             android:background="@drawable/shape_circle_card">
 
             <ImageView
-                android:layout_width="18dp"
-                android:layout_height="18dp"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
                 android:layout_gravity="center"
                 android:src="@drawable/ic_settings"
                 android:contentDescription="Settings"
@@ -253,12 +238,70 @@
                 android:text="No workouts in this range."
                 android:visibility="gone" />
 
-            <!-- Download report -->
+            <!-- Bodyweight -->
+            <TextView
+                style="@style/TextKicker"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="Bodyweight" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:background="@drawable/shape_field"
+                android:padding="14dp">
+
+                <LinearLayout
+                    android:id="@+id/layout_bodyweight_entries"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical" />
+
+                <Button
+                    android:id="@+id/btn_add_bodyweight"
+                    style="@style/BtnPillSecondary"
+                    android:layout_width="wrap_content"
+                    android:layout_height="36dp"
+                    android:minHeight="36dp"
+                    android:text="Add" />
+            </LinearLayout>
+
+            <!-- Download CSV -->
+            <FrameLayout
+                android:id="@+id/btn_download_csv"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:layout_marginTop="12dp"
+                android:background="@drawable/shape_button_secondary">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Download CSV"
+                        android:textColor="@color/ink"
+                        android:textStyle="bold"
+                        android:textSize="14sp" />
+                </LinearLayout>
+            </FrameLayout>
+
+            <!-- Download report (PDF) -->
             <FrameLayout
                 android:id="@+id/btn_download_pdf"
                 android:layout_width="match_parent"
                 android:layout_height="52dp"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="8dp"
                 android:background="@drawable/shape_button_primary">
 
                 <LinearLayout

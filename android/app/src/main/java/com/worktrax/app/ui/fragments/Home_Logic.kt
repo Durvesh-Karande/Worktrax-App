@@ -1,11 +1,13 @@
 package com.worktrax.app.ui.fragments
 
+import android.app.AlertDialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -15,7 +17,9 @@ import androidx.navigation.fragment.findNavController
 import com.worktrax.app.R
 import com.worktrax.app.data.WorkoutType
 import com.worktrax.app.databinding.HomeDesignBinding
+import com.worktrax.app.lib.Storage
 import com.worktrax.app.lib.formatTopDate
+import com.worktrax.app.lib.routinesFromJsonString
 import com.worktrax.app.store.SessionViewModel
 import com.worktrax.app.store.SettingsViewModel
 import kotlinx.coroutines.flow.collectLatest
@@ -47,6 +51,19 @@ class Home_Logic : Fragment() {
         binding.btnProfile.setOnClickListener {
             findNavController().navigate(R.id.action_home_to_profile)
         }
+        showOnboardingIfNeeded()
+    }
+
+    private fun showOnboardingIfNeeded() {
+        val done = Storage.getString(requireContext(), Storage.KEY_ONBOARDING_DONE)
+        if (done != null) return
+        val overlay = LayoutInflater.from(requireContext())
+            .inflate(R.layout.overlay_onboarding, binding.root as? ViewGroup, false)
+        overlay.findViewById<View>(R.id.btn_get_started).setOnClickListener {
+            (overlay.parent as? ViewGroup)?.removeView(overlay)
+            Storage.putString(requireContext(), Storage.KEY_ONBOARDING_DONE, "1")
+        }
+        (binding.root as? ViewGroup)?.addView(overlay)
     }
 
     private fun setupGrid() {
@@ -99,6 +116,30 @@ class Home_Logic : Fragment() {
             card.setOnClickListener {
                 sessionVM.start(type)
                 findNavController().navigate(R.id.action_home_to_exercise)
+            }
+            card.setOnLongClickListener {
+                val raw = Storage.getString(requireContext(), Storage.KEY_ROUTINES)
+                val routines = routinesFromJsonString(raw).filter { it.type == type }
+                if (routines.isEmpty()) {
+                    Toast.makeText(requireContext(), "No saved routines", Toast.LENGTH_SHORT).show()
+                    return@setOnLongClickListener true
+                }
+                val names = routines.map { it.name }.toTypedArray()
+                AlertDialog.Builder(requireContext())
+                    .setTitle("Start routine")
+                    .setItems(names) { _, i ->
+                        val routine = routines[i]
+                        sessionVM.start(type)
+                        routine.exerciseIds.forEach { id ->
+                            val def = com.worktrax.app.data.EXERCISES.find { it.id == id }
+                            if (def != null) {
+                                sessionVM.pickExercise(def.id, def.name, def.muscle)
+                            }
+                        }
+                        findNavController().navigate(R.id.action_home_to_exercise)
+                    }
+                    .show()
+                true
             }
 
             row.addView(card)

@@ -42,6 +42,8 @@ data class SetEntry(
     val weight: Double,
     val unit: WeightUnit,
     val at: String,
+    val warmup: Boolean = false,
+    val rpe: Int? = null,
 )
 
 data class ExerciseEntry(
@@ -57,6 +59,20 @@ data class Workout(
     val type: WorkoutType,
     val durationSec: Int,
     val exercises: List<ExerciseEntry>,
+)
+
+data class Routine(
+    val id: String,
+    val name: String,
+    val type: WorkoutType,
+    val exerciseIds: List<String>,
+    val createdAt: String,
+)
+
+data class BodyweightEntry(
+    val date: String,
+    val weight: Double,
+    val unit: WeightUnit,
 )
 
 val EQUIPMENT_ORDER: List<Equipment> = listOf(

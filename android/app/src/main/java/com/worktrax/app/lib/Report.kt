@@ -260,3 +260,59 @@ fun buildAndSaveReport(ctx: Context, opts: ReportOptions): Uri? {
         null
     }
 }
+
+fun buildAndSaveCsv(ctx: Context, opts: ReportOptions): Uri? {
+    val sb = StringBuilder()
+    sb.appendLine("Date,Type,Duration,Exercise,Muscle,Set,Reps,Weight,Unit,Warmup,RPE")
+    for (w in opts.workouts) {
+        for (ex in w.exercises) {
+            ex.sets.forEachIndexed { i, s ->
+                val weight = if (s.unit == opts.unit) s.weight else convertWeight(s.weight, s.unit, opts.unit)
+                sb.appendLine(
+                    listOf(
+                        w.date.substringBefore("T"),
+                        w.type.code,
+                        formatMinutes(w.durationSec),
+                        ex.name,
+                        ex.muscle,
+                        (i + 1).toString(),
+                        s.reps.toString(),
+                        "%.1f".format(weight),
+                        opts.unit.code,
+                        if (s.warmup) "yes" else "no",
+                        s.rpe?.toString() ?: "",
+                    ).joinToString(",")
+                )
+            }
+        }
+    }
+    val csv = sb.toString()
+    val safe = opts.userName.replace(Regex("[^a-zA-Z0-9]+"), "-").lowercase().ifEmpty { "user" }
+    val fromDate = isoFromEpochMs(opts.range.fromMs).substring(0, 10)
+    val toDate = isoFromEpochMs(opts.range.toMs).substring(0, 10)
+    val filename = "worktrax-$safe-${fromDate}_${toDate}.csv"
+    return try {
+        val uri: Uri?
+        val os: OutputStream?
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            val values = ContentValues().apply {
+                put(MediaStore.MediaColumns.DISPLAY_NAME, filename)
+                put(MediaStore.MediaColumns.MIME_TYPE, "text/csv")
+                put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS)
+            }
+            uri = ctx.contentResolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, values)
+            os = uri?.let { ctx.contentResolver.openOutputStream(it) }
+        } else {
+            val file = File(
+                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
+                filename,
+            )
+            os = file.outputStream()
+            uri = Uri.fromFile(file)
+        }
+        os?.use { it.write(csv.toByteArray()) }
+        uri
+    } catch (e: Exception) {
+        null
+    }
+}

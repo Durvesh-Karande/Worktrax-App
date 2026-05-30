@@ -1,5 +1,6 @@
 package com.worktrax.app.ui.fragments
 
+import android.app.AlertDialog
 import android.os.Bundle
 import android.text.SpannableStringBuilder
 import android.text.Spanned
@@ -7,6 +8,7 @@ import android.text.style.StyleSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
@@ -17,21 +19,29 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.worktrax.app.R
-import com.worktrax.app.data.Workout
+import com.worktrax.app.data.BodyweightEntry
 import com.worktrax.app.data.WeightUnit
+import com.worktrax.app.data.Workout
 import com.worktrax.app.databinding.ProfileDesignBinding
 import com.worktrax.app.lib.ReportOptions
 import com.worktrax.app.lib.ReportRange
+import com.worktrax.app.lib.Storage
+import com.worktrax.app.lib.bodyweightFromJsonString
+import com.worktrax.app.lib.bodyweightToJsonString
+import com.worktrax.app.lib.buildAndSaveCsv
 import com.worktrax.app.lib.buildAndSaveReport
 import com.worktrax.app.lib.formatShortDate
 import com.worktrax.app.lib.isoEpochMs
+import com.worktrax.app.lib.nowIso
 import com.worktrax.app.lib.numberWithCommas
 import com.worktrax.app.lib.volumeOf
 import com.worktrax.app.store.HistoryViewModel
 import com.worktrax.app.store.SettingsViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.Calendar
 
 @Suppress("ClassName")
@@ -61,7 +71,6 @@ class Profile_Logic : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.btnBack.setOnClickListener { findNavController().popBackStack() }
         binding.btnSettings.setOnClickListener {
             findNavController().navigate(R.id.settingsFragment)
         }
@@ -83,6 +92,9 @@ class Profile_Logic : Fragment() {
         }
 
         binding.btnDownloadPdf.setOnClickListener { downloadReport() }
+        binding.btnDownloadCsv.setOnClickListener { downloadCsv() }
+        binding.btnAddBodyweight.setOnClickListener { addBodyweightDialog() }
+        loadBodyweight()
     }
 
     private fun setupRangeChips() {
@@ -249,6 +261,96 @@ class Profile_Logic : Fragment() {
             row.findViewById<TextView>(R.id.tv_workout_date).text = formatShortDate(w.date)
             row.findViewById<TextView>(R.id.tv_workout_desc).text = "$title · $meta · ${volumeOf(w, unit)} ${unit.code}"
             binding.layoutFilteredLogs.addView(row)
+        }
+    }
+
+    private var bodyweightEntries: List<BodyweightEntry> = emptyList()
+
+    private fun loadBodyweight() {
+        val raw = Storage.getString(requireContext(), Storage.KEY_BODYWEIGHT)
+        bodyweightEntries = bodyweightFromJsonString(raw)
+        renderBodyweight()
+    }
+
+    private fun renderBodyweight() {
+        binding.layoutBodyweightEntries.removeAllViews()
+        val recent = bodyweightEntries.sortedByDescending { it.date }.take(3)
+        if (recent.isEmpty()) {
+            val tv = TextView(requireContext()).apply {
+                text = "No entries yet"
+                textSize = 13f
+                setTextColor(resources.getColor(R.color.ink_3, null))
+            }
+            binding.layoutBodyweightEntries.addView(tv)
+        } else {
+            recent.forEach { entry ->
+                val tv = TextView(requireContext()).apply {
+                    text = "${entry.weight} ${entry.unit.code} · ${formatShortDate(entry.date)}"
+                    textSize = 13f
+                    setTextColor(resources.getColor(R.color.ink, null))
+                }
+                binding.layoutBodyweightEntries.addView(tv)
+            }
+        }
+    }
+
+    private fun addBodyweightDialog() {
+        val unit = settingsVM.state.value.unit
+        val input = EditText(requireContext()).apply {
+            inputType = android.text.InputType.TYPE_CLASS_NUMBER or
+                    android.text.InputType.TYPE_NUMBER_FLAG_DECIMAL
+            hint = "Weight in ${unit.code}"
+        }
+        AlertDialog.Builder(requireContext())
+            .setTitle("Add bodyweight")
+            .setView(input)
+            .setPositiveButton("Save") { _, _ ->
+                val v = input.text.toString().toDoubleOrNull()
+                if (v != null && v > 0) {
+                    bodyweightEntries = bodyweightEntries + BodyweightEntry(
+                        date = nowIso(),
+                        weight = v,
+                        unit = unit,
+                    )
+                    Storage.putString(
+                        requireContext(),
+                        Storage.KEY_BODYWEIGHT,
+                        bodyweightToJsonString(bodyweightEntries),
+                    )
+                    renderBodyweight()
+                }
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
+    }
+
+    private fun downloadCsv() {
+        Toast.makeText(requireContext(), "Generating CSV…", Toast.LENGTH_SHORT).show()
+        viewLifecycleOwner.lifecycleScope.launch {
+            val settings = settingsVM.state.value
+            val all = historyVM.workouts.value
+            val filtered = filterWorkouts(all)
+            val toMs = System.currentTimeMillis()
+            val fromMs = when (selectedRange) {
+                Range.ALL -> filtered.minOfOrNull { isoEpochMs(it.date) } ?: toMs
+                Range.TODAY -> midnightToday()
+                else -> toMs - selectedRange.days.toLong() * 24 * 3600 * 1000
+            }
+            val opts = ReportOptions(
+                userName = settings.name,
+                unit = settings.unit,
+                range = ReportRange(fromMs, toMs, selectedRange.label),
+                workouts = filtered,
+                includeSets = true,
+                includeSummary = true,
+                includePRs = true,
+            )
+            val uri = withContext(Dispatchers.IO) { buildAndSaveCsv(requireContext(), opts) }
+            Toast.makeText(
+                requireContext(),
+                if (uri != null) "CSV saved to Downloads" else "Could not save CSV",
+                Toast.LENGTH_SHORT,
+            ).show()
         }
     }
 

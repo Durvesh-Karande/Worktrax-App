@@ -195,7 +195,8 @@ class Picker_Exercise_Logic : Fragment() {
             R.color.thumb_a, R.color.thumb_b, R.color.thumb_c,
             R.color.thumb_d, R.color.thumb_e, R.color.thumb_f,
         )
-        val slot = (ex.id.hashCode() and Int.MAX_VALUE) % thumbColors.size
+        val exIndex = EXERCISES.indexOfFirst { it.id == ex.id }.coerceAtLeast(0)
+        val slot = exIndex % thumbColors.size
         row.findViewById<View>(R.id.ex_thumb).backgroundTintList =
             ColorStateList.valueOf(resources.getColor(thumbColors[slot], null))
         row.findViewById<TextView>(R.id.tv_ex_name).text = ex.name

@@ -54,10 +54,10 @@ class SessionViewModel : ViewModel() {
         )
     }
 
-    fun addSet(reps: Int, weight: Double, unit: WeightUnit) {
+    fun addSet(reps: Int, weight: Double, unit: WeightUnit, warmup: Boolean = false, rpe: Int? = null) {
         val s = _state.value
         val cur = s.currentExerciseId ?: return
-        val full = SetEntry(reps = reps, weight = weight, unit = unit, at = nowIso())
+        val full = SetEntry(reps = reps, weight = weight, unit = unit, at = nowIso(), warmup = warmup, rpe = rpe)
         val next = s.exercises.map { e ->
             if (e.id == cur) e.copy(sets = e.sets + full) else e
         }

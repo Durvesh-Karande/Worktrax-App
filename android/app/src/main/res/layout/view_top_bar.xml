@@ -9,14 +9,14 @@
 
     <FrameLayout
         android:id="@+id/btn_back"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
         android:layout_centerVertical="true"
         android:background="@drawable/shape_circle_card">
 
         <ImageView
-            android:layout_width="18dp"
-            android:layout_height="18dp"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
             android:layout_gravity="center"
             android:src="@drawable/ic_chevron_left"
             android:contentDescription="Back"
@@ -33,16 +33,16 @@
 
     <FrameLayout
         android:id="@+id/right_slot"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
         android:layout_alignParentEnd="true"
         android:layout_centerVertical="true"
         android:background="@drawable/shape_circle_card">
 
         <ImageView
             android:id="@+id/btn_delete"
-            android:layout_width="18dp"
-            android:layout_height="18dp"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
             android:layout_gravity="center"
             android:src="@drawable/ic_close"
             android:visibility="gone"

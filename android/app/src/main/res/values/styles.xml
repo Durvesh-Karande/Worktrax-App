@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <style name="Theme.Worktrax" parent="Theme.Material3.DayNight.NoActionBar">
-        <item name="android:windowBackground">@color/paper</item>
+        <item name="android:windowBackground">@drawable/bg_paper</item>
         <item name="android:statusBarColor">@color/paper</item>
         <item name="android:navigationBarColor">@color/paper</item>
 
@@ -17,7 +17,7 @@
 
     <!-- Small uppercase kicker / eyebrow label -->
     <style name="TextKicker">
-        <item name="android:textSize">10.5sp</item>
+        <item name="android:textSize">12sp</item>
         <item name="android:fontFamily">Arial</item>
         <item name="android:textAllCaps">true</item>
         <item name="android:letterSpacing">0.16</item>
@@ -27,10 +27,10 @@
 
     <style name="TextEyebrow" parent="TextKicker" />
 
-    <!-- Display: serif, large, italic accent via spans in code. Uses system serif. -->
+    <!-- Display: serif, large, italic accent via spans in code. -->
     <style name="TextH1Serif">
         <item name="android:textSize">28.5sp</item>
-        <item name="android:fontFamily">Georgia</item>
+        <item name="android:fontFamily">serif</item>
         <item name="android:textColor">@color/ink</item>
         <item name="android:letterSpacing">-0.02</item>
         <item name="android:lineSpacingMultiplier">1.0</item>
@@ -42,14 +42,14 @@
 
     <style name="TextHeroSerif">
         <item name="android:textSize">24sp</item>
-        <item name="android:fontFamily">Georgia</item>
+        <item name="android:fontFamily">serif</item>
         <item name="android:textColor">@color/ink</item>
         <item name="android:letterSpacing">-0.02</item>
     </style>
 
     <style name="TextLogTitle">
         <item name="android:textSize">24sp</item>
-        <item name="android:fontFamily">Georgia</item>
+        <item name="android:fontFamily">serif</item>
         <item name="android:textColor">@color/ink</item>
         <item name="android:letterSpacing">-0.02</item>
     </style>
@@ -70,7 +70,7 @@
     </style>
 
     <style name="TextMuted">
-        <item name="android:textSize">10.5sp</item>
+        <item name="android:textSize">12sp</item>
         <item name="android:fontFamily">Arial</item>
         <item name="android:textColor">@color/ink_3</item>
     </style>

@@ -1,17 +1,26 @@
 package com.worktrax.app.ui.fragments
 
+import android.app.AlertDialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.worktrax.app.R
+import com.worktrax.app.data.Routine
 import com.worktrax.app.databinding.WorkoutSummaryDesignBinding
+import com.worktrax.app.lib.Storage
 import com.worktrax.app.lib.formatShortDate
+import com.worktrax.app.lib.nowIso
 import com.worktrax.app.lib.numberWithCommas
+import com.worktrax.app.lib.routinesFromJsonString
+import com.worktrax.app.lib.routinesToJsonString
+import com.worktrax.app.lib.uid
 import com.worktrax.app.lib.volumeOf
 import com.worktrax.app.store.HistoryViewModel
 import com.worktrax.app.store.SettingsViewModel
@@ -68,6 +77,37 @@ class Workout_Summary_Logic : Fragment() {
         }
         binding.btnDiscard.setOnClickListener {
             findNavController().popBackStack(R.id.homeFragment, false)
+        }
+        binding.btnSaveRoutine.setOnClickListener {
+            if (workout == null) return@setOnClickListener
+            val input = EditText(requireContext()).apply {
+                setText("${workout.type.code.replaceFirstChar { it.uppercase() }} Routine")
+                selectAll()
+            }
+            AlertDialog.Builder(requireContext())
+                .setTitle("Save as routine")
+                .setView(input)
+                .setPositiveButton("Save") { _, _ ->
+                    val name = input.text.toString().trim().ifEmpty { "My Routine" }
+                    val exerciseIds = workout.exercises.map { it.id }
+                    val routine = Routine(
+                        id = uid("r"),
+                        name = name,
+                        type = workout.type,
+                        exerciseIds = exerciseIds,
+                        createdAt = nowIso(),
+                    )
+                    val raw = Storage.getString(requireContext(), Storage.KEY_ROUTINES)
+                    val routines = routinesFromJsonString(raw) + routine
+                    Storage.putString(
+                        requireContext(),
+                        Storage.KEY_ROUTINES,
+                        routinesToJsonString(routines),
+                    )
+                    Toast.makeText(requireContext(), "Routine saved", Toast.LENGTH_SHORT).show()
+                }
+                .setNegativeButton("Cancel", null)
+                .show()
         }
     }
 
