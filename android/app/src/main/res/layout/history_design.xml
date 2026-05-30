@@ -58,7 +58,7 @@
         android:paddingHorizontal="20dp"
         android:paddingVertical="24dp"
         android:gravity="center"
-        android:text="No workouts yet.\nTap Home & pick a workout type to start!"
+        android:text="No workouts yet.\nTap Home &amp; pick a workout type to start!"
         android:textSize="13sp"
         android:textColor="@color/ink_3"
         android:visibility="gone" />
