@@ -4,6 +4,9 @@ import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -23,6 +26,18 @@ class MainActivity : AppCompatActivity() {
         val navController = navHostFragment.navController
         val bottomNav = findViewById<BottomNavigationView>(R.id.bottom_navigation)
         bottomNav.setupWithNavController(navController)
+
+        ViewCompat.setOnApplyWindowInsetsListener(bottomNav) { view, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            view.updatePadding(bottom = systemBars.bottom)
+            insets
+        }
+
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.nav_host_fragment)) { view, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            view.updatePadding(top = systemBars.top)
+            insets
+        }
     }
 
     private fun applyTheme(mode: ThemeMode) {

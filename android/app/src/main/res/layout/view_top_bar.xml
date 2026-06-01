@@ -12,14 +12,15 @@
         android:layout_width="48dp"
         android:layout_height="48dp"
         android:layout_centerVertical="true"
-        android:background="@drawable/shape_circle_card">
+        android:background="@drawable/shape_circle_card"
+        android:foreground="?attr/selectableItemBackground">
 
         <ImageView
             android:layout_width="20dp"
             android:layout_height="20dp"
             android:layout_gravity="center"
             android:src="@drawable/ic_chevron_left"
-            android:contentDescription="Back"
+            android:contentDescription="@string/cd_back"
             app:tint="@color/ink" />
     </FrameLayout>
 
@@ -37,7 +38,8 @@
         android:layout_height="48dp"
         android:layout_alignParentEnd="true"
         android:layout_centerVertical="true"
-        android:background="@drawable/shape_circle_card">
+        android:background="@drawable/shape_circle_card"
+        android:foreground="?attr/selectableItemBackground">
 
         <ImageView
             android:id="@+id/btn_delete"
@@ -46,7 +48,7 @@
             android:layout_gravity="center"
             android:src="@drawable/ic_close"
             android:visibility="gone"
-            android:contentDescription="Delete"
+            android:contentDescription="@string/cd_delete"
             app:tint="@color/accent" />
     </FrameLayout>
 </RelativeLayout>

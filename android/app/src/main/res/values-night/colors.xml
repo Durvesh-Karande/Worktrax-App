@@ -3,15 +3,36 @@
     <color name="paper">#121211</color>
     <color name="surface">#1C1C1B</color>
     <color name="surface_2">#222221</color>
-    <color name="card">#1C1C1B</color>
     <color name="line">#2A2A28</color>
     <color name="line_2">#3A3A37</color>
-    <color name="hairline">#2A2A28</color>
     <color name="ink">#F4F1EA</color>
     <color name="ink_2">#B4B0A5</color>
     <color name="ink_3">#7F7C74</color>
     <color name="ink_4">#555249</color>
-    <color name="muted">#7F7C74</color>
     <color name="accent">#FF7A4A</color>
     <color name="ok">#5EAD70</color>
+    <color name="danger">#E85555</color>
+    <color name="accent_10">#1AFF7A4A</color>
+    <color name="white">#FFFFFF</color>
+
+    <color name="thumb_a">#C49A4E</color>
+    <color name="thumb_b">#5A8A9E</color>
+    <color name="thumb_c">#E05A2A</color>
+    <color name="thumb_d">#8A6BC0</color>
+    <color name="thumb_e">#5A9A68</color>
+    <color name="thumb_f">#E8E4DA</color>
+
+    <!-- Workout type gradients (dark mode - slightly dimmer) -->
+    <color name="type_strength_top">#5A4020</color>
+    <color name="type_strength_bottom">#2A1F0E</color>
+    <color name="type_cardio_top">#20404F</color>
+    <color name="type_cardio_bottom">#0E222B</color>
+    <color name="type_aerobic_top">#993A16</color>
+    <color name="type_aerobic_bottom">#4F1505</color>
+    <color name="type_yoga_top">#402E59</color>
+    <color name="type_yoga_bottom">#1D1229</color>
+
+    <color name="overlay_scrim">#E6000000</color>
+    <color name="ink_on_card">#F4F1EA</color>
+    <color name="ink_on_card_70">#B3F4F1EA</color>
 </resources>

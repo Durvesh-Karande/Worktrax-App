@@ -14,8 +14,8 @@
         android:text="KG"
         android:textSize="12sp"
         android:textStyle="bold"
-        android:textColor="@color/ink"
-        android:background="@drawable/shape_chip_selected" />
+        android:textColor="@color/ink_2"
+        android:background="@drawable/shape_chip" />
 
     <TextView
         android:id="@+id/option2"

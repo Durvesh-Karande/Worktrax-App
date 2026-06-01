@@ -64,9 +64,10 @@ fun formatMonthLabel(key: String): String {
 }
 
 fun formatDuration(sec: Int): String {
-    val m = sec / 60
+    val h = sec / 3600
+    val m = (sec % 3600) / 60
     val s = sec % 60
-    return "%02d:%02d".format(m, s)
+    return if (h > 0) "%dh %02dm".format(h, m) else "%02d:%02d".format(m, s)
 }
 
 fun formatMinutes(sec: Int): String {

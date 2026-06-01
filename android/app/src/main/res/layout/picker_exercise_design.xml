@@ -65,18 +65,36 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:background="@android:color/transparent"
-            android:hint="Type to search…"
+            android:hint="@string/search_hint"
             android:textColorHint="@color/ink_3"
             android:textColor="@color/ink"
             android:textSize="14sp"
             android:singleLine="true"
             android:imeOptions="actionSearch" />
 
+        <FrameLayout
+            android:id="@+id/btn_clear_search"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:gravity="center"
+            android:visibility="gone"
+            android:clickable="true"
+            android:focusable="true">
+
+            <ImageView
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_close"
+                android:contentDescription="@string/cd_clear_search"
+                app:tint="@color/ink_3" />
+        </FrameLayout>
+
         <ImageView
             android:layout_width="16dp"
             android:layout_height="16dp"
             android:src="@drawable/ic_search"
-            android:contentDescription="Search"
+            android:contentDescription="@string/cd_search"
             app:tint="@color/ink_3" />
     </LinearLayout>
 
@@ -89,32 +107,27 @@
         android:layout_marginHorizontal="20dp"
         android:layout_marginTop="20dp"
         android:gravity="center"
-        android:text="Pick a muscle above to see\nexercises, or type to search." />
+            android:text="@string/pick_muscle_prompt" />
 
-    <androidx.core.widget.NestedScrollView
+    <TextView
+        android:id="@+id/tv_no_results"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingHorizontal="20dp"
+        android:paddingVertical="20dp"
+        android:gravity="center"
+        android:text="@string/no_exercises_match"
+        android:textSize="13sp"
+        android:textColor="@color/ink_3"
+        android:visibility="gone" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_exercises"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
         android:layout_marginTop="8dp"
-        android:fillViewport="true">
-
-        <LinearLayout
-            android:id="@+id/layout_exercises_list"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:paddingHorizontal="20dp"
-            android:paddingBottom="24dp">
-
-            <TextView
-                android:id="@+id/tv_no_results"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingVertical="20dp"
-                android:gravity="center"
-                android:text="No exercises match."
-                android:textSize="13sp"
-                android:textColor="@color/ink_3"
-                android:visibility="gone" />
-        </LinearLayout>
-    </androidx.core.widget.NestedScrollView>
+        android:paddingHorizontal="20dp"
+        android:clipToPadding="false"
+        android:paddingBottom="24dp" />
 </LinearLayout>

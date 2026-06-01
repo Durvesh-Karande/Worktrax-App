@@ -14,10 +14,9 @@
 
         <TextView
             android:id="@+id/tv_set_number"
+            style="@style/TextMuted"
             android:layout_width="40dp"
             android:layout_height="wrap_content"
-            android:textColor="@color/ink_2"
-            android:textSize="13sp"
             android:textStyle="bold" />
 
         <TextView
@@ -45,12 +44,10 @@
 
             <TextView
                 android:id="@+id/tv_unit"
+                style="@style/TextMuted"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="3dp"
-                android:textColor="@color/ink_3"
-                android:textSize="11sp"
-                android:textStyle="normal" />
+                android:layout_marginStart="3dp" />
         </LinearLayout>
     </LinearLayout>
 

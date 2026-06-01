@@ -19,7 +19,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:text="Profile" />
+            android:text="@string/profile_title" />
 
         <FrameLayout
             android:id="@+id/btn_settings"
@@ -27,14 +27,15 @@
             android:layout_height="48dp"
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
-            android:background="@drawable/shape_circle_card">
+            android:background="@drawable/shape_circle_card"
+            android:foreground="?attr/selectableItemBackground">
 
             <ImageView
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:layout_gravity="center"
                 android:src="@drawable/ic_settings"
-                android:contentDescription="Settings"
+                android:contentDescription="@string/cd_settings"
                 app:tint="@color/ink" />
         </FrameLayout>
     </RelativeLayout>
@@ -58,13 +59,23 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:gravity="center_horizontal"
-                android:paddingTop="8dp"
+                android:paddingTop="12dp"
                 android:paddingBottom="18dp">
 
                 <FrameLayout
                     android:layout_width="80dp"
                     android:layout_height="80dp"
-                    android:background="@drawable/type_strength" />
+                    android:background="@drawable/shape_circle_accent">
+                    <TextView
+                        android:id="@+id/tv_avatar_initials"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:textSize="28sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/white"
+                        android:fontFamily="serif" />
+                </FrameLayout>
 
                 <TextView
                     android:id="@+id/tv_profile_name"
@@ -72,7 +83,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
-                    android:text="Amal Okafor" />
+                    android:text="@string/your_name_placeholder" />
 
                 <TextView
                     android:id="@+id/tv_profile_sub"
@@ -80,7 +91,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="6dp"
-                    android:text="Since April 2024 · 0 sessions" />
+                    android:text="" />
             </LinearLayout>
 
             <!-- Stat 3 -->
@@ -109,7 +120,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
-                        android:text="Day streak" />
+                        android:text="@string/day_streak" />
                 </LinearLayout>
 
                 <View android:layout_width="1dp" android:layout_height="match_parent" android:background="@color/line" />
@@ -133,7 +144,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
-                        android:text="Sessions" />
+                        android:text="@string/sessions_label" />
                 </LinearLayout>
 
                 <View android:layout_width="1dp" android:layout_height="match_parent" android:background="@color/line" />
@@ -157,7 +168,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
-                        android:text="Lifted" />
+                        android:text="@string/lifted_label" />
                 </LinearLayout>
             </LinearLayout>
 
@@ -167,7 +178,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
-                android:text="Progress · volume" />
+                android:text="@string/progress_volume" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -198,7 +209,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
-                android:text="Date range" />
+                android:text="@string/date_range" />
 
             <HorizontalScrollView
                 android:layout_width="match_parent"
@@ -219,14 +230,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
-                android:text="Workout logs" />
+                android:text="@string/workout_logs" />
 
-            <LinearLayout
-                android:id="@+id/layout_filtered_logs"
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_filtered_logs"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:orientation="vertical" />
+                android:nestedScrollingEnabled="false" />
 
             <TextView
                 android:id="@+id/tv_no_logs"
@@ -235,7 +246,7 @@
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:padding="16dp"
-                android:text="No workouts in this range."
+                android:text="@string/no_workouts_range"
                 android:visibility="gone" />
 
             <!-- Bodyweight -->
@@ -244,7 +255,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
-                android:text="Bodyweight" />
+                android:text="@string/bodyweight_label" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -264,11 +275,11 @@
 
                 <Button
                     android:id="@+id/btn_add_bodyweight"
-                    style="@style/BtnPillSecondary"
+                    style="@style/BtnSecondary"
                     android:layout_width="wrap_content"
-                    android:layout_height="36dp"
-                    android:minHeight="36dp"
-                    android:text="Add" />
+                    android:layout_height="48dp"
+                    android:minHeight="48dp"
+                    android:text="@string/add_label" />
             </LinearLayout>
 
             <!-- Download CSV -->
@@ -277,7 +288,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="52dp"
                 android:layout_marginTop="12dp"
-                android:background="@drawable/shape_button_secondary">
+                android:background="@drawable/shape_button_secondary"
+                android:foreground="?attr/selectableItemBackground"
+                android:contentDescription="@string/cd_download">
 
                 <LinearLayout
                     android:layout_width="wrap_content"
@@ -289,7 +302,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Download CSV"
+                        android:text="@string/download_csv"
                         android:textColor="@color/ink"
                         android:textStyle="bold"
                         android:textSize="14sp" />
@@ -302,7 +315,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="52dp"
                 android:layout_marginTop="8dp"
-                android:background="@drawable/shape_button_primary">
+                android:background="@drawable/shape_button_primary"
+                android:foreground="?attr/selectableItemBackground">
 
                 <LinearLayout
                     android:layout_width="wrap_content"
@@ -315,16 +329,16 @@
                         android:layout_width="16dp"
                         android:layout_height="16dp"
                         android:src="@drawable/ic_pdf"
-                        android:contentDescription="Download"
-                        app:tint="@color/paper" />
+                        android:contentDescription="@string/cd_download"
+                        app:tint="@color/white" />
 
                     <TextView
                         android:id="@+id/tv_download_pdf"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
-                        android:text="Download report"
-                        android:textColor="@color/paper"
+                        android:text="@string/download_report"
+                        android:textColor="@color/white"
                         android:textStyle="bold"
                         android:textSize="14sp" />
                 </LinearLayout>

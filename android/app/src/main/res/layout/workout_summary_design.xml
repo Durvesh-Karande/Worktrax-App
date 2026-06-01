@@ -18,14 +18,15 @@
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:layout_centerVertical="true"
-            android:background="@drawable/shape_circle_card">
+            android:background="@drawable/shape_circle_card"
+            android:foreground="?attr/selectableItemBackground">
 
             <ImageView
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:layout_gravity="center"
                 android:src="@drawable/ic_close"
-                android:contentDescription="Close"
+                android:contentDescription="@string/cd_close"
                 app:tint="@color/ink" />
         </FrameLayout>
     </RelativeLayout>
@@ -62,8 +63,8 @@
                         android:layout_height="24dp"
                         android:layout_gravity="center"
                         android:src="@drawable/ic_clock"
-                        android:contentDescription="Saved"
-                        app:tint="#FFFFFF" />
+                        android:contentDescription="@string/saved_to_log"
+                        app:tint="@color/white" />
                 </FrameLayout>
 
                 <TextView
@@ -71,14 +72,14 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="14dp"
-                    android:text="Saved to log" />
+                    android:text="@string/saved_to_log" />
 
                 <TextView
                     style="@style/TextH1Serif"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:text="Nice work." />
+                    android:text="@string/nice_work" />
 
                 <TextView
                     android:id="@+id/tv_summary_meta"
@@ -108,12 +109,9 @@
 
                     <TextView
                         android:id="@+id/tv_sum_sets"
+                        style="@style/TextHeroSerif"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:fontFamily="serif"
-                        android:textSize="24sp"
-                        android:letterSpacing="-0.02"
-                        android:textColor="@color/ink"
                         android:text="0" />
 
                     <TextView
@@ -121,7 +119,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
-                        android:text="Sets" />
+                        android:text="@string/sets_label" />
                 </LinearLayout>
 
                 <View
@@ -139,12 +137,9 @@
 
                     <TextView
                         android:id="@+id/tv_sum_reps"
+                        style="@style/TextHeroSerif"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:fontFamily="serif"
-                        android:textSize="24sp"
-                        android:letterSpacing="-0.02"
-                        android:textColor="@color/ink"
                         android:text="0" />
 
                     <TextView
@@ -152,7 +147,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
-                        android:text="Reps" />
+                        android:text="@string/reps_stat_label" />
                 </LinearLayout>
 
                 <View
@@ -170,12 +165,9 @@
 
                     <TextView
                         android:id="@+id/tv_sum_volume"
+                        style="@style/TextHeroSerif"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:fontFamily="serif"
-                        android:textSize="24sp"
-                        android:letterSpacing="-0.02"
-                        android:textColor="@color/ink"
                         android:text="0" />
 
                     <TextView
@@ -183,32 +175,32 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
-                        android:text="Volume" />
+                        android:text="@string/volume_label" />
                 </LinearLayout>
             </LinearLayout>
 
             <Button
                 android:id="@+id/btn_save_routine"
-                style="@style/BtnPillSecondary"
+                style="@style/BtnOutlineAccent"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Save as routine" />
+                android:text="@string/save_as_routine" />
 
             <Button
                 android:id="@+id/btn_save"
-                style="@style/BtnPillSecondary"
+                style="@style/BtnOutlineAccent"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:text="Log another exercise" />
+                android:text="@string/log_another" />
 
             <Button
                 android:id="@+id/btn_discard"
-                style="@style/BtnPillPrimary"
+                style="@style/BtnPrimary"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:text="Finish workout" />
+                android:text="@string/finish_workout" />
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 </LinearLayout>

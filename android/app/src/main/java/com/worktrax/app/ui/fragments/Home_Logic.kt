@@ -5,6 +5,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.DecelerateInterpolator
+import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
@@ -19,6 +21,7 @@ import com.worktrax.app.data.WorkoutType
 import com.worktrax.app.databinding.HomeDesignBinding
 import com.worktrax.app.lib.Storage
 import com.worktrax.app.lib.formatTopDate
+import com.worktrax.app.lib.greeting
 import com.worktrax.app.lib.routinesFromJsonString
 import com.worktrax.app.store.SessionViewModel
 import com.worktrax.app.store.SettingsViewModel
@@ -59,7 +62,19 @@ class Home_Logic : Fragment() {
         if (done != null) return
         val overlay = LayoutInflater.from(requireContext())
             .inflate(R.layout.overlay_onboarding, binding.root as? ViewGroup, false)
+        val etName = overlay.findViewById<EditText>(R.id.et_name)
         overlay.findViewById<View>(R.id.btn_get_started).setOnClickListener {
+            val name = etName.text.toString().trim()
+            if (name.isBlank()) {
+                etName.error = getString(R.string.enter_name_hint)
+                etName.requestFocus()
+                return@setOnClickListener
+            }
+            settingsVM.setName(name)
+            (overlay.parent as? ViewGroup)?.removeView(overlay)
+            Storage.putString(requireContext(), Storage.KEY_ONBOARDING_DONE, "1")
+        }
+        overlay.findViewById<View>(R.id.btn_skip).setOnClickListener {
             (overlay.parent as? ViewGroup)?.removeView(overlay)
             Storage.putString(requireContext(), Storage.KEY_ONBOARDING_DONE, "1")
         }
@@ -121,12 +136,12 @@ class Home_Logic : Fragment() {
                 val raw = Storage.getString(requireContext(), Storage.KEY_ROUTINES)
                 val routines = routinesFromJsonString(raw).filter { it.type == type }
                 if (routines.isEmpty()) {
-                    Toast.makeText(requireContext(), "No saved routines", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), R.string.no_saved_routines, Toast.LENGTH_SHORT).show()
                     return@setOnLongClickListener true
                 }
                 val names = routines.map { it.name }.toTypedArray()
                 AlertDialog.Builder(requireContext())
-                    .setTitle("Start routine")
+                    .setTitle(R.string.start_routine_title)
                     .setItems(names) { _, i ->
                         val routine = routines[i]
                         sessionVM.start(type)
@@ -144,13 +159,33 @@ class Home_Logic : Fragment() {
 
             row.addView(card)
         }
+
+        // Staggered fade-in-up animation
+        val allCards = mutableListOf<View>()
+        for (i in 0 until topRow.childCount) allCards.add(topRow.getChildAt(i))
+        for (i in 0 until bottomRow.childCount) allCards.add(bottomRow.getChildAt(i))
+        allCards.forEachIndexed { idx, card ->
+            card.alpha = 0f
+            card.translationY = 20f * resources.displayMetrics.density
+            card.animate()
+                .alpha(1f)
+                .translationY(0f)
+                .setStartDelay((idx * 80).toLong())
+                .setDuration(300)
+                .setInterpolator(DecelerateInterpolator())
+                .start()
+        }
     }
 
     private fun setupObservers() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 settingsVM.state.collectLatest { state ->
-                    binding.tvGreeting.text = "Hi, ${state.name}"
+                    binding.tvGreeting.text = if (state.name.isNotBlank()) {
+                        getString(R.string.hi_name_format, state.name)
+                    } else {
+                        getString(R.string.good_greeting_format, greeting())
+                    }
                 }
             }
         }

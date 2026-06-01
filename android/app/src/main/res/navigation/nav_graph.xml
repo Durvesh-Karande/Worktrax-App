@@ -18,7 +18,11 @@
             app:destination="@id/profileFragment" />
         <action
             android:id="@+id/action_home_to_exercise"
-            app:destination="@id/exercisePickerFragment" />
+            app:destination="@id/exercisePickerFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
     </fragment>
 
     <fragment
@@ -28,7 +32,11 @@
         tools:layout="@layout/history_design">
         <action
             android:id="@+id/action_history_to_detail"
-            app:destination="@id/workoutDetailFragment" />
+            app:destination="@id/workoutDetailFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
     </fragment>
 
     <fragment
@@ -38,7 +46,11 @@
         tools:layout="@layout/profile_design">
         <action
             android:id="@+id/action_profile_to_settings"
-            app:destination="@id/settingsFragment" />
+            app:destination="@id/settingsFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
     </fragment>
 
     <fragment
@@ -48,7 +60,11 @@
         tools:layout="@layout/picker_exercise_design">
         <action
             android:id="@+id/action_exercise_to_log"
-            app:destination="@id/logFragment" />
+            app:destination="@id/logFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
     </fragment>
 
     <fragment
@@ -58,10 +74,18 @@
         tools:layout="@layout/workout_logger_design">
         <action
             android:id="@+id/action_log_to_summary"
-            app:destination="@id/summaryFragment" />
+            app:destination="@id/summaryFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
         <action
             android:id="@+id/action_log_to_exercise"
-            app:destination="@id/exercisePickerFragment" />
+            app:destination="@id/exercisePickerFragment"
+            app:enterAnim="@anim/slide_in_left"
+            app:exitAnim="@anim/slide_out_right"
+            app:popEnterAnim="@anim/slide_in_right"
+            app:popExitAnim="@anim/slide_out_left" />
     </fragment>
 
     <fragment

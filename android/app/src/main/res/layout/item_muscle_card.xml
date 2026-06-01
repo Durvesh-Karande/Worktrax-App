@@ -8,13 +8,16 @@
     android:minWidth="92dp"
     android:paddingHorizontal="14dp"
     android:paddingVertical="12dp"
-    android:background="@drawable/shape_field">
+    android:background="@drawable/shape_field"
+    android:foreground="?attr/selectableItemBackground"
+    android:clickable="true"
+    android:focusable="true">
 
     <ImageView
         android:id="@+id/iv_muscle_icon"
         android:layout_width="32dp"
         android:layout_height="32dp"
-        android:contentDescription="Muscle"
+        android:contentDescription="@string/cd_muscle"
         app:tint="@color/ink" />
 
     <TextView

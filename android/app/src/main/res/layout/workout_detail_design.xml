@@ -54,9 +54,9 @@
 
         <Button
             android:id="@+id/btn_repeat"
-            style="@style/BtnPillPrimary"
+            style="@style/BtnPrimary"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Repeat this workout" />
+            android:text="@string/repeat_workout" />
     </FrameLayout>
 </LinearLayout>

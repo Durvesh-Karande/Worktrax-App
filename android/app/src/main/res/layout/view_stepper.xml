@@ -19,21 +19,19 @@
         android:orientation="horizontal"
         android:gravity="center_vertical">
 
-        <Button
+        <TextView
             android:id="@+id/btn_minus"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
+            android:layout_width="38dp"
+            android:layout_height="38dp"
             android:background="@drawable/shape_stepper_btn"
             android:text="−"
-            android:textColor="@color/ink"
-            android:textSize="20sp"
+            android:textColor="@color/accent"
+            android:textSize="22sp"
             android:textStyle="bold"
             android:gravity="center"
-            android:padding="0dp"
-            android:insetTop="0dp"
-            android:insetBottom="0dp"
-            android:minHeight="0dp"
-            android:minWidth="0dp" />
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?attr/selectableItemBackgroundBorderless" />
 
         <TextView
             android:id="@+id/tv_value"
@@ -45,20 +43,18 @@
             android:text="0"
             android:textSize="32sp" />
 
-        <Button
+        <TextView
             android:id="@+id/btn_plus"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
+            android:layout_width="38dp"
+            android:layout_height="38dp"
             android:background="@drawable/shape_stepper_btn"
             android:text="+"
-            android:textColor="@color/ink"
-            android:textSize="20sp"
+            android:textColor="@color/accent"
+            android:textSize="22sp"
             android:textStyle="bold"
             android:gravity="center"
-            android:padding="0dp"
-            android:insetTop="0dp"
-            android:insetBottom="0dp"
-            android:minHeight="0dp"
-            android:minWidth="0dp" />
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?attr/selectableItemBackgroundBorderless" />
     </LinearLayout>
 </LinearLayout>

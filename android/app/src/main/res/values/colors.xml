@@ -3,17 +3,17 @@
     <color name="paper">#F2EFE9</color>
     <color name="surface">#FFFFFF</color>
     <color name="surface_2">#F6F3ED</color>
-    <color name="card">#FFFFFF</color>
     <color name="line">#E6E1D7</color>
     <color name="line_2">#D7D1C4</color>
-    <color name="hairline">#E6E1D7</color>
     <color name="ink">#1B1B1A</color>
     <color name="ink_2">#5A5854</color>
     <color name="ink_3">#8E8B83</color>
     <color name="ink_4">#BDB9AE</color>
-    <color name="muted">#8E8B83</color>
     <color name="accent">#E85D2A</color>
     <color name="ok">#4A7F58</color>
+    <color name="danger">#D44040</color>
+    <color name="accent_10">#1AE85D2A</color>
+    <color name="white">#FFFFFF</color>
 
     <color name="type_strength_top">#7A5D2E</color>
     <color name="type_strength_bottom">#3A2D17</color>
@@ -31,10 +31,7 @@
     <color name="thumb_e">#4A7F58</color>
     <color name="thumb_f">#1B1B1A</color>
 
-    <color name="paper_dark">#121211</color>
-    <color name="surface_dark">#1C1C1B</color>
-    <color name="card_dark">#1C1C1B</color>
-    <color name="ink_dark">#F4F1EA</color>
-    <color name="hairline_dark">#2A2A28</color>
-    <color name="accent_dark">#FF7A4A</color>
+    <color name="overlay_scrim">#E61B1B1A</color>
+    <color name="ink_on_card">#F4F1EA</color>
+    <color name="ink_on_card_70">#B3F4F1EA</color>
 </resources>

@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import org.json.JSONObject
 
 data class SettingsState(
-    val name: String = "Amal Okafor",
+    val name: String = "",
     val unit: WeightUnit = WeightUnit.KG,
     val theme: ThemeMode = ThemeMode.SYSTEM,
 )
@@ -26,7 +26,7 @@ class SettingsViewModel(app: Application) : AndroidViewModel(app) {
         return try {
             val o = JSONObject(raw)
             SettingsState(
-                name = o.optString("name", "Amal Okafor"),
+                name = o.optString("name", ""),
                 unit = WeightUnit.from(o.optString("unit", "kg")),
                 theme = ThemeMode.from(o.optString("theme", "system")),
             )
@@ -47,4 +47,5 @@ class SettingsViewModel(app: Application) : AndroidViewModel(app) {
     fun setName(name: String) { _state.value = _state.value.copy(name = name).also(::persist) }
     fun setUnit(unit: WeightUnit) { _state.value = _state.value.copy(unit = unit).also(::persist) }
     fun setTheme(theme: ThemeMode) { _state.value = _state.value.copy(theme = theme).also(::persist) }
+    fun reset() { _state.value = SettingsState() }
 }

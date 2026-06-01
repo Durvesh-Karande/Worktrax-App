@@ -23,7 +23,7 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingTop="36dp"
+                android:paddingTop="16dp"
                 android:paddingBottom="20dp">
 
                 <LinearLayout
@@ -37,7 +37,7 @@
                         style="@style/TextKicker"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="MONDAY, 20 APRIL" />
+                        android:text="" />
 
                     <TextView
                         android:id="@+id/tv_greeting"
@@ -45,7 +45,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="6dp"
-                        android:text="Hi, Amal" />
+                        android:text="" />
                 </LinearLayout>
 
                 <FrameLayout
@@ -54,14 +54,15 @@
                     android:layout_height="48dp"
                     android:layout_alignParentEnd="true"
                     android:layout_centerVertical="true"
-                    android:background="@drawable/shape_circle_card">
+                    android:background="@drawable/shape_circle_card"
+                    android:foreground="?attr/selectableItemBackground">
 
                     <ImageView
                         android:layout_width="20dp"
                         android:layout_height="20dp"
                         android:layout_gravity="center"
                         android:src="@drawable/ic_user"
-                        android:contentDescription="Profile"
+                        android:contentDescription="@string/cd_profile"
                         app:tint="@color/ink" />
                 </FrameLayout>
             </RelativeLayout>
@@ -70,10 +71,10 @@
                 style="@style/TextKicker"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/picker_type_kicker" />
+                android:text="@string/start_workout_kicker" />
 
             <TextView
-                android:id="@+id/card_start_workout"
+                android:id="@+id/tv_start_workout"
                 style="@style/TextH1Serif"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -91,13 +92,14 @@
                     android:id="@+id/row_types_top"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:paddingHorizontal="5dp"
                     android:orientation="horizontal" />
-
                 <LinearLayout
                     android:id="@+id/row_types_bottom"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
+                    android:paddingHorizontal="5dp"
                     android:orientation="horizontal" />
             </LinearLayout>
 

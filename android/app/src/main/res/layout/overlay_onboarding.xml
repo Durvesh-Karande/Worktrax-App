@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="#E61B1B1A"
+    android:background="@color/overlay_scrim"
     android:gravity="center"
     android:clickable="true"
     android:focusable="true"
@@ -20,14 +20,14 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Welcome to"
+            android:text="@string/welcome_to"
             style="@style/TextKicker" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="6dp"
-            android:text="Worktrax."
+            android:text="@string/worktrax_title"
             android:textSize="32sp"
             android:fontFamily="serif"
             android:textColor="@color/ink"
@@ -39,10 +39,25 @@
             android:layout_marginVertical="20dp"
             android:background="@color/accent" />
 
+        <EditText
+            android:id="@+id/et_name"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:background="@drawable/shape_field"
+            android:hint="@string/enter_name_hint"
+            android:inputType="textPersonName"
+            android:imeOptions="actionDone"
+            android:paddingHorizontal="16dp"
+            android:textSize="15sp"
+            android:textColor="@color/ink"
+            android:textColorHint="@color/ink_3"
+            android:maxLines="1"
+            android:layout_marginBottom="20dp" />
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="1. Pick a workout type"
+            android:text="@string/step1_title"
             android:textSize="14sp"
             android:textStyle="bold"
             android:textColor="@color/ink" />
@@ -51,7 +66,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
-            android:text="Strength, cardio, aerobic, or yoga"
+            android:text="@string/step1_desc"
             android:textSize="13sp"
             android:textColor="@color/ink_2" />
 
@@ -64,7 +79,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="2. Choose exercises &amp; log sets"
+            android:text="@string/step2_title"
             android:textSize="14sp"
             android:textStyle="bold"
             android:textColor="@color/ink" />
@@ -73,7 +88,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
-            android:text="Tap the number to type directly"
+            android:text="@string/step2_desc"
             android:textSize="13sp"
             android:textColor="@color/ink_2" />
 
@@ -86,7 +101,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="3. Review &amp; save"
+            android:text="@string/step3_title"
             android:textSize="14sp"
             android:textStyle="bold"
             android:textColor="@color/ink" />
@@ -95,16 +110,24 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
-            android:text="Your workout history is stored locally"
+            android:text="@string/step3_desc"
             android:textSize="13sp"
             android:textColor="@color/ink_2" />
 
         <Button
             android:id="@+id/btn_get_started"
-            style="@style/BtnPillPrimary"
+            style="@style/BtnPrimaryArrow"
             android:layout_width="match_parent"
             android:layout_height="52dp"
             android:layout_marginTop="24dp"
-            android:text="Get started" />
+            android:text="@string/get_started" />
+
+        <Button
+            android:id="@+id/btn_skip"
+            style="@style/BtnGhost"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginTop="8dp"
+            android:text="@string/skip_for_now" />
     </LinearLayout>
 </LinearLayout>

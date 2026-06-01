@@ -4,9 +4,13 @@
     android:layout_height="wrap_content"
     android:orientation="horizontal"
     android:paddingVertical="10dp"
-    android:gravity="center_vertical">
+    android:gravity="center_vertical"
+    android:foreground="?attr/selectableItemBackground"
+    android:clickable="true"
+    android:focusable="true">
 
     <View
+        android:id="@+id/v_type_bar"
         android:layout_width="4dp"
         android:layout_height="34dp"
         android:background="@color/accent" />
@@ -32,7 +36,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="2dp"
-            android:textSize="10sp"
+            android:textSize="12sp"
             android:textColor="@color/ink_3" />
     </LinearLayout>
 </LinearLayout>

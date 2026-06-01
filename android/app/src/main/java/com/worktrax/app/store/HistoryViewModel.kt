@@ -39,4 +39,8 @@ class HistoryViewModel(app: Application) : AndroidViewModel(app) {
         _workouts.value = emptyList()
         persist(emptyList())
     }
+
+    fun refresh() {
+        _workouts.value = load()
+    }
 }

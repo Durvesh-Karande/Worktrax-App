@@ -3,7 +3,9 @@
     android:id="@+id/card_type"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="5dp">
+    android:foreground="?attr/selectableItemBackground"
+    android:clickable="true"
+    android:focusable="true">
 
     <LinearLayout
         android:id="@+id/layout_bg"
@@ -28,7 +30,7 @@
             android:id="@+id/tv_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="#F4F1EA"
+            android:textColor="@color/ink_on_card"
             android:textSize="18sp"
             android:textStyle="bold"
             android:letterSpacing="-0.015" />
@@ -38,7 +40,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="2dp"
-            android:textColor="#B3F4F1EA"
-            android:textSize="11sp" />
+            android:textColor="@color/ink_on_card_70"
+            android:textSize="12sp" />
     </LinearLayout>
 </FrameLayout>

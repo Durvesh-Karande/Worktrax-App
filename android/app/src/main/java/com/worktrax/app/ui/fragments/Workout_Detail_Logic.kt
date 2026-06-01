@@ -1,11 +1,13 @@
 package com.worktrax.app.ui.fragments
 
+import android.app.AlertDialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -91,7 +93,7 @@ class Workout_Detail_Logic : Fragment() {
                 if (set.warmup) {
                     setView.alpha = 0.6f
                     setView.findViewById<TextView>(R.id.tv_set_number).setTextColor(
-                        resources.getColor(R.color.ink_3, null)
+                        ContextCompat.getColor(requireContext(), R.color.ink_3)
                     )
                 }
                 
@@ -113,15 +115,22 @@ class Workout_Detail_Logic : Fragment() {
         
         binding.includeTopBar.btnDelete.setOnClickListener {
             val workoutId = arguments?.getString("workoutId") ?: return@setOnClickListener
-            historyVM.remove(workoutId)
-            findNavController().popBackStack()
+            AlertDialog.Builder(requireContext())
+                .setTitle(R.string.delete_workout_title)
+                .setMessage(R.string.delete_workout_message)
+                .setPositiveButton(R.string.delete_label) { _, _ ->
+                    historyVM.remove(workoutId)
+                    findNavController().popBackStack()
+                }
+                .setNegativeButton(R.string.cancel_label, null)
+                .show()
         }
-        
+
         binding.btnRepeat.setOnClickListener {
             val workoutId = arguments?.getString("workoutId") ?: return@setOnClickListener
             val workout = historyVM.workouts.value.find { it.id == workoutId } ?: return@setOnClickListener
             sessionVM.seedFromWorkout(workout)
-            findNavController().navigate(R.id.logFragment) // Fixed ID to direct navigate
+            findNavController().navigate(R.id.exercisePickerFragment)
         }
     }
 

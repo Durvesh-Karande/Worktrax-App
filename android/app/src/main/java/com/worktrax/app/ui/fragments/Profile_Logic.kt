@@ -12,16 +12,20 @@ import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.worktrax.app.R
 import com.worktrax.app.data.BodyweightEntry
 import com.worktrax.app.data.WeightUnit
 import com.worktrax.app.data.Workout
+import com.worktrax.app.data.WorkoutType
 import com.worktrax.app.databinding.ProfileDesignBinding
 import com.worktrax.app.lib.ReportOptions
 import com.worktrax.app.lib.ReportRange
@@ -53,11 +57,58 @@ class Profile_Logic : Fragment() {
     private val settingsVM: SettingsViewModel by viewModels({ requireActivity() })
     private val historyVM: HistoryViewModel by viewModels({ requireActivity() })
 
-    private enum class Range(val label: String, val days: Int) {
-        TODAY("Today", 1), W7("7 days", 7), M1("30 days", 30), M3("90 days", 90), ALL("All time", Int.MAX_VALUE)
+    private enum class Range(val labelRes: Int, val days: Int) {
+        TODAY(R.string.range_today, 1), W7(R.string.range_7_days, 7), M1(R.string.range_30_days, 30),
+        M3(R.string.range_90_days, 90), ALL(R.string.range_all_time, Int.MAX_VALUE)
     }
 
     private var selectedRange: Range = Range.TODAY
+
+    private inner class WorkoutLogAdapter : RecyclerView.Adapter<WorkoutLogAdapter.VH>() {
+        private var items: List<Pair<Workout, WeightUnit>> = emptyList()
+
+        fun submit(list: List<Workout>, unit: WeightUnit) {
+            items = list.take(10).map { it to unit }
+            notifyDataSetChanged()
+        }
+
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VH {
+            val view = LayoutInflater.from(requireContext())
+                .inflate(R.layout.item_recent_workout, parent, false)
+            return VH(view)
+        }
+
+        override fun onBindViewHolder(holder: VH, position: Int) {
+            val (w, unit) = items[position]
+            val firstEx = w.exercises.firstOrNull()
+            val title = firstEx?.name ?: w.type.code.uppercase()
+            val meta = buildString {
+                append(w.type.code.replaceFirstChar { it.uppercase() })
+                if (firstEx?.muscle?.isNotBlank() == true) append(" · ").append(firstEx.muscle)
+                append(" · ").append(w.exercises.sumOf { it.sets.size }).append(" sets")
+            }
+            holder.date.text = formatShortDate(w.date)
+            holder.desc.text = "$title · $meta · ${volumeOf(w, unit)} ${unit.code}"
+            holder.bar.setBackgroundResource(
+                when (w.type) {
+                    WorkoutType.STRENGTH -> R.color.type_strength_top
+                    WorkoutType.CARDIO -> R.color.type_cardio_top
+                    WorkoutType.AEROBIC -> R.color.type_aerobic_top
+                    WorkoutType.YOGA -> R.color.type_yoga_top
+                }
+            )
+        }
+
+        override fun getItemCount() = items.size
+
+        inner class VH(view: View) : RecyclerView.ViewHolder(view) {
+            val bar: View = view.findViewById(R.id.v_type_bar)
+            val date: TextView = view.findViewById(R.id.tv_workout_date)
+            val desc: TextView = view.findViewById(R.id.tv_workout_desc)
+        }
+    }
+
+    private val workoutLogAdapter = WorkoutLogAdapter()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -72,8 +123,11 @@ class Profile_Logic : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.btnSettings.setOnClickListener {
-            findNavController().navigate(R.id.settingsFragment)
+            findNavController().navigate(R.id.action_profile_to_settings)
         }
+
+        binding.rvFilteredLogs.layoutManager = LinearLayoutManager(requireContext())
+        binding.rvFilteredLogs.adapter = workoutLogAdapter
 
         setupRangeChips()
 
@@ -81,9 +135,10 @@ class Profile_Logic : Fragment() {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 combine(settingsVM.state, historyVM.workouts) { s, h -> s to h }
                     .collectLatest { (settings, workouts) ->
-                        binding.tvProfileName.text = renderItalicLast(settings.name)
+                        binding.tvProfileName.text = if (settings.name.isNotBlank()) renderItalicLast(settings.name) else getString(R.string.your_name_placeholder)
+                        binding.tvAvatarInitials.text = if (settings.name.isNotBlank()) settings.name.trim().first().uppercase() else "?"
                         binding.tvProfileSub.text =
-                            "Since April 2024 · ${workouts.size} sessions"
+                            "${getString(R.string.profile_since)} · ${workouts.size} ${getString(R.string.profile_sessions)}"
                         renderStats(workouts, settings.unit)
                         renderChart(workouts, settings.unit)
                         renderFiltered(workouts, settings.unit)
@@ -106,10 +161,10 @@ class Profile_Logic : Fragment() {
 
         Range.values().forEach { range ->
             val chip = TextView(requireContext()).apply {
-                text = range.label
+                text = getString(range.labelRes)
                 textSize = 12f
                 setPadding(padH, padV, padH, padV)
-                setTextColor(resources.getColor(R.color.ink_2, null))
+                setTextColor(ContextCompat.getColor(requireContext(), R.color.ink_2))
                 setBackgroundResource(R.drawable.shape_chip)
                 layoutParams = LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.WRAP_CONTENT,
@@ -128,14 +183,15 @@ class Profile_Logic : Fragment() {
     }
 
     private fun updateRangeChipState() {
+        val selectedLabel = getString(selectedRange.labelRes)
         for (i in 0 until binding.layoutRangeChips.childCount) {
             val chip = binding.layoutRangeChips.getChildAt(i) as TextView
-            val selected = chip.text.toString() == selectedRange.label
+            val selected = chip.text.toString() == selectedLabel
             chip.setBackgroundResource(
                 if (selected) R.drawable.shape_chip_selected else R.drawable.shape_chip
             )
             chip.setTextColor(
-                resources.getColor(if (selected) R.color.paper else R.color.ink_2, null)
+                ContextCompat.getColor(requireContext(), if (selected) R.color.white else R.color.ink_2)
             )
         }
     }
@@ -169,9 +225,23 @@ class Profile_Logic : Fragment() {
         binding.tvStatLifted.text =
             if (vol >= 1000) "${(vol / 1000.0).format1()}t" else numberWithCommas(vol)
 
-        // crude "day streak" — distinct dated days with a workout in the last 30 days
-        val days = workouts.map { it.date.substring(0, 10) }.toSet()
-        binding.tvStatStreak.text = days.size.coerceAtMost(99).toString()
+        // day streak — count consecutive days with workouts ending from today
+        val workoutDates = workouts
+            .map { it.date.substring(0, 10) }
+            .toSortedSet()
+        var streak = 0
+        val sdf = java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.US)
+        val cal = java.util.Calendar.getInstance()
+        while (true) {
+            val dateStr = sdf.format(cal.time)
+            if (workoutDates.contains(dateStr)) {
+                streak++
+                cal.add(java.util.Calendar.DAY_OF_YEAR, -1)
+            } else {
+                break
+            }
+        }
+        binding.tvStatStreak.text = streak.coerceAtMost(99).toString()
     }
 
     private fun Double.format1() = "%.1f".format(this)
@@ -221,7 +291,7 @@ class Profile_Logic : Fragment() {
             val label = TextView(requireContext()).apply {
                 text = if (windowDays <= 7) dowLabel(i, bucketCount) else "${i + 1}"
                 textSize = 10f
-                setTextColor(resources.getColor(R.color.ink_3, null))
+                setTextColor(ContextCompat.getColor(requireContext(), R.color.ink_3))
                 gravity = android.view.Gravity.CENTER
                 layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT)
                     .apply {
@@ -236,32 +306,21 @@ class Profile_Logic : Fragment() {
     private fun dowLabel(idx: Int, total: Int): String {
         val cal = Calendar.getInstance()
         cal.add(Calendar.DAY_OF_YEAR, -(total - 1 - idx))
-        val days = arrayOf("S", "M", "T", "W", "T", "F", "S")
+        val days = arrayOf("Su", "Mo", "Tu", "We", "Th", "Fr", "Sa")
         return days[cal.get(Calendar.DAY_OF_WEEK) - 1]
     }
 
     private fun renderFiltered(allWorkouts: List<Workout>, unit: WeightUnit) {
         val filtered = filterWorkouts(allWorkouts).sortedByDescending { isoEpochMs(it.date) }
-        binding.layoutFilteredLogs.removeAllViews()
         if (filtered.isEmpty()) {
             binding.tvNoLogs.visibility = View.VISIBLE
+            binding.rvFilteredLogs.visibility = View.GONE
+            workoutLogAdapter.submit(emptyList(), unit)
             return
         }
         binding.tvNoLogs.visibility = View.GONE
-        val inflater = LayoutInflater.from(requireContext())
-        filtered.take(10).forEach { w ->
-            val row = inflater.inflate(R.layout.item_recent_workout, binding.layoutFilteredLogs, false)
-            val firstEx = w.exercises.firstOrNull()
-            val title = firstEx?.name ?: w.type.code.uppercase()
-            val meta = buildString {
-                append(w.type.code.replaceFirstChar { it.uppercase() })
-                if (firstEx?.muscle?.isNotBlank() == true) append(" · ").append(firstEx.muscle)
-                append(" · ").append(w.exercises.sumOf { it.sets.size }).append(" sets")
-            }
-            row.findViewById<TextView>(R.id.tv_workout_date).text = formatShortDate(w.date)
-            row.findViewById<TextView>(R.id.tv_workout_desc).text = "$title · $meta · ${volumeOf(w, unit)} ${unit.code}"
-            binding.layoutFilteredLogs.addView(row)
-        }
+        binding.rvFilteredLogs.visibility = View.VISIBLE
+        workoutLogAdapter.submit(filtered, unit)
     }
 
     private var bodyweightEntries: List<BodyweightEntry> = emptyList()
@@ -277,9 +336,9 @@ class Profile_Logic : Fragment() {
         val recent = bodyweightEntries.sortedByDescending { it.date }.take(3)
         if (recent.isEmpty()) {
             val tv = TextView(requireContext()).apply {
-                text = "No entries yet"
+                text = getString(R.string.no_entries_yet)
                 textSize = 13f
-                setTextColor(resources.getColor(R.color.ink_3, null))
+                setTextColor(ContextCompat.getColor(requireContext(), R.color.ink_3))
             }
             binding.layoutBodyweightEntries.addView(tv)
         } else {
@@ -287,7 +346,7 @@ class Profile_Logic : Fragment() {
                 val tv = TextView(requireContext()).apply {
                     text = "${entry.weight} ${entry.unit.code} · ${formatShortDate(entry.date)}"
                     textSize = 13f
-                    setTextColor(resources.getColor(R.color.ink, null))
+                    setTextColor(ContextCompat.getColor(requireContext(), R.color.ink))
                 }
                 binding.layoutBodyweightEntries.addView(tv)
             }
@@ -302,9 +361,9 @@ class Profile_Logic : Fragment() {
             hint = "Weight in ${unit.code}"
         }
         AlertDialog.Builder(requireContext())
-            .setTitle("Add bodyweight")
+            .setTitle(R.string.add_bodyweight)
             .setView(input)
-            .setPositiveButton("Save") { _, _ ->
+            .setPositiveButton(R.string.save_label) { _, _ ->
                 val v = input.text.toString().toDoubleOrNull()
                 if (v != null && v > 0) {
                     bodyweightEntries = bodyweightEntries + BodyweightEntry(
@@ -320,12 +379,12 @@ class Profile_Logic : Fragment() {
                     renderBodyweight()
                 }
             }
-            .setNegativeButton("Cancel", null)
+            .setNegativeButton(R.string.cancel_label, null)
             .show()
     }
 
     private fun downloadCsv() {
-        Toast.makeText(requireContext(), "Generating CSV…", Toast.LENGTH_SHORT).show()
+        Toast.makeText(requireContext(), R.string.generating_csv, Toast.LENGTH_SHORT).show()
         viewLifecycleOwner.lifecycleScope.launch {
             val settings = settingsVM.state.value
             val all = historyVM.workouts.value
@@ -339,7 +398,7 @@ class Profile_Logic : Fragment() {
             val opts = ReportOptions(
                 userName = settings.name,
                 unit = settings.unit,
-                range = ReportRange(fromMs, toMs, selectedRange.label),
+                range = ReportRange(fromMs, toMs, getString(selectedRange.labelRes)),
                 workouts = filtered,
                 includeSets = true,
                 includeSummary = true,
@@ -348,7 +407,7 @@ class Profile_Logic : Fragment() {
             val uri = withContext(Dispatchers.IO) { buildAndSaveCsv(requireContext(), opts) }
             Toast.makeText(
                 requireContext(),
-                if (uri != null) "CSV saved to Downloads" else "Could not save CSV",
+                if (uri != null) R.string.csv_saved else R.string.csv_save_failed,
                 Toast.LENGTH_SHORT,
             ).show()
         }
@@ -368,7 +427,7 @@ class Profile_Logic : Fragment() {
         val opts = ReportOptions(
             userName = settings.name,
             unit = settings.unit,
-            range = ReportRange(fromMs, toMs, selectedRange.label),
+            range = ReportRange(fromMs, toMs, getString(selectedRange.labelRes)),
             workouts = filtered,
             includeSets = true,
             includeSummary = true,
@@ -377,7 +436,7 @@ class Profile_Logic : Fragment() {
         val uri = buildAndSaveReport(requireContext(), opts)
         Toast.makeText(
             requireContext(),
-            if (uri != null) "Report saved to Downloads" else "Could not save report",
+            if (uri != null) R.string.report_saved else R.string.report_save_failed,
             Toast.LENGTH_SHORT
         ).show()
     }
@@ -402,3 +461,4 @@ class Profile_Logic : Fragment() {
         _binding = null
     }
 }
+

@@ -11,6 +11,7 @@ import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -20,6 +21,7 @@ import androidx.navigation.fragment.findNavController
 import com.worktrax.app.R
 import com.worktrax.app.data.WeightUnit
 import com.worktrax.app.databinding.WorkoutLoggerDesignBinding
+import com.worktrax.app.lib.weightStep
 import com.worktrax.app.store.HistoryViewModel
 import com.worktrax.app.store.SessionViewModel
 import com.worktrax.app.store.SettingsViewModel
@@ -76,12 +78,11 @@ class Workout_Logger_Logic : Fragment() {
                 if (currentWarmup) R.drawable.shape_chip_selected else R.drawable.shape_chip
             )
             binding.btnWarmupToggle.setTextColor(
-                resources.getColor(if (currentWarmup) R.color.paper else R.color.ink_3, null)
+                ContextCompat.getColor(requireContext(), if (currentWarmup) R.color.white else R.color.ink_3)
             )
-            binding.layoutRpe.visibility = if (currentWarmup) View.GONE else View.VISIBLE
-            if (currentWarmup) currentRpe = null
             haptic()
         }
+        binding.layoutRpe.visibility = View.VISIBLE
         binding.layoutRpeButtons.removeAllViews()
         val density = resources.displayMetrics.density
         val gap = (6 * density).toInt()
@@ -89,7 +90,7 @@ class Workout_Logger_Logic : Fragment() {
             val btn = TextView(requireContext()).apply {
                 text = rpe.toString()
                 textSize = 12f
-                setTextColor(resources.getColor(R.color.ink_2, null))
+                setTextColor(ContextCompat.getColor(requireContext(), R.color.ink_2))
                 setBackgroundResource(R.drawable.shape_chip)
                 setPadding(12, 6, 12, 6)
                 gravity = android.view.Gravity.CENTER
@@ -115,13 +116,13 @@ class Workout_Logger_Logic : Fragment() {
                 if (selected) R.drawable.shape_chip_selected else R.drawable.shape_chip
             )
             chip.setTextColor(
-                resources.getColor(if (selected) R.color.paper else R.color.ink_2, null)
+                ContextCompat.getColor(requireContext(), if (selected) R.color.white else R.color.ink_2)
             )
         }
     }
 
     private fun setupSteppers() {
-        binding.stepperReps.tvStepperLabel.text = "REPS"
+        binding.stepperReps.tvStepperLabel.text = getString(R.string.reps_stepper_label)
         binding.stepperReps.tvValue.text = currentReps.toString()
         binding.stepperReps.btnMinus.setOnClickListener {
             if (currentReps > 0) {
@@ -142,17 +143,17 @@ class Workout_Logger_Logic : Fragment() {
             }
         }
 
-        binding.stepperWeight.tvStepperLabel.text = "WEIGHT"
+        binding.stepperWeight.tvStepperLabel.text = getString(R.string.weight_stepper_label)
         binding.stepperWeight.tvValue.text = currentWeight.toString()
         binding.stepperWeight.btnMinus.setOnClickListener {
             if (currentWeight > 0) {
-                currentWeight -= 2.5
+                currentWeight = (currentWeight - weightStep(settingsVM.state.value.unit)).coerceAtLeast(0.0)
                 binding.stepperWeight.tvValue.text = currentWeight.toString()
                 haptic()
             }
         }
         binding.stepperWeight.btnPlus.setOnClickListener {
-            currentWeight += 2.5
+            currentWeight += weightStep(settingsVM.state.value.unit)
             binding.stepperWeight.tvValue.text = currentWeight.toString()
             haptic()
         }
@@ -165,7 +166,7 @@ class Workout_Logger_Logic : Fragment() {
             }
         }
 
-        binding.stepperTotalSets.tvStepperLabel.text = "TOTAL SETS"
+        binding.stepperTotalSets.tvStepperLabel.text = getString(R.string.total_sets_stepper_label)
         binding.stepperTotalSets.tvValue.text = totalSets.toString()
         binding.stepperTotalSets.btnMinus.setOnClickListener {
             if (totalSets > 1) {
@@ -207,13 +208,13 @@ class Workout_Logger_Logic : Fragment() {
             setSelection(text.length)
         }
         AlertDialog.Builder(requireContext())
-            .setTitle("Enter $label")
+            .setTitle(getString(R.string.enter_label, label))
             .setView(input)
-            .setPositiveButton("Set") { _, _ ->
+            .setPositiveButton(R.string.set_label_action) { _, _ ->
                 val v = input.text.toString().toIntOrNull()
                 if (v != null) onSet(v.coerceIn(min, max))
             }
-            .setNegativeButton("Cancel", null)
+            .setNegativeButton(R.string.cancel_label, null)
             .show()
     }
 
@@ -232,13 +233,13 @@ class Workout_Logger_Logic : Fragment() {
             setSelection(text.length)
         }
         AlertDialog.Builder(requireContext())
-            .setTitle("Enter $label")
+            .setTitle(getString(R.string.enter_label, label))
             .setView(input)
-            .setPositiveButton("Set") { _, _ ->
+            .setPositiveButton(R.string.set_label_action) { _, _ ->
                 val v = input.text.toString().toDoubleOrNull()
                 if (v != null) onSet(v.coerceIn(min, max))
             }
-            .setNegativeButton("Cancel", null)
+            .setNegativeButton(R.string.cancel_label, null)
             .show()
     }
 
@@ -249,18 +250,18 @@ class Workout_Logger_Logic : Fragment() {
                     session to settings.unit
                 }.collectLatest { (session, unit) ->
                     binding.tvTitle.text = getString(R.string.workout_logger_title)
-                    binding.tvMuscleKicker.text = "${session.muscle?.uppercase() ?: "TYPE"} · LOGGING"
+                    binding.tvMuscleKicker.text = "${session.muscle?.uppercase() ?: getString(R.string.muscle_logging_placeholder)} ${getString(R.string.type_logging_suffix)}"
 
                     val currentEx = session.exercises.find { it.id == session.currentExerciseId }
-                    binding.tvExerciseName.text = currentEx?.name ?: "No Exercise Selected"
+                    binding.tvExerciseName.text = currentEx?.name ?: getString(R.string.no_exercise_selected)
 
                     binding.tvUnit.text = unit.code.uppercase()
 
                     val loggedCount = currentEx?.sets?.size ?: 0
                     val currentIndex = loggedCount + 1
                     binding.tvSetCounter.text =
-                        if (currentIndex > totalSets) "All sets done. Tap Done to save."
-                        else "Set $currentIndex of $totalSets · enter values, then Next."
+                        if (currentIndex > totalSets) getString(R.string.all_sets_done)
+                        else getString(R.string.set_counter_format, currentIndex, totalSets)
 
                     updateLoggedSets(currentEx?.sets ?: emptyList(), unit)
                 }
@@ -275,8 +276,8 @@ class Workout_Logger_Logic : Fragment() {
         updateLoggedSets(sets, settingsVM.state.value.unit)
         val currentIndex = sets.size + 1
         binding.tvSetCounter.text =
-            if (currentIndex > totalSets) "All sets done. Tap Done to save."
-            else "Set $currentIndex of $totalSets · enter values, then Next."
+            if (currentIndex > totalSets) getString(R.string.all_sets_done)
+            else getString(R.string.set_counter_format, currentIndex, totalSets)
     }
 
     private fun updateLoggedSets(sets: List<com.worktrax.app.data.SetEntry>, unit: WeightUnit) {
@@ -300,7 +301,7 @@ class Workout_Logger_Logic : Fragment() {
                 if (warmup) {
                     row.alpha = 0.6f
                     row.findViewById<TextView>(R.id.tv_set_number).setTextColor(
-                        resources.getColor(R.color.ink_3, null)
+                        ContextCompat.getColor(requireContext(), R.color.ink_3)
                     )
                 }
             } else if (isCurrent) {
@@ -310,7 +311,7 @@ class Workout_Logger_Logic : Fragment() {
                 row.findViewById<TextView>(R.id.tv_unit).text = unit.code
                 row.setBackgroundResource(R.drawable.shape_set_current)
                 row.findViewById<TextView>(R.id.tv_set_number)
-                    .setTextColor(resources.getColor(R.color.accent, null))
+                    .setTextColor(ContextCompat.getColor(requireContext(), R.color.accent))
                 // Spring animation on the newly pending row
                 row.scaleX = 0.95f
                 row.scaleY = 0.95f
@@ -331,12 +332,12 @@ class Workout_Logger_Logic : Fragment() {
     private fun setupListeners() {
         binding.btnBack.setOnClickListener {
             AlertDialog.Builder(requireContext())
-                .setTitle("Exit workout?")
-                .setMessage("Your progress for this exercise will be saved.")
-                .setPositiveButton("Exit") { _, _ ->
+                .setTitle(R.string.exit_workout_title)
+                .setMessage(R.string.exit_workout_message)
+                .setPositiveButton(R.string.exit_button) { _, _ ->
                     findNavController().popBackStack()
                 }
-                .setNegativeButton("Keep logging", null)
+                .setNegativeButton(R.string.keep_logging_button, null)
                 .show()
         }
 
@@ -362,6 +363,10 @@ class Workout_Logger_Logic : Fragment() {
             } else {
                 findNavController().popBackStack()
             }
+        }
+
+        binding.btnAddExercise.setOnClickListener {
+            findNavController().navigate(R.id.action_log_to_exercise)
         }
     }
 

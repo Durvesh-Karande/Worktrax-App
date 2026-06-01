@@ -1,10 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="24dp"
-    android:height="24dp"
-    android:viewportWidth="24"
-    android:viewportHeight="24">
-    <path
-        android:fillColor="#000000"
-        android:pathData="M12,2L1,21H23L12,2Z" />
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Stylized dumbbell icon -->
+    <group android:translateX="30" android:translateY="30">
+        <!-- Left weight -->
+        <path
+            android:fillColor="@color/paper"
+            android:pathData="M8,12 L8,36 C8,38.2 9.8,40 12,40 L16,40 C18.2,40 20,38.2 20,36 L20,12 C20,9.8 18.2,8 16,8 L12,8 C9.8,8 8,9.8 8,12Z" />
+        <!-- Right weight -->
+        <path
+            android:fillColor="@color/paper"
+            android:pathData="M28,12 L28,36 C28,38.2 29.8,40 32,40 L36,40 C38.2,40 40,38.2 40,36 L40,12 C40,9.8 38.2,8 36,8 L32,8 C29.8,8 28,9.8 28,12Z" />
+        <!-- Bar -->
+        <path
+            android:fillColor="@color/paper"
+            android:pathData="M20,22 L28,22 L28,26 L20,26Z" />
+    </group>
 </vector>

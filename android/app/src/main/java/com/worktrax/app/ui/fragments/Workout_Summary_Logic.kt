@@ -85,10 +85,10 @@ class Workout_Summary_Logic : Fragment() {
                 selectAll()
             }
             AlertDialog.Builder(requireContext())
-                .setTitle("Save as routine")
+                .setTitle(R.string.save_as_routine)
                 .setView(input)
-                .setPositiveButton("Save") { _, _ ->
-                    val name = input.text.toString().trim().ifEmpty { "My Routine" }
+                .setPositiveButton(R.string.save_label) { _, _ ->
+                    val name = input.text.toString().trim().ifEmpty { getString(R.string.my_routine_default) }
                     val exerciseIds = workout.exercises.map { it.id }
                     val routine = Routine(
                         id = uid("r"),
@@ -104,9 +104,9 @@ class Workout_Summary_Logic : Fragment() {
                         Storage.KEY_ROUTINES,
                         routinesToJsonString(routines),
                     )
-                    Toast.makeText(requireContext(), "Routine saved", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), R.string.routine_saved, Toast.LENGTH_SHORT).show()
                 }
-                .setNegativeButton("Cancel", null)
+                .setNegativeButton(R.string.cancel_label, null)
                 .show()
         }
     }

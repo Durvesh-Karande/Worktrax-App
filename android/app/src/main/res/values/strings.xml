@@ -11,4 +11,168 @@
     <string name="workout_logger_title">4 OF 4</string>
     <string name="summary_header">Nice <i>work.</i></string>
     <string name="profile_name_last">Okafor</string>
+
+    <!-- Bottom nav -->
+    <string name="nav_home">Home</string>
+    <string name="nav_history">History</string>
+    <string name="nav_profile">Profile</string>
+
+    <!-- Profile screen -->
+    <string name="profile_title">Profile</string>
+    <string name="profile_since">Since April 2024</string>
+    <string name="profile_sessions">sessions</string>
+    <string name="day_streak">Day streak</string>
+    <string name="sessions_label">Sessions</string>
+    <string name="lifted_label">Lifted</string>
+    <string name="progress_volume">Progress · volume</string>
+    <string name="date_range">Date range</string>
+    <string name="workout_logs">Workout logs</string>
+    <string name="no_workouts_range">No workouts in this range.</string>
+    <string name="bodyweight_label">Bodyweight</string>
+    <string name="add_label">Add</string>
+    <string name="download_csv">Download CSV</string>
+    <string name="download_report">Download report</string>
+    <string name="your_name_placeholder">Your name</string>
+
+    <!-- Settings screen -->
+    <string name="settings_title">Settings</string>
+    <string name="account_label">Account</string>
+    <string name="name_label">Name</string>
+    <string name="hint_your_name">Your name</string>
+    <string name="units_label">Units</string>
+    <string name="appearance_label">Appearance</string>
+    <string name="sign_out">Sign out</string>
+    <string name="settings_header">Settings.</string>
+
+    <!-- History screen -->
+    <string name="your_journal">Your journal</string>
+    <string name="all_logs">All logs.</string>
+    <string name="empty_history">No workouts yet.\nTap Home &amp; pick a workout type to start!</string>
+
+    <!-- Home screen -->
+    <string name="start_workout_kicker">START A WORKOUT</string>
+    <string name="hi_greeting">Hi</string>
+
+    <!-- Workout logger -->
+    <string name="warmup_label">WARM-UP</string>
+    <string name="set_label">SET</string>
+    <string name="reps_label">REPS</string>
+    <string name="weight_label">KG</string>
+    <string name="done_label">Done</string>
+    <string name="next_set_label">Next set</string>
+    <string name="saved_to_log">Saved to log</string>
+    <string name="nice_work">Nice work.</string>
+    <string name="sets_label">Sets</string>
+    <string name="reps_stat_label">Reps</string>
+    <string name="volume_label">Volume</string>
+
+    <!-- Exercise picker -->
+    <string name="search_hint">Type to search…</string>
+    <string name="pick_muscle_prompt">Pick a muscle above to see exercises, or type to search.</string>
+    <string name="no_exercises_match">No exercises match.</string>
+
+    <!-- Summary -->
+    <string name="save_as_routine">Save as routine</string>
+    <string name="log_another">Add Exercise</string>
+    <string name="finish_workout">Done</string>
+    <string name="add_exercise_label">Add Exercise</string>
+
+    <!-- Duration -->
+    <string name="rest_label">REST</string>
+    <string name="skip_label">Skip</string>
+
+    <!-- Bodyweight -->
+    <string name="add_bodyweight">Add bodyweight</string>
+    <string name="save_label">Save</string>
+    <string name="cancel_label">Cancel</string>
+    <string name="no_entries_yet">No entries yet</string>
+
+    <!-- Export -->
+    <string name="generating_csv">Generating CSV…</string>
+    <string name="csv_saved">CSV saved to Downloads</string>
+    <string name="csv_save_failed">Could not save CSV</string>
+    <string name="report_saved">Report saved to Downloads</string>
+    <string name="report_save_failed">Could not save report</string>
+
+    <!-- Onboarding -->
+    <string name="welcome_to">Welcome to</string>
+    <string name="worktrax_title">Worktrax.</string>
+    <string name="step1_title">1. Pick a workout type</string>
+    <string name="step1_desc">Strength, cardio, aerobic, or yoga</string>
+    <string name="step2_title">2. Choose exercises &amp; log sets</string>
+    <string name="step2_desc">Tap the number to type directly</string>
+    <string name="step3_title">3. Review &amp; save</string>
+    <string name="step3_desc">Your workout history is stored locally</string>
+    <string name="get_started">Get started</string>
+    <string name="skip_for_now">Skip for now</string>
+    <string name="enter_name_hint">Enter your name</string>
+
+    <!-- Content descriptions -->
+    <string name="cd_profile">Profile</string>
+    <string name="cd_settings">Settings</string>
+    <string name="cd_back">Back</string>
+    <string name="cd_close">Close</string>
+    <string name="cd_search">Search</string>
+    <string name="cd_delete">Delete</string>
+    <string name="cd_muscle">Muscle group icon</string>
+    <string name="cd_clear_search">Clear search</string>
+    <string name="cd_download">Download</string>
+
+    <!-- Workout logger hardcoded strings -->
+    <string name="reps_stepper_label">REPS</string>
+    <string name="weight_stepper_label">WEIGHT</string>
+    <string name="total_sets_stepper_label">TOTAL SETS</string>
+    <string name="enter_label">Enter %s</string>
+    <string name="set_label_action">Set</string>
+    <string name="exit_workout_title">Exit workout?</string>
+    <string name="exit_workout_message">Your progress for this exercise will be saved.</string>
+    <string name="exit_button">Exit</string>
+    <string name="keep_logging_button">Keep logging</string>
+    <string name="no_exercise_selected">No Exercise Selected</string>
+    <string name="all_sets_done">All sets done. Tap Done to save.</string>
+    <string name="set_counter_format">Set %1$d of %2$d · enter values, then Next.</string>
+    <string name="type_logging_suffix">· LOGGING</string>
+    <string name="muscle_logging_placeholder">TYPE</string>
+
+    <!-- Home screen -->
+    <string name="hi_name_format">Hi, %s</string>
+    <string name="good_greeting_format">Good %s!</string>
+
+    <!-- Sign out dialog -->
+    <string name="sign_out_title">Sign out</string>
+    <string name="sign_out_message">This will clear all local data.</string>
+    <string name="sign_out_confirm">Sign out</string>
+
+    <!-- Routine dialog -->
+    <string name="start_routine_title">Start routine</string>
+    <string name="no_saved_routines">No saved routines</string>
+
+    <!-- Routine saved -->
+    <string name="routine_saved">Routine saved</string>
+    <string name="my_routine_default">My Routine</string>
+
+    <!-- Date range chips -->
+    <string name="range_today">Today</string>
+    <string name="range_7_days">7 days</string>
+    <string name="range_30_days">30 days</string>
+    <string name="range_90_days">90 days</string>
+    <string name="range_all_time">All time</string>
+
+    <!-- Workout deleted -->
+    <string name="workout_deleted">Workout deleted</string>
+    <string name="undo_label">Undo</string>
+    <string name="delete_workout_title">Delete workout?</string>
+    <string name="delete_workout_message">This cannot be undone.</string>
+    <string name="delete_label">Delete</string>
+
+    <!-- Appearance labels -->
+    <string name="light_label">Light</string>
+    <string name="dark_label">Dark</string>
+
+    <!-- Content descriptions for accessibility -->
+    <string name="cd_exercise_thumb">Exercise thumbnail</string>
+    <string name="cd_chart_bar">Volume bar</string>
+
+    <!-- Workout detail -->
+    <string name="repeat_workout">Repeat this workout</string>
 </resources>
