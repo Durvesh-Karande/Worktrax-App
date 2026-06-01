@@ -11,6 +11,7 @@ import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.TextView
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -22,6 +23,7 @@ import com.worktrax.app.R
 import com.worktrax.app.data.WeightUnit
 import com.worktrax.app.databinding.WorkoutLoggerDesignBinding
 import com.worktrax.app.lib.weightStep
+import com.worktrax.app.store.lastSetForExercise
 import com.worktrax.app.store.HistoryViewModel
 import com.worktrax.app.store.SessionViewModel
 import com.worktrax.app.store.SettingsViewModel
@@ -255,6 +257,21 @@ class Workout_Logger_Logic : Fragment() {
                     val currentEx = session.exercises.find { it.id == session.currentExerciseId }
                     binding.tvExerciseName.text = currentEx?.name ?: getString(R.string.no_exercise_selected)
 
+                    // Show previous workout values
+                    if (currentEx != null) {
+                        val lastSet = lastSetForExercise(historyVM.workouts.value, currentEx.id)
+                        if (lastSet != null && currentEx.sets.isEmpty()) {
+                            val prevWeight = if (lastSet.unit == unit) lastSet.weight
+                            else com.worktrax.app.lib.convertWeight(lastSet.weight, lastSet.unit, unit)
+                            binding.tvPreviousValues.text = "Last: ${prevWeight} ${unit.code} × ${lastSet.reps} reps"
+                            binding.tvPreviousValues.visibility = View.VISIBLE
+                        } else {
+                            binding.tvPreviousValues.visibility = View.GONE
+                        }
+                    } else {
+                        binding.tvPreviousValues.visibility = View.GONE
+                    }
+
                     binding.tvUnit.text = unit.code.uppercase()
 
                     val loggedCount = currentEx?.sets?.size ?: 0
@@ -344,7 +361,11 @@ class Workout_Logger_Logic : Fragment() {
         binding.btnLogSet.setOnClickListener {
             val session = sessionVM.state.value
             val currentEx = session.exercises.find { it.id == session.currentExerciseId }
-            val loggedCount = currentEx?.sets?.size ?: 0
+            if (currentEx == null) {
+                Toast.makeText(requireContext(), R.string.no_exercise_selected, Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+            val loggedCount = currentEx.sets.size
             if (loggedCount < totalSets) {
                 val unit = settingsVM.state.value.unit
                 sessionVM.addSet(currentReps, currentWeight, unit, currentWarmup, currentRpe)
@@ -368,6 +389,48 @@ class Workout_Logger_Logic : Fragment() {
         binding.btnAddExercise.setOnClickListener {
             findNavController().navigate(R.id.action_log_to_exercise)
         }
+
+        binding.btnPlateCalc.setOnClickListener { showPlateCalculator() }
+    }
+
+    private fun showPlateCalculator() {
+        val weight = currentWeight
+        val unit = settingsVM.state.value.unit
+        val barWeight = if (unit == WeightUnit.KG) 20.0 else 45.0
+        val availablePlates = if (unit == WeightUnit.KG)
+            listOf(25.0, 20.0, 15.0, 10.0, 5.0, 2.5, 1.25)
+        else
+            listOf(45.0, 35.0, 25.0, 10.0, 5.0, 2.5)
+
+        val perSide = (weight - barWeight) / 2.0
+        if (perSide <= 0) {
+            Toast.makeText(requireContext(), "Use just the bar (${barWeight.toInt()} ${unit.code})", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        var remaining = perSide
+        val plates = mutableListOf<Double>()
+        for (p in availablePlates) {
+            while (remaining >= p - 0.01) {
+                plates.add(p)
+                remaining -= p
+            }
+        }
+
+        val perSideText = plates.joinToString(" + ") { "${it.toInt()} ${unit.code}" }
+        val totalText = buildString {
+            appendLine("Bar: ${barWeight.toInt()} ${unit.code}")
+            appendLine("Each side: $perSideText")
+            if (remaining > 0.01) appendLine("Remaining: ${"%.1f".format(remaining)} ${unit.code}")
+            appendLine()
+            append("Total: ${weight.toInt()} ${unit.code}")
+        }
+
+        AlertDialog.Builder(requireContext())
+            .setTitle(R.string.plate_calculator)
+            .setMessage(totalText)
+            .setPositiveButton(R.string.done_label, null)
+            .show()
     }
 
     private fun startRestTimer() {

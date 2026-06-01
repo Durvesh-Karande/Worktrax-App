@@ -19,6 +19,8 @@ import com.worktrax.app.data.Workout
 import com.worktrax.app.databinding.WorkoutDetailDesignBinding
 import com.worktrax.app.lib.formatDate
 import com.worktrax.app.lib.formatDuration
+import com.worktrax.app.store.bestSetForExercise
+import com.worktrax.app.store.estimated1rm
 import com.worktrax.app.store.HistoryViewModel
 import com.worktrax.app.store.SessionViewModel
 import kotlinx.coroutines.flow.collectLatest
@@ -72,6 +74,8 @@ class Workout_Detail_Logic : Fragment() {
         binding.tvWorkoutType.text = workout.type.code.uppercase()
         binding.tvDuration.text = formatDuration(workout.durationSec)
         
+        val allWorkouts = historyVM.workouts.value
+        
         binding.layoutExercisesContainer.removeAllViews()
         workout.exercises.forEach { exercise ->
             val exerciseView = LayoutInflater.from(requireContext())
@@ -79,6 +83,25 @@ class Workout_Detail_Logic : Fragment() {
             
             exerciseView.findViewById<TextView>(R.id.tv_exercise_name).text = exercise.name
             exerciseView.findViewById<TextView>(R.id.tv_muscle_name).text = exercise.muscle
+            
+            // PR badge
+            val prBadge = exerciseView.findViewById<TextView>(R.id.tv_pr_badge)
+            val best = bestSetForExercise(allWorkouts, exercise.id)
+            if (best != null) {
+                val sessionBest = exercise.sets.maxByOrNull { it.weight * (1 + it.reps / 30.0) }
+                if (sessionBest != null &&
+                    (sessionBest.weight * (1 + sessionBest.reps / 30.0)) >=
+                    (best.weight * (1 + best.reps / 30.0))
+                ) {
+                    val e1rm = estimated1rm(sessionBest.weight, sessionBest.reps)
+                    prBadge.text = "PR ${e1rm.toInt()} ${sessionBest.unit.code}"
+                    prBadge.visibility = View.VISIBLE
+                } else {
+                    val e1rm = estimated1rm(best.weight, best.reps)
+                    prBadge.text = "BEST ${e1rm.toInt()} ${best.unit.code}"
+                    prBadge.visibility = View.VISIBLE
+                }
+            }
             
             val setsContainer = exerciseView.findViewById<LinearLayout>(R.id.layout_sets_container)
             exercise.sets.forEachIndexed { index, set ->
@@ -102,6 +125,36 @@ class Workout_Detail_Logic : Fragment() {
                 }
                 
                 setsContainer.addView(setView)
+            }
+            
+            // Mini progression chart
+            val chart = exerciseView.findViewById<LinearLayout>(R.id.layout_exercise_chart)
+            val historySets = allWorkouts
+                .filter { w -> w.exercises.any { it.id == exercise.id } }
+                .sortedBy { it.date }
+                .mapNotNull { w ->
+                    val ex = w.exercises.find { it.id == exercise.id } ?: return@mapNotNull null
+                    ex.sets.maxByOrNull { it.weight * (1 + it.reps / 30.0) }
+                }
+            if (historySets.size >= 2) {
+                val maxScore = historySets.maxOf { it.weight * (1 + it.reps / 30.0) }.coerceAtLeast(1.0)
+                val chartH = 40f
+                val density = resources.displayMetrics.density
+                historySets.forEachIndexed { i, s ->
+                    val score = s.weight * (1 + s.reps / 30.0)
+                    val frac = (score / maxScore).coerceIn(0.05f, 1.0f)
+                    val bar = View(requireContext()).apply {
+                        val h = (chartH * frac).toInt()
+                        layoutParams = LinearLayout.LayoutParams(0, h).apply {
+                            weight = 1f
+                            setMargins((2 * density).toInt(), 0, (2 * density).toInt(), 0)
+                        }
+                        backgroundTintList = ContextCompat.getColorStateList(requireContext(), R.color.accent)
+                        setBackgroundResource(R.drawable.shape_chart_bar)
+                    }
+                    chart.addView(bar)
+                }
+                chart.visibility = View.VISIBLE
             }
             
             binding.layoutExercisesContainer.addView(exerciseView)

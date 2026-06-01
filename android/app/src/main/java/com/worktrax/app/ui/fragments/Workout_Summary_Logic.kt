@@ -1,6 +1,7 @@
 package com.worktrax.app.ui.fragments
 
 import android.app.AlertDialog
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -8,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -15,6 +17,7 @@ import com.worktrax.app.R
 import com.worktrax.app.data.Routine
 import com.worktrax.app.databinding.WorkoutSummaryDesignBinding
 import com.worktrax.app.lib.Storage
+import com.worktrax.app.lib.buildShareImage
 import com.worktrax.app.lib.formatShortDate
 import com.worktrax.app.lib.nowIso
 import com.worktrax.app.lib.numberWithCommas
@@ -77,6 +80,30 @@ class Workout_Summary_Logic : Fragment() {
         }
         binding.btnDiscard.setOnClickListener {
             findNavController().popBackStack(R.id.homeFragment, false)
+        }
+        binding.btnShare.setOnClickListener {
+            if (workout == null) return@setOnClickListener
+            val file = buildShareImage(
+                ctx = requireContext(),
+                workout = workout,
+                unit = unit,
+                userName = settingsVM.state.value.name,
+            )
+            if (file != null) {
+                val uri = FileProvider.getUriForFile(
+                    requireContext(),
+                    "${requireContext().packageName}.fileprovider",
+                    file,
+                )
+                val intent = Intent(Intent.ACTION_SEND).apply {
+                    type = "image/png"
+                    putExtra(Intent.EXTRA_STREAM, uri)
+                    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                }
+                startActivity(Intent.createChooser(intent, getString(R.string.share_workout)))
+            } else {
+                Toast.makeText(requireContext(), R.string.report_save_failed, Toast.LENGTH_SHORT).show()
+            }
         }
         binding.btnSaveRoutine.setOnClickListener {
             if (workout == null) return@setOnClickListener

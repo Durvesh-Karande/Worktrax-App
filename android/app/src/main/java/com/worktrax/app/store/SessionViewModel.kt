@@ -108,10 +108,58 @@ fun lastSetForExercise(
     workouts: List<Workout>,
     exerciseId: String,
 ): SetEntry? {
-    for (w in workouts) {
+    // Return the last non-warmup set from the most recent workout containing this exercise
+    val sorted = workouts.sortedByDescending { it.date }
+    for (w in sorted) {
         val ex = w.exercises.find { it.id == exerciseId } ?: continue
         val last = ex.sets.lastOrNull() ?: continue
         return last
     }
     return null
+}
+
+fun bestSetForExercise(
+    workouts: List<Workout>,
+    exerciseId: String,
+): SetEntry? {
+    // Return the best set (highest estimated 1RM) for this exercise
+    var best: SetEntry? = null
+    var bestScore = 0.0
+    for (w in workouts) {
+        val ex = w.exercises.find { it.id == exerciseId } ?: continue
+        for (s in ex.sets) {
+            val score = s.weight * (1.0 + s.reps / 30.0) // Epley formula
+            if (score > bestScore) {
+                bestScore = score
+                best = s
+            }
+        }
+    }
+    return best
+}
+
+fun estimated1rm(weight: Double, reps: Int): Double {
+    if (reps == 1) return weight
+    return weight * (1.0 + reps / 30.0)
+}
+
+fun bestSetAcrossExercises(
+    workouts: List<Workout>,
+    exerciseName: String,
+): SetEntry? {
+    var best: SetEntry? = null
+    var bestScore = 0.0
+    for (w in workouts) {
+        for (ex in w.exercises) {
+            if (!ex.name.equals(exerciseName, ignoreCase = true)) continue
+            for (s in ex.sets) {
+                val score = s.weight * (1.0 + s.reps / 30.0)
+                if (score > bestScore) {
+                    bestScore = score
+                    best = s
+                }
+            }
+        }
+    }
+    return best
 }

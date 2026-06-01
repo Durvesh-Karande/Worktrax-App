@@ -21,13 +21,22 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import android.widget.ArrayAdapter
+import android.widget.EditText
+import android.widget.Spinner
+import android.widget.Toast
 import com.worktrax.app.R
 import com.worktrax.app.data.EQUIPMENT_ORDER
 import com.worktrax.app.data.EXERCISES
+import com.worktrax.app.data.Equipment
 import com.worktrax.app.data.ExerciseDef
 import com.worktrax.app.data.Muscles
 import com.worktrax.app.data.WorkoutType
 import com.worktrax.app.databinding.PickerExerciseDesignBinding
+import com.worktrax.app.lib.Storage
+import com.worktrax.app.lib.customExercisesFromJsonString
+import com.worktrax.app.lib.customExercisesToJsonString
+import com.worktrax.app.lib.uid
 import com.worktrax.app.store.SessionViewModel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -116,7 +125,7 @@ class Picker_Exercise_Logic : Fragment() {
                     R.color.thumb_a, R.color.thumb_b, R.color.thumb_c,
                     R.color.thumb_d, R.color.thumb_e, R.color.thumb_f,
                 )
-                val exIndex = EXERCISES.indexOfFirst { it.id == ex.id }.coerceAtLeast(0)
+                val exIndex = allExercises().indexOfFirst { it.id == ex.id }.coerceAtLeast(0)
                 thumb.backgroundTintList =
                     ColorStateList.valueOf(ContextCompat.getColor(requireContext(), thumbColors[exIndex % thumbColors.size]))
                 name.text = ex.name
@@ -130,6 +139,14 @@ class Picker_Exercise_Logic : Fragment() {
     }
 
     private val exerciseAdapter = ExerciseAdapter()
+    private var customExercises: List<ExerciseDef> = emptyList()
+
+    private fun loadCustomExercises() {
+        val raw = Storage.getString(requireContext(), Storage.KEY_CUSTOM_EXERCISES)
+        customExercises = customExercisesFromJsonString(raw)
+    }
+
+    private fun allExercises(): List<ExerciseDef> = EXERCISES + customExercises
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -145,6 +162,7 @@ class Picker_Exercise_Logic : Fragment() {
         binding.includeTopBar.tvTopBarTitle.text = getString(R.string.picker_exercise_title)
         binding.rvExercises.layoutManager = LinearLayoutManager(requireContext())
         binding.rvExercises.adapter = exerciseAdapter
+        loadCustomExercises()
         setupMuscleChips()
         setupObservers()
         setupListeners()
@@ -224,7 +242,7 @@ class Picker_Exercise_Logic : Fragment() {
     }
 
     private fun updateList(query: String, type: WorkoutType, muscleFilter: String?) {
-        val pool = EXERCISES.filter { it.type == type }
+        val pool = allExercises().filter { it.type == type }
         val byMuscle = if (muscleFilter != null) pool.filter { it.muscle == muscleFilter } else pool
         val filtered = if (query.isBlank()) byMuscle
         else byMuscle.filter {
@@ -263,6 +281,8 @@ class Picker_Exercise_Logic : Fragment() {
     }
 
     private fun setupListeners() {
+        binding.btnCustomExercise.setOnClickListener { showCustomExerciseDialog() }
+
         binding.includeTopBar.btnBack.setOnClickListener {
             findNavController().popBackStack()
         }
@@ -285,6 +305,73 @@ class Picker_Exercise_Logic : Fragment() {
         binding.btnClearSearch.setOnClickListener {
             binding.etSearch.text?.clear()
         }
+    }
+
+    private fun showCustomExerciseDialog() {
+        val lp = LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT,
+            LinearLayout.LayoutParams.WRAP_CONTENT
+        ).apply { setMargins(0, 0, 0, 12) }
+
+        val nameInput = EditText(requireContext()).apply {
+            hint = getString(R.string.custom_exercise_name_hint)
+            layoutParams = lp
+        }
+
+        val muscleSpinner = Spinner(requireContext()).apply {
+            val items = Muscles.ALL.toMutableList().apply { add(0, "Other") }
+            adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item, items)
+            layoutParams = lp
+        }
+
+        val equipSpinner = Spinner(requireContext()).apply {
+            val items = Equipment.values().map { it.label }
+            adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item, items)
+            layoutParams = lp
+        }
+
+        val density = resources.displayMetrics.density
+        val dp30 = (30 * density).toInt()
+        val container = LinearLayout(requireContext()).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(dp30, dp30, dp30, dp30)
+            addView(nameInput)
+            addView(muscleSpinner)
+            addView(equipSpinner)
+        }
+
+        AlertDialog.Builder(requireContext())
+            .setTitle(R.string.create_custom_exercise)
+            .setView(container)
+            .setPositiveButton(R.string.save_label) { _, _ ->
+                val name = nameInput.text.toString().trim()
+                if (name.isBlank()) return@setPositiveButton
+                val muscle = muscleSpinner.selectedItem.toString()
+                val equip = Equipment.from(equipSpinner.selectedItem.toString())
+                val type = sessionVM.state.value.type ?: WorkoutType.STRENGTH
+                val ex = ExerciseDef(
+                    id = uid("custom"),
+                    name = name,
+                    muscle = if (muscle == "Other") "" else muscle,
+                    equipment = equip,
+                    type = type,
+                )
+                customExercises = customExercises + ex
+                Storage.putString(
+                    requireContext(),
+                    Storage.KEY_CUSTOM_EXERCISES,
+                    customExercisesToJsonString(customExercises),
+                )
+                Toast.makeText(requireContext(), R.string.custom_exercise_created, Toast.LENGTH_SHORT).show()
+                // Refresh list
+                val query = binding.etSearch.text?.toString() ?: ""
+                val state = sessionVM.state.value
+                val stype = state.type ?: WorkoutType.STRENGTH
+                val isStrength = stype == WorkoutType.STRENGTH
+                updateList(query, stype, if (isStrength) state.muscle else null)
+            }
+            .setNegativeButton(R.string.cancel_label, null)
+            .show()
     }
 
     override fun onDestroyView() {

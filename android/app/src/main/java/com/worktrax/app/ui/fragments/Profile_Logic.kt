@@ -22,6 +22,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.worktrax.app.R
+import com.worktrax.app.data.BodyMeasurement
 import com.worktrax.app.data.BodyweightEntry
 import com.worktrax.app.data.WeightUnit
 import com.worktrax.app.data.Workout
@@ -36,6 +37,8 @@ import com.worktrax.app.lib.buildAndSaveCsv
 import com.worktrax.app.lib.buildAndSaveReport
 import com.worktrax.app.lib.formatShortDate
 import com.worktrax.app.lib.isoEpochMs
+import com.worktrax.app.lib.measurementsFromJsonString
+import com.worktrax.app.lib.measurementsToJsonString
 import com.worktrax.app.lib.nowIso
 import com.worktrax.app.lib.numberWithCommas
 import com.worktrax.app.lib.volumeOf
@@ -149,6 +152,7 @@ class Profile_Logic : Fragment() {
         binding.btnDownloadPdf.setOnClickListener { downloadReport() }
         binding.btnDownloadCsv.setOnClickListener { downloadCsv() }
         binding.btnAddBodyweight.setOnClickListener { addBodyweightDialog() }
+        binding.btnAddMeasurement.setOnClickListener { addMeasurementDialog() }
         loadBodyweight()
     }
 
@@ -324,11 +328,48 @@ class Profile_Logic : Fragment() {
     }
 
     private var bodyweightEntries: List<BodyweightEntry> = emptyList()
+    private var measurementEntries: List<BodyMeasurement> = emptyList()
 
     private fun loadBodyweight() {
         val raw = Storage.getString(requireContext(), Storage.KEY_BODYWEIGHT)
         bodyweightEntries = bodyweightFromJsonString(raw)
         renderBodyweight()
+        loadMeasurements()
+    }
+
+    private fun loadMeasurements() {
+        val raw = Storage.getString(requireContext(), Storage.KEY_BODY_MEASUREMENTS)
+        measurementEntries = measurementsFromJsonString(raw)
+        renderMeasurements()
+    }
+
+    private fun renderMeasurements() {
+        binding.layoutMeasurementEntries.removeAllViews()
+        val recent = measurementEntries.sortedByDescending { it.date }.take(3)
+        if (recent.isEmpty()) {
+            val tv = TextView(requireContext()).apply {
+                text = getString(R.string.no_entries_yet)
+                textSize = 13f
+                setTextColor(ContextCompat.getColor(requireContext(), R.color.ink_3))
+            }
+            binding.layoutMeasurementEntries.addView(tv)
+        } else {
+            recent.forEach { m ->
+                val parts = mutableListOf<String>()
+                if (m.chest > 0) parts.add("Chest ${m.chest} ${m.unit}")
+                if (m.waist > 0) parts.add("Waist ${m.waist} ${m.unit}")
+                if (m.hips > 0) parts.add("Hips ${m.hips} ${m.unit}")
+                if (m.arm > 0) parts.add("Arm ${m.arm} ${m.unit}")
+                if (m.thigh > 0) parts.add("Thigh ${m.thigh} ${m.unit}")
+                if (m.calf > 0) parts.add("Calf ${m.calf} ${m.unit}")
+                val tv = TextView(requireContext()).apply {
+                    text = "${parts.joinToString(" · ")}  • ${formatShortDate(m.date)}"
+                    textSize = 12f
+                    setTextColor(ContextCompat.getColor(requireContext(), R.color.ink))
+                }
+                binding.layoutMeasurementEntries.addView(tv)
+            }
+        }
     }
 
     private fun renderBodyweight() {
@@ -378,6 +419,55 @@ class Profile_Logic : Fragment() {
                     )
                     renderBodyweight()
                 }
+            }
+            .setNegativeButton(R.string.cancel_label, null)
+            .show()
+    }
+
+    private fun addMeasurementDialog() {
+        val lp = LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT,
+            LinearLayout.LayoutParams.WRAP_CONTENT
+        ).apply { setMargins(0, 0, 0, 12) }
+
+        val fields = listOf("chest", "waist", "hips", "arm", "thigh", "calf")
+        val inputs = fields.associateWith { EditText(requireContext()).apply {
+            hint = "${it.replaceFirstChar { c -> c.uppercase() }} (cm)"
+            inputType = android.text.InputType.TYPE_CLASS_NUMBER or
+                    android.text.InputType.TYPE_NUMBER_FLAG_DECIMAL
+            layoutParams = lp
+        }}
+
+        val density2 = resources.displayMetrics.density
+        val container = LinearLayout(requireContext()).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding((30 * density2).toInt(), (30 * density2).toInt(), (30 * density2).toInt(), (30 * density2).toInt())
+            fields.forEach { addView(inputs[it]) }
+        }
+
+        AlertDialog.Builder(requireContext())
+            .setTitle(R.string.add_measurement)
+            .setView(container)
+            .setPositiveButton(R.string.save_label) { _, _ ->
+                val values = inputs.mapValues { (_, v) -> v.text.toString().toDoubleOrNull() ?: 0.0 }
+                if (values.values.all { it <= 0 }) return@setPositiveButton
+                val m = BodyMeasurement(
+                    date = nowIso(),
+                    chest = values["chest"] ?: 0.0,
+                    waist = values["waist"] ?: 0.0,
+                    arm = values["arm"] ?: 0.0,
+                    thigh = values["thigh"] ?: 0.0,
+                    calf = values["calf"] ?: 0.0,
+                    unit = "cm",
+                )
+                measurementEntries = measurementEntries + m
+                Storage.putString(
+                    requireContext(),
+                    Storage.KEY_BODY_MEASUREMENTS,
+                    measurementsToJsonString(measurementEntries),
+                )
+                Toast.makeText(requireContext(), R.string.measurement_saved, Toast.LENGTH_SHORT).show()
+                renderMeasurements()
             }
             .setNegativeButton(R.string.cancel_label, null)
             .show()

@@ -75,6 +75,17 @@ data class BodyweightEntry(
     val unit: WeightUnit,
 )
 
+data class BodyMeasurement(
+    val date: String,
+    val chest: Double = 0.0,
+    val waist: Double = 0.0,
+    val hips: Double = 0.0,
+    val arm: Double = 0.0,
+    val thigh: Double = 0.0,
+    val calf: Double = 0.0,
+    val unit: String = "cm",
+)
+
 val EQUIPMENT_ORDER: List<Equipment> = listOf(
     Equipment.BARBELL,
     Equipment.DUMBBELL,

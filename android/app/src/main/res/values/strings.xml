@@ -77,6 +77,28 @@
     <string name="finish_workout">Done</string>
     <string name="add_exercise_label">Add Exercise</string>
 
+    <!-- Share -->
+    <string name="share_workout">Share</string>
+
+    <!-- Custom exercises -->
+    <string name="create_custom_exercise">+ Custom Exercise</string>
+    <string name="custom_exercise_name_hint">Exercise name</string>
+    <string name="custom_exercise_created">Custom exercise created</string>
+    <string name="plate_calculator">Plate Calculator</string>
+    <string name="bar_weight">Bar weight</string>
+    <string name="target_weight">Target weight</string>
+
+    <!-- Body measurements -->
+    <string name="body_measurements">Body measurements</string>
+    <string name="add_measurement">Add measurement</string>
+    <string name="chest_label">Chest</string>
+    <string name="waist_label">Waist</string>
+    <string name="hips_label">Hips</string>
+    <string name="arm_label">Arm</string>
+    <string name="thigh_label">Thigh</string>
+    <string name="calf_label">Calf</string>
+    <string name="measurement_saved">Measurement saved</string>
+
     <!-- Duration -->
     <string name="rest_label">REST</string>
     <string name="skip_label">Skip</string>

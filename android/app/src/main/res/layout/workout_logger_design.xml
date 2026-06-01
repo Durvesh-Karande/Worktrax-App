@@ -82,8 +82,18 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
-                android:layout_marginBottom="18dp"
+                android:layout_marginBottom="4dp"
                 android:text="Set 2 of 4 · enter values, then Next." />
+
+            <TextView
+                android:id="@+id/tv_previous_values"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="14dp"
+                android:textSize="12sp"
+                android:textColor="@color/ink_3"
+                android:textStyle="bold"
+                android:visibility="gone" />
 
             <!-- Field grid: reps | weight -->
             <LinearLayout
@@ -306,6 +316,14 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:text="@string/add_exercise_label" />
+
+            <Button
+                android:id="@+id/btn_plate_calc"
+                style="@style/BtnGhost"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="@string/plate_calculator" />
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 </LinearLayout>

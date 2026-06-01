@@ -2,7 +2,10 @@ package com.worktrax.app.lib
 
 import android.content.ContentValues
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.Canvas
 import android.graphics.Paint
+import android.graphics.Typeface
 import android.graphics.pdf.PdfDocument
 import android.net.Uri
 import android.os.Build
@@ -10,6 +13,7 @@ import android.os.Environment
 import android.provider.MediaStore
 import com.worktrax.app.data.WeightUnit
 import com.worktrax.app.data.Workout
+import com.worktrax.app.data.WorkoutType
 import java.io.File
 import java.io.OutputStream
 import kotlin.math.roundToInt
@@ -257,6 +261,227 @@ fun buildAndSaveReport(ctx: Context, opts: ReportOptions): Uri? {
         uri
     } catch (e: Exception) {
         doc.close()
+        null
+    }
+}
+
+private fun workoutTypeColor(type: WorkoutType): Int {
+    return when (type) {
+        WorkoutType.STRENGTH -> android.graphics.Color.parseColor("#7A5D2E")
+        WorkoutType.CARDIO -> android.graphics.Color.parseColor("#2E5A6A")
+        WorkoutType.AEROBIC -> android.graphics.Color.parseColor("#C24A1E")
+        WorkoutType.YOGA -> android.graphics.Color.parseColor("#5A3E7A")
+    }
+}
+
+private val BITMAP_W = 1080
+private val BITMAP_H = 1350 // 4:5 portrait — good for stories/shares
+private val PAD = 64f
+
+/**
+ * Renders a shareable workout-summary card bitmap and saves it to the app's
+ * cache directory. Returns the File or null on failure.
+ */
+fun buildShareImage(
+    ctx: Context,
+    workout: Workout,
+    unit: WeightUnit,
+    userName: String,
+): File? {
+    val typeColor = workoutTypeColor(workout.type)
+    val paper = android.graphics.Color.parseColor("#F2EFE9")
+    val surface = android.graphics.Color.parseColor("#FFFFFF")
+    val ink = android.graphics.Color.parseColor("#1B1B1A")
+    val muted = android.graphics.Color.parseColor("#8E8B83")
+    val accent = android.graphics.Color.parseColor("#E85D2A")
+    val line = android.graphics.Color.parseColor("#E6E1D7")
+
+    val bmp = Bitmap.createBitmap(BITMAP_W, BITMAP_H, Bitmap.Config.ARGB_8888)
+    val c = Canvas(bmp)
+
+    val bold = Typeface.create(Typeface.SANS_SERIF, Typeface.BOLD)
+    val normal = Typeface.create(Typeface.SANS_SERIF, Typeface.NORMAL)
+    val serif = Typeface.create(Typeface.SERIF, Typeface.NORMAL)
+
+    // Background
+    c.drawColor(paper)
+
+    // Top banner (workout type stripe)
+    val bannerH = 200f
+    val bannerPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = typeColor }
+    c.drawRoundRect(0f, 0f, BITMAP_W.toFloat(), bannerH, 0f, 0f, bannerPaint)
+
+    // Banner shading — subtle gradient overlay (darker bottom)
+    val shadePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = android.graphics.Color.parseColor("#33000000")
+    }
+    c.drawRect(0f, bannerH * 0.6f, BITMAP_W.toFloat(), bannerH, shadePaint)
+
+    // "WORKTRAX" branding on banner
+    val brandPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = android.graphics.Color.WHITE
+        typeface = bold
+        textSize = 32f
+        alpha = 180
+    }
+    c.drawText("WORKTRAX", PAD, PAD + 34f, brandPaint)
+
+    // Workout type label on banner
+    val typeLabel = workout.type.code.uppercase()
+    val typePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = android.graphics.Color.WHITE
+        typeface = bold
+        textSize = 48f
+    }
+    c.drawText(typeLabel, PAD, bannerH - PAD, typePaint)
+
+    // Card (white rounded rect)
+    val cardTop = bannerH - 40f
+    val cardBottom = BITMAP_H - PAD
+    val cardLeft = PAD
+    val cardRight = BITMAP_W - PAD
+    val cardRadius = 24f
+    val cardPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = surface }
+    val cardP = android.graphics.RectF(cardLeft, cardTop, cardRight, cardBottom)
+    c.drawRoundRect(cardP, cardRadius, cardRadius, cardPaint)
+
+    // Card shadow outline
+    val shadowPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = android.graphics.Color.parseColor("#0C000000")
+        style = Paint.Style.STROKE
+        strokeWidth = 2f
+    }
+    c.drawRoundRect(cardP, cardRadius, cardRadius, shadowPaint)
+
+    // Inner content area
+    val innerLeft = cardLeft + 48f
+    val innerW = cardRight - cardLeft - 96f
+
+    // Greeting
+    val greetPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = accent
+        typeface = bold
+        textSize = 28f
+    }
+    c.drawText("Nice work!", innerLeft, cardTop + 70f, greetPaint)
+
+    // User name
+    val namePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = muted
+        typeface = normal
+        textSize = 22f
+    }
+    c.drawText(userName.ifEmpty { "Athlete" }, innerLeft, cardTop + 102f, namePaint)
+
+    // First exercise
+    val ex = workout.exercises.firstOrNull()
+    val exName = ex?.name ?: "Workout"
+    val exPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = ink
+        typeface = serif
+        textSize = 42f
+    }
+    // Truncate if too long
+    val displayName = if (exName.length > 28) exName.take(25) + "…" else exName
+    c.drawText(displayName, innerLeft, cardTop + 170f, exPaint)
+
+    // Muscle group
+    val muscleName = ex?.muscle ?: ""
+    if (muscleName.isNotBlank()) {
+        val musPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = muted
+            typeface = normal
+            textSize = 20f
+        }
+        c.drawText(muscleName.uppercase(), innerLeft, cardTop + 200f, musPaint)
+    }
+
+    // Divider
+    val divY = cardTop + 240f
+    val divPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = line
+        strokeWidth = 2f
+    }
+    c.drawLine(innerLeft, divY, cardRight - 48f, divY, divPaint)
+
+    // Stats row
+    val stats = workout.exercises.sumOf { it.sets.size }
+    val reps = workout.exercises.sumOf { ex -> ex.sets.sumOf { it.reps } }
+    val vol = volumeOf(workout, unit)
+    val volText = "${numberWithCommas(vol)} ${unit.code}"
+
+    val statColW = innerW / 3f
+    val statData = listOf(
+        stats.toString() to "SETS",
+        reps.toString() to "REPS",
+        volText to "VOLUME",
+    )
+
+    val statValPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = ink
+        typeface = Typeface.create(Typeface.SERIF, Typeface.BOLD)
+        textSize = 44f
+        textAlign = Paint.Align.CENTER
+    }
+    val statLabelPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = muted
+        typeface = bold
+        textSize = 16f
+        textAlign = Paint.Align.CENTER
+    }
+    val statDivPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = line
+        strokeWidth = 1.5f
+    }
+
+    statData.forEachIndexed { i, (value, label) ->
+        val cx = innerLeft + statColW * i + statColW / 2f
+        c.drawText(value, cx, divY + 70f, statValPaint)
+        c.drawText(label, cx, divY + 100f, statLabelPaint)
+        if (i < statData.size - 1) {
+            val lx = innerLeft + statColW * (i + 1)
+            c.drawLine(lx, divY + 30f, lx, divY + 100f, statDivPaint)
+        }
+    }
+
+    // Date
+    val dateText = formatShortDate(workout.date)
+    val datePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = muted
+        typeface = normal
+        textSize = 20f
+        textAlign = Paint.Align.CENTER
+    }
+    c.drawText(dateText, BITMAP_W / 2f, cardBottom - 52f, datePaint)
+
+    // Duration
+    val durText = formatDuration(workout.durationSec)
+    val durPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = muted
+        typeface = normal
+        textSize = 20f
+        textAlign = Paint.Align.CENTER
+    }
+    c.drawText(durText, BITMAP_W / 2f, cardBottom - 28f, durPaint)
+
+    // Bottom app name mini
+    val footerPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = android.graphics.Color.parseColor("#BDB9AE")
+        typeface = bold
+        textSize = 20f
+        textAlign = Paint.Align.CENTER
+    }
+    c.drawText("Worktrax", BITMAP_W / 2f, BITMAP_H - 28f, footerPaint)
+
+    // Save
+    return try {
+        val dir = File(ctx.cacheDir, "images").also { it.mkdirs() }
+        val file = File(dir, "worktrax_share_${workout.id.takeLast(12)}.png")
+        file.outputStream().use { fos -> bmp.compress(Bitmap.CompressFormat.PNG, 90, fos) }
+        bmp.recycle()
+        file
+    } catch (_: Exception) {
+        bmp.recycle()
         null
     }
 }

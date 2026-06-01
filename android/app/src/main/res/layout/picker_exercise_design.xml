@@ -98,6 +98,15 @@
             app:tint="@color/ink_3" />
     </LinearLayout>
 
+    <Button
+        android:id="@+id/btn_custom_exercise"
+        style="@style/BtnOutlineAccent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginTop="10dp"
+        android:text="@string/create_custom_exercise" />
+
     <!-- Empty state / prompt when no muscle selected -->
     <TextView
         android:id="@+id/tv_prompt"
