@@ -28,6 +28,7 @@ import com.worktrax.app.data.WeightUnit
 import com.worktrax.app.data.Workout
 import com.worktrax.app.data.WorkoutType
 import com.worktrax.app.databinding.ProfileDesignBinding
+import com.worktrax.app.lib.AnalyticsHelper
 import com.worktrax.app.lib.ReportOptions
 import com.worktrax.app.lib.ReportRange
 import com.worktrax.app.lib.Storage
@@ -124,6 +125,7 @@ class Profile_Logic : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        AnalyticsHelper.screenView("profile")
 
         binding.btnSettings.setOnClickListener {
             findNavController().navigate(R.id.action_profile_to_settings)
@@ -417,6 +419,7 @@ class Profile_Logic : Fragment() {
                         Storage.KEY_BODYWEIGHT,
                         bodyweightToJsonString(bodyweightEntries),
                     )
+                    AnalyticsHelper.bodyweightLogged(unit.code)
                     renderBodyweight()
                 }
             }
@@ -466,6 +469,7 @@ class Profile_Logic : Fragment() {
                     Storage.KEY_BODY_MEASUREMENTS,
                     measurementsToJsonString(measurementEntries),
                 )
+                AnalyticsHelper.measurementLogged()
                 Toast.makeText(requireContext(), R.string.measurement_saved, Toast.LENGTH_SHORT).show()
                 renderMeasurements()
             }
@@ -495,6 +499,7 @@ class Profile_Logic : Fragment() {
                 includePRs = true,
             )
             val uri = withContext(Dispatchers.IO) { buildAndSaveCsv(requireContext(), opts) }
+            AnalyticsHelper.reportDownloaded("csv")
             Toast.makeText(
                 requireContext(),
                 if (uri != null) R.string.csv_saved else R.string.csv_save_failed,
@@ -524,6 +529,7 @@ class Profile_Logic : Fragment() {
             includePRs = true,
         )
         val uri = buildAndSaveReport(requireContext(), opts)
+        AnalyticsHelper.reportDownloaded("pdf")
         Toast.makeText(
             requireContext(),
             if (uri != null) R.string.report_saved else R.string.report_save_failed,

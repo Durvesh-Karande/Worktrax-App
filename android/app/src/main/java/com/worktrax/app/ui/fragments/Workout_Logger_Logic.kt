@@ -22,6 +22,8 @@ import androidx.navigation.fragment.findNavController
 import com.worktrax.app.R
 import com.worktrax.app.data.WeightUnit
 import com.worktrax.app.databinding.WorkoutLoggerDesignBinding
+import com.worktrax.app.lib.AnalyticsHelper
+import com.worktrax.app.lib.volumeOf
 import com.worktrax.app.lib.weightStep
 import com.worktrax.app.store.lastSetForExercise
 import com.worktrax.app.store.HistoryViewModel
@@ -65,6 +67,7 @@ class Workout_Logger_Logic : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        AnalyticsHelper.screenView("workout_logger")
 
         setupSteppers()
         setupWarmupRpe()
@@ -348,6 +351,7 @@ class Workout_Logger_Logic : Fragment() {
 
     private fun setupListeners() {
         binding.btnBack.setOnClickListener {
+            AnalyticsHelper.workoutCancelled(sessionVM.state.value.type?.code ?: "unknown")
             AlertDialog.Builder(requireContext())
                 .setTitle(R.string.exit_workout_title)
                 .setMessage(R.string.exit_workout_message)
@@ -369,6 +373,7 @@ class Workout_Logger_Logic : Fragment() {
             if (loggedCount < totalSets) {
                 val unit = settingsVM.state.value.unit
                 sessionVM.addSet(currentReps, currentWeight, unit, currentWarmup, currentRpe)
+                AnalyticsHelper.setLogged(currentEx.name, currentReps, currentWeight, currentWarmup, currentRpe)
                 startRestTimer()
             }
         }
@@ -379,9 +384,12 @@ class Workout_Logger_Logic : Fragment() {
             val workout = sessionVM.finish()
             if (workout != null) {
                 historyVM.add(workout)
+                val vol = volumeOf(workout, settingsVM.state.value.unit)
+                AnalyticsHelper.workoutCompleted(workout.type.code, workout.exercises.size, vol.toDouble(), workout.durationSec)
                 val bundle = Bundle().apply { putString("workoutId", workout.id) }
                 findNavController().navigate(R.id.action_log_to_summary, bundle)
             } else {
+                AnalyticsHelper.workoutCancelled(sessionVM.state.value.type?.code ?: "unknown")
                 findNavController().popBackStack()
             }
         }

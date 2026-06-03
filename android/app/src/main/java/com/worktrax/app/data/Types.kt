@@ -86,6 +86,23 @@ data class BodyMeasurement(
     val unit: String = "cm",
 )
 
+data class SettingsData(
+    val name: String = "",
+    val unit: String = "kg",
+    val theme: String = "system",
+) {
+    companion object {
+        fun fromJson(raw: String): SettingsData? = try {
+            val o = org.json.JSONObject(raw)
+            SettingsData(
+                name = o.optString("name", ""),
+                unit = o.optString("unit", "kg"),
+                theme = o.optString("theme", "system"),
+            )
+        } catch (_: Exception) { null }
+    }
+}
+
 val EQUIPMENT_ORDER: List<Equipment> = listOf(
     Equipment.BARBELL,
     Equipment.DUMBBELL,

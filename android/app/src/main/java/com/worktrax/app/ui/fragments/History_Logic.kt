@@ -23,6 +23,7 @@ import com.worktrax.app.R
 import com.worktrax.app.data.Workout
 import com.worktrax.app.data.WorkoutType
 import com.worktrax.app.databinding.HistoryDesignBinding
+import com.worktrax.app.lib.AnalyticsHelper
 import com.worktrax.app.lib.formatDate
 import com.worktrax.app.store.HistoryViewModel
 import kotlinx.coroutines.flow.collectLatest
@@ -46,6 +47,7 @@ class History_Logic : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        AnalyticsHelper.screenView("history")
 
         binding.rvHistory.layoutManager = LinearLayoutManager(requireContext())
         setupSwipeToDelete()
@@ -60,6 +62,7 @@ class History_Logic : Fragment() {
                 val position = viewHolder.adapterPosition
                 val adapter = binding.rvHistory.adapter as? HistoryAdapter ?: return
                 val workout = adapter.getWorkoutAt(position) ?: return
+                AnalyticsHelper.workoutDeleted(workout.type.code)
                 historyVM.remove(workout.id)
                 Snackbar.make(binding.root, R.string.workout_deleted, Snackbar.LENGTH_LONG)
                     .setAction(R.string.undo_label) { historyVM.add(workout) }
@@ -98,6 +101,7 @@ class History_Logic : Fragment() {
                         binding.tvEmptyHistory.visibility = View.GONE
                         binding.rvHistory.visibility = View.VISIBLE
                         binding.rvHistory.adapter = HistoryAdapter(workouts) { workout ->
+                            AnalyticsHelper.historyItemViewed(workout.type.code)
                             val bundle = Bundle().apply {
                                 putString("workoutId", workout.id)
                             }

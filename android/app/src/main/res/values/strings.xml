@@ -197,4 +197,21 @@
 
     <!-- Workout detail -->
     <string name="repeat_workout">Repeat this workout</string>
+
+    <!-- Auth screen -->
+    <string name="auth_title">Sign in</string>
+    <string name="auth_subtitle">Sign in to save your workouts to the cloud</string>
+    <string name="auth_email_hint">Email</string>
+    <string name="auth_password_hint">Password</string>
+    <string name="auth_sign_in">Sign In</string>
+    <string name="auth_sign_up">Sign Up</string>
+    <string name="auth_toggle_sign_up">Don\'t have an account? Sign up</string>
+    <string name="auth_toggle_sign_in">Already have an account? Sign in</string>
+    <string name="auth_or">or continue with</string>
+    <string name="auth_google_sign_in">Sign in with Google</string>
+    <string name="auth_loading">Signing in…</string>
+    <string name="auth_error_email_blank">Please enter your email</string>
+    <string name="auth_error_password_blank">Please enter your password</string>
+    <string name="auth_error_weak_password">Password must be at least 6 characters</string>
+    <string name="web_client_id">981033930798-s7745upi4982letpl6njqm053cnud0g5.apps.googleusercontent.com</string>
 </resources>

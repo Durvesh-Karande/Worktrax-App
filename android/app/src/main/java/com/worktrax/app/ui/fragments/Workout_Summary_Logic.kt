@@ -16,6 +16,7 @@ import androidx.navigation.fragment.findNavController
 import com.worktrax.app.R
 import com.worktrax.app.data.Routine
 import com.worktrax.app.databinding.WorkoutSummaryDesignBinding
+import com.worktrax.app.lib.AnalyticsHelper
 import com.worktrax.app.lib.Storage
 import com.worktrax.app.lib.buildShareImage
 import com.worktrax.app.lib.formatShortDate
@@ -48,6 +49,7 @@ class Workout_Summary_Logic : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        AnalyticsHelper.screenView("workout_summary")
 
         val workoutId = arguments?.getString("workoutId")
         val workout = historyVM.workouts.value.firstOrNull { it.id == workoutId }
@@ -83,6 +85,7 @@ class Workout_Summary_Logic : Fragment() {
         }
         binding.btnShare.setOnClickListener {
             if (workout == null) return@setOnClickListener
+            AnalyticsHelper.workoutShared()
             val file = buildShareImage(
                 ctx = requireContext(),
                 workout = workout,
@@ -131,6 +134,7 @@ class Workout_Summary_Logic : Fragment() {
                         Storage.KEY_ROUTINES,
                         routinesToJsonString(routines),
                     )
+                    AnalyticsHelper.routineSaved()
                     Toast.makeText(requireContext(), R.string.routine_saved, Toast.LENGTH_SHORT).show()
                 }
                 .setNegativeButton(R.string.cancel_label, null)

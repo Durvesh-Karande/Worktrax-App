@@ -19,6 +19,7 @@ import androidx.navigation.fragment.findNavController
 import com.worktrax.app.R
 import com.worktrax.app.data.WorkoutType
 import com.worktrax.app.databinding.HomeDesignBinding
+import com.worktrax.app.lib.AnalyticsHelper
 import com.worktrax.app.lib.Storage
 import com.worktrax.app.lib.formatTopDate
 import com.worktrax.app.lib.greeting
@@ -48,6 +49,7 @@ class Home_Logic : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        AnalyticsHelper.screenView("home")
         binding.tvDateKicker.text = formatTopDate()
         setupGrid()
         setupObservers()
@@ -71,6 +73,7 @@ class Home_Logic : Fragment() {
                 return@setOnClickListener
             }
             settingsVM.setName(name)
+            AnalyticsHelper.nameSet()
             (overlay.parent as? ViewGroup)?.removeView(overlay)
             Storage.putString(requireContext(), Storage.KEY_ONBOARDING_DONE, "1")
         }
@@ -129,6 +132,7 @@ class Home_Logic : Fragment() {
             }
 
             card.setOnClickListener {
+                AnalyticsHelper.workoutStarted(type.code)
                 sessionVM.start(type)
                 findNavController().navigate(R.id.action_home_to_exercise)
             }
@@ -140,11 +144,12 @@ class Home_Logic : Fragment() {
                     return@setOnLongClickListener true
                 }
                 val names = routines.map { it.name }.toTypedArray()
-                AlertDialog.Builder(requireContext())
-                    .setTitle(R.string.start_routine_title)
-                    .setItems(names) { _, i ->
-                        val routine = routines[i]
-                        sessionVM.start(type)
+                    AlertDialog.Builder(requireContext())
+                        .setTitle(R.string.start_routine_title)
+                        .setItems(names) { _, i ->
+                            val routine = routines[i]
+                            AnalyticsHelper.routineStarted(routine.type.code, routine.name)
+                            sessionVM.start(type)
                         routine.exerciseIds.forEach { id ->
                             val def = com.worktrax.app.data.EXERCISES.find { it.id == id }
                             if (def != null) {

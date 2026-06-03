@@ -2,12 +2,18 @@ package com.worktrax.app.store
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
+import com.worktrax.app.data.SettingsData
 import com.worktrax.app.data.ThemeMode
 import com.worktrax.app.data.WeightUnit
+import com.worktrax.app.lib.AnalyticsHelper
+import com.worktrax.app.lib.FirestoreRepository
 import com.worktrax.app.lib.Storage
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 import org.json.JSONObject
 
 data class SettingsState(
@@ -42,6 +48,13 @@ class SettingsViewModel(app: Application) : AndroidViewModel(app) {
             put("theme", s.theme.code)
         }
         Storage.putString(getApplication(), Storage.KEY_SETTINGS, o.toString())
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                FirestoreRepository.saveSettings(
+                    SettingsData(s.name, s.unit.code, s.theme.code)
+                )
+            } catch (_: Exception) {}
+        }
     }
 
     fun setName(name: String) { _state.value = _state.value.copy(name = name).also(::persist) }

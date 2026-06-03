@@ -17,6 +17,7 @@ import androidx.navigation.fragment.findNavController
 import com.worktrax.app.R
 import com.worktrax.app.data.Workout
 import com.worktrax.app.databinding.WorkoutDetailDesignBinding
+import com.worktrax.app.lib.AnalyticsHelper
 import com.worktrax.app.lib.formatDate
 import com.worktrax.app.lib.formatDuration
 import com.worktrax.app.store.bestSetForExercise
@@ -45,6 +46,7 @@ class Workout_Detail_Logic : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        AnalyticsHelper.screenView("workout_detail")
         
         val workoutId = arguments?.getString("workoutId") ?: return
         
@@ -142,7 +144,7 @@ class Workout_Detail_Logic : Fragment() {
                 val density = resources.displayMetrics.density
                 historySets.forEachIndexed { i, s ->
                     val score = s.weight * (1 + s.reps / 30.0)
-                    val frac = (score / maxScore).coerceIn(0.05f, 1.0f)
+                    val frac = (score / maxScore).coerceIn(0.05, 1.0)
                     val bar = View(requireContext()).apply {
                         val h = (chartH * frac).toInt()
                         layoutParams = LinearLayout.LayoutParams(0, h).apply {

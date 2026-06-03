@@ -17,7 +17,9 @@ import com.worktrax.app.R
 import com.worktrax.app.data.ThemeMode
 import com.worktrax.app.data.WeightUnit
 import com.worktrax.app.databinding.AppSettingsDesignBinding
+import com.worktrax.app.lib.AnalyticsHelper
 import com.worktrax.app.lib.Storage
+import com.worktrax.app.store.AuthViewModel
 import com.worktrax.app.store.SettingsViewModel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -28,6 +30,7 @@ class App_Settings_Logic : Fragment() {
     private val binding get() = _binding!!
 
     private val settingsVM: SettingsViewModel by viewModels({ requireActivity() })
+    private val authVM: AuthViewModel by viewModels({ requireActivity() })
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -40,6 +43,7 @@ class App_Settings_Logic : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        AnalyticsHelper.screenView("settings")
 
         setupUI()
         setupAppearanceLabels()
@@ -117,17 +121,25 @@ class App_Settings_Logic : Fragment() {
             }
         })
 
-        binding.segmentedUnits.option1.setOnClickListener { settingsVM.setUnit(WeightUnit.KG) }
-        binding.segmentedUnits.option2.setOnClickListener { settingsVM.setUnit(WeightUnit.LB) }
+        binding.segmentedUnits.option1.setOnClickListener {
+            settingsVM.setUnit(WeightUnit.KG)
+            AnalyticsHelper.unitChanged("kg")
+        }
+        binding.segmentedUnits.option2.setOnClickListener {
+            settingsVM.setUnit(WeightUnit.LB)
+            AnalyticsHelper.unitChanged("lb")
+        }
 
         binding.segmentedAppearance.option1.setOnClickListener {
             settingsVM.setTheme(ThemeMode.LIGHT)
+            AnalyticsHelper.themeChanged("light")
             androidx.appcompat.app.AppCompatDelegate.setDefaultNightMode(
                 androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_NO
             )
         }
         binding.segmentedAppearance.option2.setOnClickListener {
             settingsVM.setTheme(ThemeMode.DARK)
+            AnalyticsHelper.themeChanged("dark")
             androidx.appcompat.app.AppCompatDelegate.setDefaultNightMode(
                 androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_YES
             )
@@ -138,9 +150,11 @@ class App_Settings_Logic : Fragment() {
                 .setTitle(R.string.sign_out_title)
                 .setMessage(R.string.sign_out_message)
                 .setPositiveButton(R.string.sign_out_confirm) { _, _ ->
+                    AnalyticsHelper.signedOut()
+                    authVM.signOut()
                     Storage.prefs(requireContext()).edit().clear().apply()
                     settingsVM.reset()
-                    findNavController().popBackStack(R.id.homeFragment, false)
+                    findNavController().navigate(R.id.action_settings_to_auth)
                 }
                 .setNegativeButton(R.string.cancel_label, null)
                 .show()

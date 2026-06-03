@@ -3,12 +3,16 @@ package com.worktrax.app.store
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import com.worktrax.app.data.Workout
+import com.worktrax.app.lib.FirestoreRepository
 import com.worktrax.app.lib.Storage
 import com.worktrax.app.lib.workoutsFromJsonString
 import com.worktrax.app.lib.workoutsToJsonString
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 
 class HistoryViewModel(app: Application) : AndroidViewModel(app) {
     private val _workouts = MutableStateFlow(load())
@@ -27,12 +31,18 @@ class HistoryViewModel(app: Application) : AndroidViewModel(app) {
         val next = listOf(w) + _workouts.value
         _workouts.value = next
         persist(next)
+        CoroutineScope(Dispatchers.IO).launch {
+            try { FirestoreRepository.addWorkout(w) } catch (_: Exception) {}
+        }
     }
 
     fun remove(id: String) {
         val next = _workouts.value.filterNot { it.id == id }
         _workouts.value = next
         persist(next)
+        CoroutineScope(Dispatchers.IO).launch {
+            try { FirestoreRepository.removeWorkout(id) } catch (_: Exception) {}
+        }
     }
 
     fun clear() {

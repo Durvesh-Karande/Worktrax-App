@@ -1,5 +1,6 @@
 package com.worktrax.app.ui.fragments
 
+import android.app.AlertDialog
 import android.content.res.ColorStateList
 import android.os.Bundle
 import android.text.Editable
@@ -33,6 +34,7 @@ import com.worktrax.app.data.ExerciseDef
 import com.worktrax.app.data.Muscles
 import com.worktrax.app.data.WorkoutType
 import com.worktrax.app.databinding.PickerExerciseDesignBinding
+import com.worktrax.app.lib.AnalyticsHelper
 import com.worktrax.app.lib.Storage
 import com.worktrax.app.lib.customExercisesFromJsonString
 import com.worktrax.app.lib.customExercisesToJsonString
@@ -131,6 +133,7 @@ class Picker_Exercise_Logic : Fragment() {
                 name.text = ex.name
                 meta.text = "${ex.equipment.label} · ${ex.muscle.lowercase()}"
                 itemView.setOnClickListener {
+                    AnalyticsHelper.exercisePicked(ex.name, ex.muscle)
                     sessionVM.pickExercise(ex.id, ex.name, ex.muscle)
                     findNavController().navigate(R.id.action_exercise_to_log)
                 }
@@ -159,6 +162,7 @@ class Picker_Exercise_Logic : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        AnalyticsHelper.screenView("exercise_picker")
         binding.includeTopBar.tvTopBarTitle.text = getString(R.string.picker_exercise_title)
         binding.rvExercises.layoutManager = LinearLayoutManager(requireContext())
         binding.rvExercises.adapter = exerciseAdapter
@@ -362,6 +366,7 @@ class Picker_Exercise_Logic : Fragment() {
                     Storage.KEY_CUSTOM_EXERCISES,
                     customExercisesToJsonString(customExercises),
                 )
+                AnalyticsHelper.customExerciseCreated()
                 Toast.makeText(requireContext(), R.string.custom_exercise_created, Toast.LENGTH_SHORT).show()
                 // Refresh list
                 val query = binding.etSearch.text?.toString() ?: ""
