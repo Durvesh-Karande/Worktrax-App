@@ -84,11 +84,44 @@ fun volumeOf(w: Workout, unit: WeightUnit): Int {
     var total = 0.0
     for (ex in w.exercises) {
         for (s in ex.sets) {
+            if (s.metricType != "strength") continue
             val weight = if (s.unit == unit) s.weight else convertWeight(s.weight, s.unit, unit)
             total += weight * s.reps
         }
     }
     return total.roundToInt()
+}
+
+fun totalDurationOf(w: Workout): Int {
+    var total = 0
+    for (ex in w.exercises) {
+        for (s in ex.sets) {
+            total += s.durationSec
+        }
+    }
+    return total
+}
+
+fun totalDistanceOf(w: Workout): Double {
+    var total = 0.0
+    for (ex in w.exercises) {
+        for (s in ex.sets) {
+            total += s.distanceKm
+        }
+    }
+    return total
+}
+
+fun totalRepsOf(w: Workout): Int {
+    var total = 0
+    for (ex in w.exercises) {
+        for (s in ex.sets) {
+            if (s.metricType in listOf("strength", "bodyweight", "hiit")) {
+                total += s.reps * if (s.metricType == "hiit" && s.rounds > 0) s.rounds else 1
+            }
+        }
+    }
+    return total
 }
 
 fun greeting(cal: Calendar = Calendar.getInstance()): String {

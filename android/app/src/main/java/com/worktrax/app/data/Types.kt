@@ -38,18 +38,36 @@ data class ExerciseDef(
 )
 
 data class SetEntry(
-    val reps: Int,
-    val weight: Double,
-    val unit: WeightUnit,
-    val at: String,
+    val metricType: String = "strength",
+    val reps: Int = 0,
+    val weight: Double = 0.0,
+    val unit: WeightUnit = WeightUnit.KG,
+    val durationSec: Int = 0,
+    val distanceKm: Double = 0.0,
+    val rounds: Int = 0,
+    val at: String = "",
     val warmup: Boolean = false,
     val rpe: Int? = null,
 )
+
+val TIMED_CORE_IDS = setOf("plank", "hanging-leg-raise")
+
+fun ExerciseDef.metricType(): String = when (type) {
+    WorkoutType.STRENGTH -> when {
+        id in TIMED_CORE_IDS -> "timed"
+        equipment == Equipment.BODYWEIGHT -> "bodyweight"
+        else -> "strength"
+    }
+    WorkoutType.CARDIO -> "cardio"
+    WorkoutType.AEROBIC -> "hiit"
+    WorkoutType.YOGA -> "yoga"
+}
 
 data class ExerciseEntry(
     val id: String,
     val name: String,
     val muscle: String,
+    val metricType: String = "strength",
     val sets: List<SetEntry>,
 )
 

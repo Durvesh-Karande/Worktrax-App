@@ -11,12 +11,14 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.worktrax.app.R
+import com.worktrax.app.data.ThemeMode
 import com.worktrax.app.data.WorkoutType
 import com.worktrax.app.databinding.HomeDesignBinding
 import com.worktrax.app.lib.AnalyticsHelper
@@ -56,6 +58,7 @@ class Home_Logic : Fragment() {
         binding.btnProfile.setOnClickListener {
             findNavController().navigate(R.id.action_home_to_profile)
         }
+        setupThemeToggle()
         showOnboardingIfNeeded()
     }
 
@@ -182,6 +185,22 @@ class Home_Logic : Fragment() {
         }
     }
 
+    private fun setupThemeToggle() {
+        val currentTheme = settingsVM.state.value.theme
+        updateThemeIcon(currentTheme)
+        binding.btnThemeToggle.setOnClickListener {
+            val next = if (settingsVM.state.value.theme == ThemeMode.LIGHT) ThemeMode.DARK else ThemeMode.LIGHT
+            settingsVM.setTheme(next)
+            AnalyticsHelper.themeChanged(next.code)
+        }
+    }
+
+    private fun updateThemeIcon(theme: ThemeMode) {
+        binding.ivThemeIcon.setImageResource(
+            if (theme == ThemeMode.LIGHT) R.drawable.ic_moon else R.drawable.ic_sun
+        )
+    }
+
     private fun setupObservers() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -191,6 +210,7 @@ class Home_Logic : Fragment() {
                     } else {
                         getString(R.string.good_greeting_format, greeting())
                     }
+                    updateThemeIcon(state.theme)
                 }
             }
         }

@@ -15,6 +15,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.TimeoutCancellationException
+import kotlinx.coroutines.withTimeout
 
 data class AuthState(
     val isLoading: Boolean = false,
@@ -44,8 +46,12 @@ class AuthViewModel(app: Application) : AndroidViewModel(app) {
         viewModelScope.launch {
             _state.value = _state.value.copy(isLoading = true, error = null)
             try {
-                auth.signInWithEmailAndPassword(email, password).await()
+                withTimeout(15_000L) {
+                    auth.signInWithEmailAndPassword(email, password).await()
+                }
                 _state.value = AuthState(isLoggedIn = true)
+            } catch (e: TimeoutCancellationException) {
+                _state.value = AuthState(isLoggedIn = false, error = "Request timed out. Check your connection.")
             } catch (e: Exception) {
                 _state.value = AuthState(isLoggedIn = false, error = e.localizedMessage ?: "Sign in failed")
             }
@@ -56,9 +62,13 @@ class AuthViewModel(app: Application) : AndroidViewModel(app) {
         viewModelScope.launch {
             _state.value = _state.value.copy(isLoading = true, error = null)
             try {
-                auth.createUserWithEmailAndPassword(email, password).await()
+                withTimeout(15_000L) {
+                    auth.createUserWithEmailAndPassword(email, password).await()
+                }
                 migrateIfNeeded()
                 _state.value = AuthState(isLoggedIn = true)
+            } catch (e: TimeoutCancellationException) {
+                _state.value = AuthState(isLoggedIn = false, error = "Request timed out. Check your connection.")
             } catch (e: Exception) {
                 _state.value = AuthState(isLoggedIn = false, error = e.localizedMessage ?: "Sign up failed")
             }
@@ -70,9 +80,13 @@ class AuthViewModel(app: Application) : AndroidViewModel(app) {
             _state.value = _state.value.copy(isLoading = true, error = null)
             try {
                 val credential = GoogleAuthProvider.getCredential(idToken, null)
-                auth.signInWithCredential(credential).await()
+                withTimeout(15_000L) {
+                    auth.signInWithCredential(credential).await()
+                }
                 migrateIfNeeded()
                 _state.value = AuthState(isLoggedIn = true)
+            } catch (e: TimeoutCancellationException) {
+                _state.value = AuthState(isLoggedIn = false, error = "Request timed out. Check your connection.")
             } catch (e: Exception) {
                 _state.value = AuthState(isLoggedIn = false, error = e.localizedMessage ?: "Google sign in failed")
             }

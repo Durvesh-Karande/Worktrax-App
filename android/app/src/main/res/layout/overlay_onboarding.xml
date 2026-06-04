@@ -17,6 +17,12 @@
         android:padding="24dp"
         android:gravity="center">
 
+        <ImageView
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_marginBottom="16dp"
+            android:src="@drawable/ic_playstore_logo" />
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

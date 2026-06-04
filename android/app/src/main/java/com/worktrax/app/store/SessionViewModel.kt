@@ -40,24 +40,39 @@ class SessionViewModel : ViewModel() {
         _state.value = _state.value.copy(muscle = muscle)
     }
 
-    fun pickExercise(id: String, name: String, muscle: String) {
+    fun pickExercise(id: String, name: String, muscle: String, metricType: String = "strength") {
         val s = _state.value
         val existing = s.exercises.find { it.id == id }
         if (existing != null) {
             _state.value = s.copy(currentExerciseId = id)
             return
         }
-        val entry = ExerciseEntry(id = id, name = name, muscle = muscle, sets = emptyList())
+        val entry = ExerciseEntry(id = id, name = name, muscle = muscle, metricType = metricType, sets = emptyList())
         _state.value = s.copy(
             currentExerciseId = id,
             exercises = s.exercises + entry,
         )
     }
 
-    fun addSet(reps: Int, weight: Double, unit: WeightUnit, warmup: Boolean = false, rpe: Int? = null) {
+    fun addSet(
+        reps: Int = 0,
+        weight: Double = 0.0,
+        unit: WeightUnit = WeightUnit.KG,
+        durationSec: Int = 0,
+        distanceKm: Double = 0.0,
+        rounds: Int = 0,
+        warmup: Boolean = false,
+        rpe: Int? = null,
+    ) {
         val s = _state.value
         val cur = s.currentExerciseId ?: return
-        val full = SetEntry(reps = reps, weight = weight, unit = unit, at = nowIso(), warmup = warmup, rpe = rpe)
+        val ex = s.exercises.find { it.id == cur } ?: return
+        val full = SetEntry(
+            metricType = ex.metricType,
+            reps = reps, weight = weight, unit = unit,
+            durationSec = durationSec, distanceKm = distanceKm, rounds = rounds,
+            at = nowIso(), warmup = warmup, rpe = rpe,
+        )
         val next = s.exercises.map { e ->
             if (e.id == cur) e.copy(sets = e.sets + full) else e
         }
@@ -98,7 +113,7 @@ class SessionViewModel : ViewModel() {
             startedAt = nowIso(),
             currentExerciseId = null,
             exercises = w.exercises.map {
-                ExerciseEntry(id = it.id, name = it.name, muscle = it.muscle, sets = emptyList())
+                ExerciseEntry(id = it.id, name = it.name, muscle = it.muscle, metricType = it.metricType, sets = emptyList())
             },
         )
     }

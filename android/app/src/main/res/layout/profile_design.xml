@@ -370,7 +370,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
                         android:text="@string/download_report"
-                        android:textColor="@color/white"
+                        android:textColor="@color/ink"
                         android:textStyle="bold"
                         android:textSize="14sp" />
                 </LinearLayout>

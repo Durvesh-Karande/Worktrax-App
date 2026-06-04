@@ -20,6 +20,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.worktrax.app.R
+import com.worktrax.app.data.SetEntry
 import com.worktrax.app.data.WeightUnit
 import com.worktrax.app.databinding.WorkoutLoggerDesignBinding
 import com.worktrax.app.lib.AnalyticsHelper
@@ -43,14 +44,22 @@ class Workout_Logger_Logic : Fragment() {
     private val settingsVM: SettingsViewModel by viewModels({ requireActivity() })
     private val historyVM: HistoryViewModel by viewModels({ requireActivity() })
 
+    private var currentMetricType = "strength"
     private var currentReps = 8
     private var currentWeight = 80.0
     private var totalSets = 4
     private var currentWarmup = false
     private var currentRpe: Int? = null
+    private var currentDuration = 30
+    private var currentDurationSec = 0
+    private var currentDistance = 1.0
+    private var currentRounds = 4
 
     private var restTimer: CountDownTimer? = null
     private var restSeconds = 60
+
+    private var workoutTimer: CountDownTimer? = null
+    private var isWorkoutTimerRunning = false
 
     private fun haptic() {
         binding.root.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY)
@@ -68,11 +77,27 @@ class Workout_Logger_Logic : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         AnalyticsHelper.screenView("workout_logger")
-
         setupSteppers()
         setupWarmupRpe()
         setupObservers()
         setupListeners()
+    }
+
+    private fun showFieldsForType(metricType: String) {
+        binding.layoutStrengthFields.visibility = if (metricType == "strength") View.VISIBLE else View.GONE
+        binding.layoutBodyweightFields.visibility = if (metricType == "bodyweight") View.VISIBLE else View.GONE
+        binding.layoutTimedFields.visibility = if (metricType == "timed") View.VISIBLE else View.GONE
+        binding.layoutCardioFields.visibility = if (metricType == "cardio") View.VISIBLE else View.GONE
+        binding.layoutHiitFields.visibility = if (metricType == "hiit") View.VISIBLE else View.GONE
+        binding.layoutYogaFields.visibility = if (metricType == "yoga") View.VISIBLE else View.GONE
+
+        binding.tvUnit.visibility = if (metricType in listOf("strength", "bodyweight")) View.VISIBLE else View.GONE
+        binding.btnPlateCalc.visibility = if (metricType == "strength") View.VISIBLE else View.GONE
+
+        val isTimedType = metricType in listOf("timed", "cardio", "yoga")
+        binding.containerWorkoutTimer.visibility = if (isTimedType) View.VISIBLE else View.GONE
+        binding.btnLogSet.visibility = if (isTimedType) View.GONE else View.VISIBLE
+        if (isTimedType) stopWorkoutTimer()
     }
 
     private fun setupWarmupRpe() {
@@ -87,7 +112,6 @@ class Workout_Logger_Logic : Fragment() {
             )
             haptic()
         }
-        binding.layoutRpe.visibility = View.VISIBLE
         binding.layoutRpeButtons.removeAllViews()
         val density = resources.displayMetrics.density
         val gap = (6 * density).toInt()
@@ -126,76 +150,132 @@ class Workout_Logger_Logic : Fragment() {
         }
     }
 
-    private fun setupSteppers() {
-        binding.stepperReps.tvStepperLabel.text = getString(R.string.reps_stepper_label)
-        binding.stepperReps.tvValue.text = currentReps.toString()
-        binding.stepperReps.btnMinus.setOnClickListener {
-            if (currentReps > 0) {
-                currentReps--
-                binding.stepperReps.tvValue.text = currentReps.toString()
+    private fun setupStepper(
+        label: String, value: Int, min: Int, max: Int,
+        tvLabel: TextView, tvValue: TextView, btnMinus: View, btnPlus: View,
+        onChanged: (Int) -> Unit
+    ) {
+        tvLabel.text = label
+        tvValue.text = value.toString()
+        btnMinus.setOnClickListener {
+            val v = onChanged(0) // just to read current
+            val cur = tvValue.text.toString().toIntOrNull() ?: value
+            if (cur > min) {
+                val next = cur - 1
+                tvValue.text = next.toString()
+                onChanged(next)
                 haptic()
             }
         }
-        binding.stepperReps.btnPlus.setOnClickListener {
-            currentReps++
-            binding.stepperReps.tvValue.text = currentReps.toString()
-            haptic()
-        }
-        binding.stepperReps.tvValue.setOnClickListener {
-            showNumberInput("Reps", currentReps, 0, 999, 1) { v ->
-                currentReps = v
-                binding.stepperReps.tvValue.text = currentReps.toString()
+        btnPlus.setOnClickListener {
+            val cur = tvValue.text.toString().toIntOrNull() ?: value
+            if (cur < max) {
+                val next = cur + 1
+                tvValue.text = next.toString()
+                onChanged(next)
+                haptic()
             }
         }
+        tvValue.setOnClickListener {
+            showNumberInput(label, tvValue.text.toString().toIntOrNull() ?: value, min, max, 1) { v ->
+                tvValue.text = v.toString()
+                onChanged(v)
+            }
+        }
+    }
 
-        binding.stepperWeight.tvStepperLabel.text = getString(R.string.weight_stepper_label)
-        binding.stepperWeight.tvValue.text = currentWeight.toString()
+    private val unitCode: String get() = settingsVM.state.value.unit.code.uppercase()
+
+    private fun setupSteppers() {
+        // Strength steppers
+        setupStepper(
+            getString(R.string.reps_stepper_label), currentReps, 0, 999,
+            binding.stepperReps.tvStepperLabel, binding.stepperReps.tvValue,
+            binding.stepperReps.btnMinus, binding.stepperReps.btnPlus
+        ) { v -> currentReps = v }
+
+        // Weight stepper (special: decimal steps)
+        binding.stepperWeight.tvStepperLabel.text = "Weight ($unitCode)"
+        binding.stepperWeight.tvValue.text = currentWeight.toInt().toString()
         binding.stepperWeight.btnMinus.setOnClickListener {
             if (currentWeight > 0) {
                 currentWeight = (currentWeight - weightStep(settingsVM.state.value.unit)).coerceAtLeast(0.0)
-                binding.stepperWeight.tvValue.text = currentWeight.toString()
+                binding.stepperWeight.tvValue.text = currentWeight.toInt().toString()
                 haptic()
             }
         }
         binding.stepperWeight.btnPlus.setOnClickListener {
             currentWeight += weightStep(settingsVM.state.value.unit)
-            binding.stepperWeight.tvValue.text = currentWeight.toString()
+            binding.stepperWeight.tvValue.text = currentWeight.toInt().toString()
             haptic()
         }
         binding.stepperWeight.tvValue.setOnClickListener {
-            showDecimalInput("Weight (${
-                settingsVM.state.value.unit.code.uppercase()
-            })", currentWeight, 0.0, 999.0) { v ->
+            showDecimalInput("Weight ($unitCode)", currentWeight, 0.0, 999.0) { v ->
                 currentWeight = v
-                binding.stepperWeight.tvValue.text = currentWeight.toString()
+                binding.stepperWeight.tvValue.text = currentWeight.toInt().toString()
             }
         }
 
-        binding.stepperTotalSets.tvStepperLabel.text = getString(R.string.total_sets_stepper_label)
-        binding.stepperTotalSets.tvValue.text = totalSets.toString()
-        binding.stepperTotalSets.btnMinus.setOnClickListener {
-            if (totalSets > 1) {
-                totalSets--
-                binding.stepperTotalSets.tvValue.text = totalSets.toString()
-                haptic()
-                refreshTable()
-            }
-        }
-        binding.stepperTotalSets.btnPlus.setOnClickListener {
-            if (totalSets < 12) {
-                totalSets++
-                binding.stepperTotalSets.tvValue.text = totalSets.toString()
-                haptic()
-                refreshTable()
-            }
-        }
-        binding.stepperTotalSets.tvValue.setOnClickListener {
-            showNumberInput("Total sets", totalSets, 1, 12, 1) { v ->
-                totalSets = v
-                binding.stepperTotalSets.tvValue.text = totalSets.toString()
-                refreshTable()
-            }
-        }
+        setupStepper(
+            getString(R.string.total_sets_stepper_label), totalSets, 1, 12,
+            binding.stepperTotalSets.tvStepperLabel, binding.stepperTotalSets.tvValue,
+            binding.stepperTotalSets.btnMinus, binding.stepperTotalSets.btnPlus
+        ) { v -> totalSets = v; refreshTable() }
+
+        // Bodyweight steppers
+        setupStepper(
+            getString(R.string.reps_stepper_label), currentReps, 0, 999,
+            binding.sbwReps.tvStepperLabel, binding.sbwReps.tvValue,
+            binding.sbwReps.btnMinus, binding.sbwReps.btnPlus
+        ) { v -> currentReps = v }
+        setupStepper(
+            getString(R.string.total_sets_stepper_label), totalSets, 1, 12,
+            binding.sbwTotalSets.tvStepperLabel, binding.sbwTotalSets.tvValue,
+            binding.sbwTotalSets.btnMinus, binding.sbwTotalSets.btnPlus
+        ) { v -> totalSets = v; refreshTable() }
+
+        // Cardio steppers
+        setupStepper("Min", currentDuration, 0, 999,
+            binding.scDurationMin.tvStepperLabel, binding.scDurationMin.tvValue,
+            binding.scDurationMin.btnMinus, binding.scDurationMin.btnPlus
+        ) { v -> currentDuration = v }
+        setupStepper("Sec", currentDurationSec, 0, 59,
+            binding.scDurationSec.tvStepperLabel, binding.scDurationSec.tvValue,
+            binding.scDurationSec.btnMinus, binding.scDurationSec.btnPlus
+        ) { v -> currentDurationSec = v }
+        setupStepper("Distance (km)", (currentDistance * 10).toInt(), 0, 999,
+            binding.scDistance.tvStepperLabel, binding.scDistance.tvValue,
+            binding.scDistance.btnMinus, binding.scDistance.btnPlus
+        ) { v -> currentDistance = v / 10.0 }
+        // Override value click for min/sec to show quick picker
+        binding.scDurationMin.tvValue.setOnClickListener { showDurationPicker("Min", binding.scDurationMin.tvValue, 0, 999, 1) { n -> currentDuration = n; binding.scDurationMin.tvValue.text = n.toString() } }
+        binding.scDurationSec.tvValue.setOnClickListener { showDurationPicker("Sec", binding.scDurationSec.tvValue, 0, 59, 5) { n -> currentDurationSec = n; binding.scDurationSec.tvValue.text = n.toString() } }
+
+        // HIIT steppers
+        setupStepper("Rounds", currentRounds, 1, 50,
+            binding.shiitRounds.tvStepperLabel, binding.shiitRounds.tvValue,
+            binding.shiitRounds.btnMinus, binding.shiitRounds.btnPlus
+        ) { v -> currentRounds = v }
+        setupStepper("Reps per round", currentReps, 0, 999,
+            binding.shiitReps.tvStepperLabel, binding.shiitReps.tvValue,
+            binding.shiitReps.btnMinus, binding.shiitReps.btnPlus
+        ) { v -> currentReps = v }
+
+        // Timed steppers
+        setupStepper("Hold (sec)", currentDuration, 1, 999,
+            binding.stDuration.tvStepperLabel, binding.stDuration.tvValue,
+            binding.stDuration.btnMinus, binding.stDuration.btnPlus
+        ) { v -> currentDuration = v }
+        setupStepper("Sets", totalSets, 1, 12,
+            binding.stTotalSets.tvStepperLabel, binding.stTotalSets.tvValue,
+            binding.stTotalSets.btnMinus, binding.stTotalSets.btnPlus
+        ) { v -> totalSets = v; refreshTable() }
+
+        // Yoga steppers
+        setupStepper("Duration (min)", currentDuration, 1, 999,
+            binding.syDuration.tvStepperLabel, binding.syDuration.tvValue,
+            binding.syDuration.btnMinus, binding.syDuration.btnPlus
+        ) { v -> currentDuration = v }
     }
 
     private fun showNumberInput(
@@ -231,7 +311,7 @@ class Workout_Logger_Logic : Fragment() {
         onSet: (Double) -> Unit
     ) {
         val input = EditText(requireContext()).apply {
-            setText(current.toString())
+            setText(current.toInt().toString())
             selectAll()
             inputType = android.text.InputType.TYPE_CLASS_NUMBER or
                     android.text.InputType.TYPE_NUMBER_FLAG_DECIMAL
@@ -254,98 +334,211 @@ class Workout_Logger_Logic : Fragment() {
                 combine(sessionVM.state, settingsVM.state) { session, settings ->
                     session to settings.unit
                 }.collectLatest { (session, unit) ->
+                    if (!isAdded || _binding == null) return@collectLatest
                     binding.tvTitle.text = getString(R.string.workout_logger_title)
                     binding.tvMuscleKicker.text = "${session.muscle?.uppercase() ?: getString(R.string.muscle_logging_placeholder)} ${getString(R.string.type_logging_suffix)}"
 
                     val currentEx = session.exercises.find { it.id == session.currentExerciseId }
                     binding.tvExerciseName.text = currentEx?.name ?: getString(R.string.no_exercise_selected)
 
-                    // Show previous workout values
+                    // Update metric type from current exercise
                     if (currentEx != null) {
-                        val lastSet = lastSetForExercise(historyVM.workouts.value, currentEx.id)
-                        if (lastSet != null && currentEx.sets.isEmpty()) {
-                            val prevWeight = if (lastSet.unit == unit) lastSet.weight
-                            else com.worktrax.app.lib.convertWeight(lastSet.weight, lastSet.unit, unit)
-                            binding.tvPreviousValues.text = "Last: ${prevWeight} ${unit.code} × ${lastSet.reps} reps"
-                            binding.tvPreviousValues.visibility = View.VISIBLE
-                        } else {
-                            binding.tvPreviousValues.visibility = View.GONE
+                        if (currentEx.metricType != currentMetricType) {
+                            currentMetricType = currentEx.metricType
+                            showFieldsForType(currentMetricType)
+                            resetDefaults()
                         }
-                    } else {
-                        binding.tvPreviousValues.visibility = View.GONE
+                        showPreviousValues(currentEx, unit)
                     }
 
                     binding.tvUnit.text = unit.code.uppercase()
 
                     val loggedCount = currentEx?.sets?.size ?: 0
+
+                    val hasLimit = currentMetricType in listOf("strength", "bodyweight", "timed")
+                    val displayTotal = if (hasLimit) totalSets else 1
                     val currentIndex = loggedCount + 1
                     binding.tvSetCounter.text =
-                        if (currentIndex > totalSets) getString(R.string.all_sets_done)
-                        else getString(R.string.set_counter_format, currentIndex, totalSets)
+                        if (hasLimit && currentIndex > displayTotal) getString(R.string.all_sets_done)
+                        else if (hasLimit) getString(R.string.set_counter_format, currentIndex, displayTotal)
+                        else ""
 
-                    updateLoggedSets(currentEx?.sets ?: emptyList(), unit)
+                    binding.stepperTotalSets.root.visibility = if (hasLimit) View.VISIBLE else View.GONE
+                    binding.sbwTotalSets.root.visibility = if (hasLimit) View.VISIBLE else View.GONE
+
+                    binding.layoutWarmup.visibility = if (currentMetricType == "strength") View.VISIBLE else View.GONE
+                    binding.layoutRpe.visibility = if (currentMetricType == "strength") View.VISIBLE else View.GONE
+
+                    binding.btnUndo.visibility = if (loggedCount > 0) View.VISIBLE else View.GONE
+
+                    updateTableHeaders(currentMetricType)
+                    updateLoggedSets(currentEx?.sets ?: emptyList(), unit, currentMetricType)
                 }
             }
         }
+    }
+
+    private fun showPreviousValues(currentEx: com.worktrax.app.data.ExerciseEntry, unit: WeightUnit) {
+        if (currentEx.sets.isNotEmpty()) {
+            binding.tvPreviousValues.visibility = View.GONE
+            return
+        }
+        val lastSet = lastSetForExercise(historyVM.workouts.value, currentEx.id) ?: run {
+            binding.tvPreviousValues.visibility = View.GONE
+            return
+        }
+        val text = when (currentMetricType) {
+            "strength" -> {
+                val w = if (lastSet.unit == unit) lastSet.weight
+                else com.worktrax.app.lib.convertWeight(lastSet.weight, lastSet.unit, unit)
+                "Last: ${w} ${unit.code} x ${lastSet.reps} reps"
+            }
+            "bodyweight" -> "Last: ${lastSet.reps} reps"
+            "timed" -> "Last: ${lastSet.durationSec}s hold"
+            "cardio" -> "Last: ${formatDuration(lastSet.durationSec)}, ${lastSet.distanceKm} km"
+            "hiit" -> "Last: ${lastSet.rounds} rounds x ${lastSet.reps} reps"
+            "yoga" -> "Last: ${formatDuration(lastSet.durationSec)}"
+            else -> ""
+        }
+        binding.tvPreviousValues.text = text
+        binding.tvPreviousValues.visibility = if (text.isNotBlank()) View.VISIBLE else View.GONE
+    }
+
+    private fun updateTableHeaders(metricType: String) {
+        val (left, right) = when (metricType) {
+            "strength" -> Pair("Reps", "Weight")
+            "bodyweight" -> Pair("Reps", "")
+            "timed" -> Pair("Hold", "")
+            "cardio" -> Pair("Duration", "Distance")
+            "hiit" -> Pair("Rounds", "Reps")
+            "yoga" -> Pair("Duration", "")
+            else -> Pair("Reps", "Weight")
+        }
+        binding.tblColLeft.text = left
+        binding.tblColRight.text = right
+    }
+
+    private fun resetDefaults() {
+        when (currentMetricType) {
+            "strength" -> { currentReps = 8; currentWeight = 80.0; totalSets = 4; currentWarmup = false; currentRpe = null }
+            "bodyweight" -> { currentReps = 10; totalSets = 3 }
+            "timed" -> { currentDuration = 30; totalSets = 3 }
+            "cardio" -> { currentDuration = 30; currentDurationSec = 0; currentDistance = 5.0 }
+            "hiit" -> { currentRounds = 4; currentReps = 15 }
+            "yoga" -> { currentDuration = 5; currentDurationSec = 0 }
+        }
+        syncStepperValues()
+    }
+
+    private fun syncStepperValues() {
+        binding.stepperReps.tvValue.text = currentReps.toString()
+        binding.stepperWeight.tvValue.text = currentWeight.toInt().toString()
+        binding.stepperTotalSets.tvValue.text = totalSets.toString()
+        binding.sbwReps.tvValue.text = currentReps.toString()
+        binding.sbwTotalSets.tvValue.text = totalSets.toString()
+        binding.scDurationMin.tvValue.text = currentDuration.toString()
+        binding.scDurationSec.tvValue.text = currentDurationSec.toString()
+        binding.scDistance.tvValue.text = (currentDistance * 10).toInt().toString()
+        binding.shiitRounds.tvValue.text = currentRounds.toString()
+        binding.shiitReps.tvValue.text = currentReps.toString()
+        binding.stDuration.tvValue.text = currentDuration.toString()
+        binding.stTotalSets.tvValue.text = totalSets.toString()
+        binding.syDuration.tvValue.text = currentDuration.toString()
     }
 
     private fun refreshTable() {
         val session = sessionVM.state.value
         val currentEx = session.exercises.find { it.id == session.currentExerciseId }
         val sets = currentEx?.sets ?: emptyList()
-        updateLoggedSets(sets, settingsVM.state.value.unit)
+        updateLoggedSets(sets, settingsVM.state.value.unit, currentMetricType)
+        val hasLimit = currentMetricType in listOf("strength", "bodyweight", "timed")
+        val displayTotal = if (hasLimit) totalSets else 1
         val currentIndex = sets.size + 1
         binding.tvSetCounter.text =
-            if (currentIndex > totalSets) getString(R.string.all_sets_done)
-            else getString(R.string.set_counter_format, currentIndex, totalSets)
+            if (hasLimit && currentIndex > displayTotal) getString(R.string.all_sets_done)
+            else if (hasLimit) getString(R.string.set_counter_format, currentIndex, displayTotal)
+            else ""
     }
 
-    private fun updateLoggedSets(sets: List<com.worktrax.app.data.SetEntry>, unit: WeightUnit) {
-        val newCount = sets.size
+    private fun updateLoggedSets(sets: List<SetEntry>, unit: WeightUnit, metricType: String) {
         binding.listLoggedSets.removeAllViews()
         val inflater = LayoutInflater.from(requireContext())
 
-        for (i in 1..totalSets) {
+        val hasLimit = metricType in listOf("strength", "bodyweight", "timed")
+        val displayTotal = if (hasLimit) totalSets else 1
+
+        for (i in 1..displayTotal) {
             val row = inflater.inflate(R.layout.item_set_row, binding.listLoggedSets, false)
             val logged = sets.getOrNull(i - 1)
-            val isCurrent = logged == null && i == sets.size + 1
+            val isCurrent = logged == null && i == displayTotal && sets.size < displayTotal
 
             row.findViewById<TextView>(R.id.tv_set_number).text = i.toString()
+            val tvReps = row.findViewById<TextView>(R.id.tv_reps)
+            val tvWeight = row.findViewById<TextView>(R.id.tv_weight)
+            val tvUnit = row.findViewById<TextView>(R.id.tv_unit)
+
             if (logged != null) {
-                val warmup = logged.warmup
-                row.findViewById<TextView>(R.id.tv_reps).text = logged.reps.toString()
-                val weightText = logged.weight.toString()
-                val rpeSuffix = if (logged.rpe != null) " @${logged.rpe}" else ""
-                row.findViewById<TextView>(R.id.tv_weight).text = "$weightText$rpeSuffix"
-                row.findViewById<TextView>(R.id.tv_unit).text = logged.unit.code
-                if (warmup) {
+                val (leftText, rightText, unitText) = formatSetRow(logged, unit)
+                tvReps.text = leftText
+                tvWeight.text = rightText
+                tvUnit.text = unitText
+                if (logged.warmup) {
                     row.alpha = 0.6f
                     row.findViewById<TextView>(R.id.tv_set_number).setTextColor(
                         ContextCompat.getColor(requireContext(), R.color.ink_3)
                     )
                 }
             } else if (isCurrent) {
-                row.findViewById<TextView>(R.id.tv_reps).text = currentReps.toString()
-                val rpeSuffix = if (currentRpe != null) " @${currentRpe}" else ""
-                row.findViewById<TextView>(R.id.tv_weight).text = "${currentWeight}$rpeSuffix"
-                row.findViewById<TextView>(R.id.tv_unit).text = unit.code
+                val (leftText, rightText, unitText) = formatPendingRow(metricType, unit)
+                tvReps.text = leftText
+                tvWeight.text = rightText
+                tvUnit.text = unitText
                 row.setBackgroundResource(R.drawable.shape_set_current)
                 row.findViewById<TextView>(R.id.tv_set_number)
                     .setTextColor(ContextCompat.getColor(requireContext(), R.color.accent))
-                // Spring animation on the newly pending row
                 row.scaleX = 0.95f
                 row.scaleY = 0.95f
                 row.animate().scaleX(1f).scaleY(1f).setDuration(250)
                     .setInterpolator(AccelerateDecelerateInterpolator()).start()
             } else {
-                row.findViewById<TextView>(R.id.tv_reps).text = "—"
-                row.findViewById<TextView>(R.id.tv_weight).text = "—"
-                row.findViewById<TextView>(R.id.tv_unit).text = ""
+                tvReps.text = "—"
+                tvWeight.text = "—"
+                tvUnit.text = ""
             }
-            if (i == totalSets) {
+            if (i == displayTotal) {
                 row.findViewById<View>(R.id.divider).visibility = View.GONE
             }
             binding.listLoggedSets.addView(row)
+        }
+    }
+
+    private fun formatSetRow(set: SetEntry, unit: WeightUnit): Triple<String, String, String> {
+        return when (set.metricType) {
+            "strength" -> {
+                val rpe = if (set.rpe != null) " @${set.rpe}" else ""
+                Triple(set.reps.toString(), "${set.weight}$rpe", set.unit.code)
+            }
+            "bodyweight" -> Triple("${set.reps} reps", "", "")
+            "timed" -> Triple("${set.durationSec}s", "", "")
+            "cardio" -> Triple(formatDuration(set.durationSec), "${set.distanceKm} km", "")
+            "hiit" -> Triple("${set.rounds} rds", "${set.reps} reps", "")
+            "yoga" -> Triple(formatDuration(set.durationSec), "", "")
+            else -> Triple(set.reps.toString(), set.weight.toString(), set.unit.code)
+        }
+    }
+
+    private fun formatPendingRow(metricType: String, unit: WeightUnit): Triple<String, String, String> {
+        return when (metricType) {
+            "strength" -> {
+                val rpe = if (currentRpe != null) " @${currentRpe}" else ""
+                Triple(currentReps.toString(), "${currentWeight.toInt()}$rpe", unit.code)
+            }
+            "bodyweight" -> Triple("${currentReps} reps", "", "")
+            "timed" -> Triple("${currentDuration}s", "", "")
+            "cardio" -> Triple("${currentDuration} min ${currentDurationSec} sec", "${currentDistance} km", "")
+            "hiit" -> Triple("${currentRounds} rds", "${currentReps} reps", "")
+            "yoga" -> Triple("${currentDuration} min ${currentDurationSec} sec", "", "")
+            else -> Triple(currentReps.toString(), currentWeight.toInt().toString(), unit.code)
         }
     }
 
@@ -370,10 +563,31 @@ class Workout_Logger_Logic : Fragment() {
                 return@setOnClickListener
             }
             val loggedCount = currentEx.sets.size
-            if (loggedCount < totalSets) {
+            val hasLimit = currentMetricType in listOf("strength", "bodyweight", "timed")
+            if (!hasLimit || loggedCount < totalSets) {
                 val unit = settingsVM.state.value.unit
-                sessionVM.addSet(currentReps, currentWeight, unit, currentWarmup, currentRpe)
-                AnalyticsHelper.setLogged(currentEx.name, currentReps, currentWeight, currentWarmup, currentRpe)
+                when (currentMetricType) {
+                    "strength" -> {
+                        sessionVM.addSet(reps = currentReps, weight = currentWeight, unit = unit, warmup = currentWarmup, rpe = currentRpe)
+                        AnalyticsHelper.setLogged(currentEx.name, currentReps, currentWeight, currentWarmup, currentRpe)
+                    }
+                    "bodyweight" -> {
+                        sessionVM.addSet(reps = currentReps)
+                        AnalyticsHelper.setLogged(currentEx.name, currentReps, 0.0, false, null)
+                    }
+                    "timed" -> {
+                        sessionVM.addSet(durationSec = currentDuration)
+                    }
+                    "cardio" -> {
+                        sessionVM.addSet(durationSec = currentDuration, distanceKm = currentDistance)
+                    }
+                    "hiit" -> {
+                        sessionVM.addSet(rounds = currentRounds, reps = currentReps)
+                    }
+                    "yoga" -> {
+                        sessionVM.addSet(durationSec = currentDuration)
+                    }
+                }
                 startRestTimer()
             }
         }
@@ -381,16 +595,26 @@ class Workout_Logger_Logic : Fragment() {
         binding.btnSkipRest.setOnClickListener { stopRestTimer() }
 
         binding.btnFinishWorkout.setOnClickListener {
-            val workout = sessionVM.finish()
+            if (_binding == null || !isAdded) return@setOnClickListener
+            stopRestTimer()
+            val workout = try { sessionVM.finish() } catch (e: Exception) { null }
             if (workout != null) {
-                historyVM.add(workout)
-                val vol = volumeOf(workout, settingsVM.state.value.unit)
-                AnalyticsHelper.workoutCompleted(workout.type.code, workout.exercises.size, vol.toDouble(), workout.durationSec)
-                val bundle = Bundle().apply { putString("workoutId", workout.id) }
-                findNavController().navigate(R.id.action_log_to_summary, bundle)
+                try { historyVM.add(workout) } catch (_: Exception) {}
+                try {
+                    val vol = volumeOf(workout, settingsVM.state.value.unit)
+                    AnalyticsHelper.workoutCompleted(workout.type.code, workout.exercises.size, vol.toDouble(), workout.durationSec)
+                } catch (_: Exception) {}
+                try {
+                    val bundle = Bundle().apply { putString("workoutId", workout.id) }
+                    findNavController().navigate(R.id.action_log_to_summary, bundle)
+                } catch (e: Exception) {
+                    findNavController().popBackStack()
+                }
             } else {
-                AnalyticsHelper.workoutCancelled(sessionVM.state.value.type?.code ?: "unknown")
-                findNavController().popBackStack()
+                try {
+                    AnalyticsHelper.workoutCancelled(sessionVM.state.value.type?.code ?: "unknown")
+                    findNavController().popBackStack()
+                } catch (_: Exception) {}
             }
         }
 
@@ -398,7 +622,34 @@ class Workout_Logger_Logic : Fragment() {
             findNavController().navigate(R.id.action_log_to_exercise)
         }
 
+        binding.btnUndo.setOnClickListener {
+            val session = sessionVM.state.value
+            val currentEx = session.exercises.find { it.id == session.currentExerciseId }
+            if (currentEx != null && currentEx.sets.isNotEmpty()) {
+                sessionVM.removeLastSet()
+                Toast.makeText(requireContext(), R.string.set_undone, Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(requireContext(), R.string.nothing_to_undo, Toast.LENGTH_SHORT).show()
+            }
+        }
+
         binding.btnPlateCalc.setOnClickListener { showPlateCalculator() }
+
+        binding.btnTimerStart.setOnClickListener {
+            if (isWorkoutTimerRunning) return@setOnClickListener
+            val session = sessionVM.state.value
+            val currentEx = session.exercises.find { it.id == session.currentExerciseId }
+            if (currentEx == null) {
+                Toast.makeText(requireContext(), R.string.no_exercise_selected, Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+            startWorkoutTimer()
+        }
+        binding.btnTimerStop.setOnClickListener {
+            if (!isWorkoutTimerRunning) return@setOnClickListener
+            stopWorkoutTimer()
+            logTimedSet()
+        }
     }
 
     private fun showPlateCalculator() {
@@ -464,7 +715,97 @@ class Workout_Logger_Logic : Fragment() {
         binding.containerRestTimer.visibility = View.GONE
     }
 
+    private fun formatDuration(sec: Int): String {
+        val m = sec / 60
+        val s = sec % 60
+        return if (m > 0) "${m} min ${s} sec" else "${s} sec"
+    }
+
+    private fun formatTimerDisplay(sec: Int): String {
+        val m = sec / 60
+        val s = sec % 60
+        return "%02d:%02d".format(m, s)
+    }
+
+    private fun showDurationPicker(
+        label: String, tvValue: TextView, min: Int, max: Int, step: Int,
+        onSet: (Int) -> Unit
+    ) {
+        val commonValues = when {
+            label == "Min" -> listOf(0, 1, 2, 3, 5, 10, 15, 20, 30, 45, 60)
+            label == "Sec" -> listOf(0, 5, 10, 15, 20, 30, 45)
+            else -> (min..max step step).take(20).toList()
+        }
+        val current = tvValue.text.toString().toIntOrNull() ?: min
+        val items = commonValues.map { it.toString() }.toTypedArray()
+        val checked = commonValues.indexOfFirst { it >= current }.coerceAtLeast(0)
+        AlertDialog.Builder(requireContext())
+            .setTitle(label)
+            .setSingleChoiceItems(items, checked) { dialog, which ->
+                val v = commonValues[which]
+                tvValue.text = v.toString()
+                onSet(v)
+                dialog.dismiss()
+            }
+            .setNegativeButton(R.string.cancel_label, null)
+            .show()
+    }
+
+    private fun startWorkoutTimer() {
+        stopWorkoutTimer()
+        val target = when (currentMetricType) {
+            "cardio" -> (currentDuration * 60 + currentDurationSec).coerceAtLeast(1)
+            "yoga" -> (currentDuration * 60 + currentDurationSec).coerceAtLeast(1)
+            else -> currentDuration.coerceAtLeast(1)
+        }
+        isWorkoutTimerRunning = true
+        binding.btnTimerStart.isEnabled = false
+        binding.btnTimerStop.isEnabled = true
+        binding.tvWorkoutTimer.text = formatTimerDisplay(target)
+        workoutTimer = object : CountDownTimer((target * 1000L) + 500, 1000L) {
+            var remaining = target
+            override fun onTick(millisUntilFinished: Long) {
+                remaining = ((millisUntilFinished + 500) / 1000).toInt()
+                binding.tvWorkoutTimer.text = formatTimerDisplay(remaining)
+            }
+            override fun onFinish() {
+                binding.tvWorkoutTimer.text = "00:00"
+                isWorkoutTimerRunning = false
+                binding.btnTimerStart.isEnabled = true
+                binding.btnTimerStop.isEnabled = false
+                logTimedSet()
+            }
+        }.start()
+    }
+
+    private fun stopWorkoutTimer() {
+        workoutTimer?.cancel()
+        workoutTimer = null
+        isWorkoutTimerRunning = false
+        binding.btnTimerStart.isEnabled = true
+        binding.btnTimerStop.isEnabled = false
+    }
+
+    private fun logTimedSet() {
+        when (currentMetricType) {
+            "timed" -> {
+                sessionVM.addSet(durationSec = currentDuration)
+            }
+            "cardio" -> {
+                val totalSec = currentDuration * 60 + currentDurationSec
+                sessionVM.addSet(durationSec = totalSec, distanceKm = currentDistance)
+            }
+            "yoga" -> {
+                val totalSec = currentDuration * 60 + currentDurationSec
+                sessionVM.addSet(durationSec = totalSec)
+            }
+        }
+        stopRestTimer()
+        startRestTimer()
+    }
+
     override fun onDestroyView() {
+        stopWorkoutTimer()
         stopRestTimer()
         super.onDestroyView()
         _binding = null

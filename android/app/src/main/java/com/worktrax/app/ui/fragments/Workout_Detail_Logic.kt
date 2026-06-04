@@ -15,6 +15,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.worktrax.app.R
+import com.worktrax.app.data.SetEntry
 import com.worktrax.app.data.Workout
 import com.worktrax.app.databinding.WorkoutDetailDesignBinding
 import com.worktrax.app.lib.AnalyticsHelper
@@ -85,23 +86,40 @@ class Workout_Detail_Logic : Fragment() {
             
             exerciseView.findViewById<TextView>(R.id.tv_exercise_name).text = exercise.name
             exerciseView.findViewById<TextView>(R.id.tv_muscle_name).text = exercise.muscle
+
+            // Set column headers based on metric type
+            val (leftHeader, rightHeader) = when (exercise.metricType) {
+                "strength" -> "Reps" to "Weight"
+                "bodyweight" -> "Reps" to ""
+                "timed" -> "Hold" to ""
+                "cardio" -> "Duration" to "Distance"
+                "hiit" -> "Rounds" to "Reps"
+                "yoga" -> "Duration" to ""
+                else -> "Reps" to "Weight"
+            }
+            exerciseView.findViewById<TextView>(R.id.tbl_col_left).text = leftHeader
+            exerciseView.findViewById<TextView>(R.id.tbl_col_right).text = rightHeader
+            exerciseView.findViewById<TextView>(R.id.tbl_col_right).visibility =
+                if (rightHeader.isBlank()) android.view.View.GONE else android.view.View.VISIBLE
             
-            // PR badge
+            // PR badge (only for strength exercises)
             val prBadge = exerciseView.findViewById<TextView>(R.id.tv_pr_badge)
-            val best = bestSetForExercise(allWorkouts, exercise.id)
-            if (best != null) {
-                val sessionBest = exercise.sets.maxByOrNull { it.weight * (1 + it.reps / 30.0) }
-                if (sessionBest != null &&
-                    (sessionBest.weight * (1 + sessionBest.reps / 30.0)) >=
-                    (best.weight * (1 + best.reps / 30.0))
-                ) {
-                    val e1rm = estimated1rm(sessionBest.weight, sessionBest.reps)
-                    prBadge.text = "PR ${e1rm.toInt()} ${sessionBest.unit.code}"
-                    prBadge.visibility = View.VISIBLE
-                } else {
-                    val e1rm = estimated1rm(best.weight, best.reps)
-                    prBadge.text = "BEST ${e1rm.toInt()} ${best.unit.code}"
-                    prBadge.visibility = View.VISIBLE
+            if (exercise.metricType == "strength") {
+                val best = bestSetForExercise(allWorkouts, exercise.id)
+                if (best != null) {
+                    val sessionBest = exercise.sets.maxByOrNull { it.weight * (1 + it.reps / 30.0) }
+                    if (sessionBest != null &&
+                        (sessionBest.weight * (1 + sessionBest.reps / 30.0)) >=
+                        (best.weight * (1 + best.reps / 30.0))
+                    ) {
+                        val e1rm = estimated1rm(sessionBest.weight, sessionBest.reps)
+                        prBadge.text = "PR ${e1rm.toInt()} ${sessionBest.unit.code}"
+                        prBadge.visibility = View.VISIBLE
+                    } else {
+                        val e1rm = estimated1rm(best.weight, best.reps)
+                        prBadge.text = "BEST ${e1rm.toInt()} ${best.unit.code}"
+                        prBadge.visibility = View.VISIBLE
+                    }
                 }
             }
             
@@ -109,35 +127,38 @@ class Workout_Detail_Logic : Fragment() {
             exercise.sets.forEachIndexed { index, set ->
                 val setView = LayoutInflater.from(requireContext())
                     .inflate(R.layout.item_set_row, setsContainer, false)
-                
+
                 setView.findViewById<TextView>(R.id.tv_set_number).text = (index + 1).toString()
-                setView.findViewById<TextView>(R.id.tv_reps).text = set.reps.toString()
-                val rpeSuffix = if (set.rpe != null) " @${set.rpe}" else ""
-                setView.findViewById<TextView>(R.id.tv_weight).text = "${set.weight}$rpeSuffix"
-                setView.findViewById<TextView>(R.id.tv_unit).text = set.unit.code
+                val (leftText, rightText, unitText) = formatDetailSetRow(set)
+                setView.findViewById<TextView>(R.id.tv_reps).text = leftText
+                setView.findViewById<TextView>(R.id.tv_weight).text = rightText
+                setView.findViewById<TextView>(R.id.tv_unit).text = unitText
                 if (set.warmup) {
                     setView.alpha = 0.6f
                     setView.findViewById<TextView>(R.id.tv_set_number).setTextColor(
                         ContextCompat.getColor(requireContext(), R.color.ink_3)
                     )
                 }
-                
+
                 if (index == exercise.sets.size - 1) {
                     setView.findViewById<View>(R.id.divider).visibility = View.GONE
                 }
-                
+
                 setsContainer.addView(setView)
             }
             
-            // Mini progression chart
+            // Mini progression chart (only for strength)
             val chart = exerciseView.findViewById<LinearLayout>(R.id.layout_exercise_chart)
-            val historySets = allWorkouts
-                .filter { w -> w.exercises.any { it.id == exercise.id } }
-                .sortedBy { it.date }
-                .mapNotNull { w ->
-                    val ex = w.exercises.find { it.id == exercise.id } ?: return@mapNotNull null
-                    ex.sets.maxByOrNull { it.weight * (1 + it.reps / 30.0) }
-                }
+            if (exercise.metricType != "strength") {
+                chart.visibility = View.GONE
+            } else {
+                val historySets = allWorkouts
+                    .filter { w -> w.exercises.any { it.id == exercise.id } }
+                    .sortedBy { it.date }
+                    .mapNotNull { w ->
+                        val ex = w.exercises.find { it.id == exercise.id } ?: return@mapNotNull null
+                        ex.sets.maxByOrNull { it.weight * (1 + it.reps / 30.0) }
+                    }
             if (historySets.size >= 2) {
                 val maxScore = historySets.maxOf { it.weight * (1 + it.reps / 30.0) }.coerceAtLeast(1.0)
                 val chartH = 40f
@@ -157,6 +178,7 @@ class Workout_Detail_Logic : Fragment() {
                     chart.addView(bar)
                 }
                 chart.visibility = View.VISIBLE
+            }
             }
             
             binding.layoutExercisesContainer.addView(exerciseView)
@@ -186,6 +208,27 @@ class Workout_Detail_Logic : Fragment() {
             val workout = historyVM.workouts.value.find { it.id == workoutId } ?: return@setOnClickListener
             sessionVM.seedFromWorkout(workout)
             findNavController().navigate(R.id.exercisePickerFragment)
+        }
+    }
+
+    private fun formatDurationDetail(sec: Int): String {
+        val m = sec / 60
+        val s = sec % 60
+        return if (m > 0) "${m} min ${s} sec" else "${s} sec"
+    }
+
+    private fun formatDetailSetRow(set: SetEntry): Triple<String, String, String> {
+        return when (set.metricType) {
+            "strength" -> {
+                val rpe = if (set.rpe != null) " @${set.rpe}" else ""
+                Triple(set.reps.toString(), "${set.weight}$rpe", set.unit.code)
+            }
+            "bodyweight" -> Triple("${set.reps} reps", "", "")
+            "timed" -> Triple("${set.durationSec}s hold", "", "")
+            "cardio" -> Triple(formatDurationDetail(set.durationSec), "${set.distanceKm} km", "")
+            "hiit" -> Triple("${set.rounds} rounds", "${set.reps} reps", "")
+            "yoga" -> Triple(formatDurationDetail(set.durationSec), "", "")
+            else -> Triple(set.reps.toString(), set.weight.toString(), set.unit.code)
         }
     }
 

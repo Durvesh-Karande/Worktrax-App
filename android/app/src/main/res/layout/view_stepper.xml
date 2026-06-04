@@ -4,57 +4,58 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:background="@drawable/shape_field"
-    android:padding="14dp">
+    android:padding="8dp">
 
     <TextView
         android:id="@+id/tv_stepper_label"
         style="@style/TextKicker"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="10dp" />
+        android:layout_marginBottom="2dp" />
+
+    <TextView
+        android:id="@+id/tv_value"
+        style="@style/TextH1Serif"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:text="0"
+        android:textSize="24sp" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
         android:orientation="horizontal"
-        android:gravity="center_vertical">
+        android:gravity="center">
 
         <TextView
             android:id="@+id/btn_minus"
-            android:layout_width="38dp"
-            android:layout_height="38dp"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
             android:background="@drawable/shape_stepper_btn"
             android:text="−"
             android:textColor="@color/accent"
-            android:textSize="22sp"
+            android:textSize="18sp"
             android:textStyle="bold"
             android:gravity="center"
             android:clickable="true"
             android:focusable="true"
             android:foreground="?attr/selectableItemBackgroundBorderless" />
-
-        <TextView
-            android:id="@+id/tv_value"
-            style="@style/TextH1Serif"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:text="0"
-            android:textSize="32sp" />
 
         <TextView
             android:id="@+id/btn_plus"
-            android:layout_width="38dp"
-            android:layout_height="38dp"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_marginStart="12dp"
             android:background="@drawable/shape_stepper_btn"
             android:text="+"
             android:textColor="@color/accent"
-            android:textSize="22sp"
+            android:textSize="18sp"
             android:textStyle="bold"
             android:gravity="center"
             android:clickable="true"
             android:focusable="true"
             android:foreground="?attr/selectableItemBackgroundBorderless" />
-    </LinearLayout>
+</LinearLayout>
 </LinearLayout>

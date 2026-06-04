@@ -16,7 +16,7 @@ import com.google.android.gms.common.api.ApiException
 import com.worktrax.app.R
 import com.worktrax.app.databinding.AuthDesignBinding
 import com.worktrax.app.store.AuthViewModel
-import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 @Suppress("ClassName")
@@ -108,7 +108,9 @@ class Auth_Logic : Fragment() {
     private fun setupObservers() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                authVM.state.collectLatest { state ->
+                authVM.state.collect { state ->
+                    if (!isAdded) return@collect
+
                     binding.progressBar.visibility = if (state.isLoading) View.VISIBLE else View.GONE
                     binding.btnPrimary.isEnabled = !state.isLoading
                     binding.btnGoogle.isEnabled = !state.isLoading

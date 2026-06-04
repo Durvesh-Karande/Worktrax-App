@@ -23,9 +23,11 @@ import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
     private val settingsVM: SettingsViewModel by viewModels()
+    private var lastTheme: ThemeMode? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         AnalyticsHelper.init(this)
+        lastTheme = settingsVM.state.value.theme
         applyTheme(settingsVM.state.value.theme)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.main_activity_design)
@@ -59,6 +61,11 @@ class MainActivity : AppCompatActivity() {
                     AnalyticsHelper.setUserProperty("preferred_unit", state.unit.code)
                     if (state.name.isNotBlank()) {
                         AnalyticsHelper.setUserProperty("has_name", "true")
+                    }
+                    if (lastTheme != state.theme) {
+                        lastTheme = state.theme
+                        applyTheme(state.theme)
+                        recreate()
                     }
                 }
             }

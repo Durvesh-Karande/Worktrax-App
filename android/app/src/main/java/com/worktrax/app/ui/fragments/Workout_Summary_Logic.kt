@@ -24,6 +24,9 @@ import com.worktrax.app.lib.nowIso
 import com.worktrax.app.lib.numberWithCommas
 import com.worktrax.app.lib.routinesFromJsonString
 import com.worktrax.app.lib.routinesToJsonString
+import com.worktrax.app.lib.totalDistanceOf
+import com.worktrax.app.lib.totalDurationOf
+import com.worktrax.app.lib.totalRepsOf
 import com.worktrax.app.lib.uid
 import com.worktrax.app.lib.volumeOf
 import com.worktrax.app.store.HistoryViewModel
@@ -65,13 +68,24 @@ class Workout_Summary_Logic : Fragment() {
                 .joinToString(" · ")
 
             val sets = workout.exercises.sumOf { it.sets.size }
-            val reps = workout.exercises.sumOf { ex -> ex.sets.sumOf { it.reps } }
+            val reps = totalRepsOf(workout)
             val vol = volumeOf(workout, unit)
+            val totalDurSec = totalDurationOf(workout)
+            val totalDurMin = totalDurSec / 60
+            val totalDist = totalDistanceOf(workout)
 
-            binding.tvSumSets.text = sets.toString()
-            binding.tvSumReps.text = reps.toString()
-            view.findViewById<TextView?>(R.id.tv_sum_volume)?.text =
-                "${numberWithCommas(vol)} ${unit.code}"
+            if (workout.type == com.worktrax.app.data.WorkoutType.CARDIO) {
+                binding.tvSumSets.text = totalDurMin.toString()
+                binding.tvSumSetsLabel.text = "Duration (min)"
+                binding.tvSumReps.text = "%.1f".format(totalDist)
+                binding.tvSumRepsLabel.text = "Distance (km)"
+                binding.tvSumVolume.text = if (totalDurMin > 0) "${(totalDist / totalDurMin).toInt()}" else "0"
+                binding.tvSumVolumeLabel.text = "Pace (min/km)"
+            } else {
+                binding.tvSumSets.text = sets.toString()
+                binding.tvSumReps.text = reps.toString()
+                binding.tvSumVolume.text = "${numberWithCommas(vol)} ${unit.code}"
+            }
         }
 
         binding.btnClose.setOnClickListener {

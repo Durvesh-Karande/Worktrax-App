@@ -32,6 +32,7 @@ import com.worktrax.app.data.EXERCISES
 import com.worktrax.app.data.Equipment
 import com.worktrax.app.data.ExerciseDef
 import com.worktrax.app.data.Muscles
+import com.worktrax.app.data.metricType
 import com.worktrax.app.data.WorkoutType
 import com.worktrax.app.databinding.PickerExerciseDesignBinding
 import com.worktrax.app.lib.AnalyticsHelper
@@ -134,7 +135,7 @@ class Picker_Exercise_Logic : Fragment() {
                 meta.text = "${ex.equipment.label} · ${ex.muscle.lowercase()}"
                 itemView.setOnClickListener {
                     AnalyticsHelper.exercisePicked(ex.name, ex.muscle)
-                    sessionVM.pickExercise(ex.id, ex.name, ex.muscle)
+                    sessionVM.pickExercise(ex.id, ex.name, ex.muscle, ex.metricType())
                     findNavController().navigate(R.id.action_exercise_to_log)
                 }
             }

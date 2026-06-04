@@ -95,102 +95,310 @@
                 android:textStyle="bold"
                 android:visibility="gone" />
 
-            <!-- Field grid: reps | weight -->
+            <!-- ─── STRENGTH: reps + weight ─── -->
             <LinearLayout
+                android:id="@+id/layout_strength_fields"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:orientation="vertical">
 
-                <include
-                    android:id="@+id/stepper_reps"
-                    layout="@layout/view_stepper"
-                    android:layout_width="0dp"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1" />
+                    android:orientation="horizontal">
+
+                    <include
+                        android:id="@+id/stepper_reps"
+                        layout="@layout/view_stepper"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1" />
+
+                    <View
+                        android:layout_width="10dp"
+                        android:layout_height="match_parent" />
+
+                    <include
+                        android:id="@+id/stepper_weight"
+                        layout="@layout/view_stepper"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1" />
+                </LinearLayout>
 
                 <View
-                    android:layout_width="10dp"
-                    android:layout_height="match_parent" />
+                    android:layout_width="match_parent"
+                    android:layout_height="4dp" />
 
                 <include
-                    android:id="@+id/stepper_weight"
+                    android:id="@+id/stepper_total_sets"
                     layout="@layout/view_stepper"
-                    android:layout_width="0dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <!-- Warm-up toggle -->
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1" />
-            </LinearLayout>
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:paddingVertical="4dp"
+                    android:id="@+id/layout_warmup">
 
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="10dp" />
-
-            <!-- Total sets stepper (wide) -->
-            <include
-                android:id="@+id/stepper_total_sets"
-                layout="@layout/view_stepper"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-
-            <!-- Warm-up toggle -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:paddingVertical="4dp">
-
-                <TextView
-                    style="@style/TextKicker"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/warmup_label" />
-
-                <TextView
-                    android:id="@+id/btn_warmup_toggle"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:layout_marginStart="10dp"
-                    android:gravity="center"
-                    android:text="OFF"
-                    android:textSize="11sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/ink_3"
-                    android:background="@drawable/shape_chip" />
-            </LinearLayout>
-
-            <!-- RPE selector -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:paddingVertical="4dp"
-                android:id="@+id/layout_rpe">
-
-                <TextView
-                    style="@style/TextKicker"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="RPE" />
-
-                <HorizontalScrollView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginStart="10dp"
-                    android:scrollbars="none">
-
-                    <LinearLayout
-                        android:id="@+id/layout_rpe_buttons"
+                    <TextView
+                        style="@style/TextKicker"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal" />
-                </HorizontalScrollView>
+                        android:text="@string/warmup_label" />
+
+                    <TextView
+                        android:id="@+id/btn_warmup_toggle"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:layout_marginStart="10dp"
+                        android:gravity="center"
+                        android:text="OFF"
+                        android:textSize="11sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/ink_3"
+                        android:background="@drawable/shape_chip" />
+                </LinearLayout>
+
+                <!-- RPE selector -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:paddingVertical="4dp"
+                    android:id="@+id/layout_rpe">
+
+                    <TextView
+                        style="@style/TextKicker"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="RPE" />
+
+                    <HorizontalScrollView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginStart="10dp"
+                        android:scrollbars="none">
+
+                        <LinearLayout
+                            android:id="@+id/layout_rpe_buttons"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal" />
+                    </HorizontalScrollView>
+                </LinearLayout>
             </LinearLayout>
+
+            <!-- ─── BODYWEIGHT: reps only ─── -->
+            <LinearLayout
+                android:id="@+id/layout_bodyweight_fields"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <include
+                    android:id="@+id/sbw_reps"
+                    layout="@layout/view_stepper"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="4dp" />
+
+                <include
+                    android:id="@+id/sbw_total_sets"
+                    layout="@layout/view_stepper"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+
+            <!-- ─── CARDIO: min + sec + distance ─── -->
+            <LinearLayout
+                android:id="@+id/layout_cardio_fields"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <include
+                        android:id="@+id/sc_duration_min"
+                        layout="@layout/view_stepper"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1" />
+
+                    <View
+                        android:layout_width="8dp"
+                        android:layout_height="match_parent" />
+
+                    <include
+                        android:id="@+id/sc_duration_sec"
+                        layout="@layout/view_stepper"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1" />
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="4dp" />
+
+                <include
+                    android:id="@+id/sc_distance"
+                    layout="@layout/view_stepper"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+
+            <!-- ─── HIIT: rounds + reps/duration ─── -->
+            <LinearLayout
+                android:id="@+id/layout_hiit_fields"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <include
+                        android:id="@+id/shiit_rounds"
+                        layout="@layout/view_stepper"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1" />
+
+                    <View
+                        android:layout_width="10dp"
+                        android:layout_height="match_parent" />
+
+                    <include
+                        android:id="@+id/shiit_reps"
+                        layout="@layout/view_stepper"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- ─── TIMED: duration + total sets ─── -->
+            <LinearLayout
+                android:id="@+id/layout_timed_fields"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <include
+                    android:id="@+id/st_duration"
+                    layout="@layout/view_stepper"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="4dp" />
+
+                <include
+                    android:id="@+id/st_total_sets"
+                    layout="@layout/view_stepper"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+
+            <!-- ─── YOGA: duration only ─── -->
+            <LinearLayout
+                android:id="@+id/layout_yoga_fields"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <include
+                    android:id="@+id/sy_duration"
+                    layout="@layout/view_stepper"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+
+            <!-- Workout timer (timed / cardio / yoga) -->
+            <FrameLayout
+                android:id="@+id/container_workout_timer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:background="@drawable/shape_field"
+                    android:padding="14dp">
+
+                    <TextView
+                        style="@style/TextKicker"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/work_timer_label" />
+
+                    <TextView
+                        android:id="@+id/tv_workout_timer"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="48sp"
+                        android:fontFamily="serif"
+                        android:textColor="@color/accent"
+                        android:text="00:00" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:orientation="horizontal"
+                        android:gravity="center">
+
+                        <Button
+                            android:id="@+id/btn_timer_start"
+                            style="@style/BtnPrimary"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@string/start_label" />
+
+                        <View
+                            android:layout_width="8dp"
+                            android:layout_height="match_parent" />
+
+                        <Button
+                            android:id="@+id/btn_timer_stop"
+                            style="@style/BtnSecondary"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@string/stop_label" />
+                    </LinearLayout>
+                </LinearLayout>
+            </FrameLayout>
 
             <View
                 android:layout_width="match_parent"
-                android:layout_height="12dp" />
+                android:layout_height="8dp" />
 
             <!-- Rest timer -->
             <FrameLayout
@@ -247,16 +455,21 @@
                     android:paddingVertical="12dp">
 
                     <TextView
+                        android:id="@+id/tbl_col_set"
                         style="@style/TextKicker"
                         android:layout_width="60dp"
                         android:layout_height="wrap_content"
-                    android:text="@string/set_label" />
-                    <TextView style="@style/TextKicker"
+                        android:text="@string/set_label" />
+                    <TextView
+                        android:id="@+id/tbl_col_left"
+                        style="@style/TextKicker"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:text="@string/reps_label" />
-                    <TextView style="@style/TextKicker"
+                    <TextView
+                        android:id="@+id/tbl_col_right"
+                        style="@style/TextKicker"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
@@ -316,6 +529,14 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:text="@string/add_exercise_label" />
+
+            <Button
+                android:id="@+id/btn_undo"
+                style="@style/BtnGhost"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="@string/undo_label" />
 
             <Button
                 android:id="@+id/btn_plate_calc"

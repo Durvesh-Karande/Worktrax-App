@@ -100,7 +100,9 @@ class History_Logic : Fragment() {
                     } else {
                         binding.tvEmptyHistory.visibility = View.GONE
                         binding.rvHistory.visibility = View.VISIBLE
-                        binding.rvHistory.adapter = HistoryAdapter(workouts) { workout ->
+
+                        val sorted = workouts.sortedByDescending { it.date }
+                        binding.rvHistory.adapter = HistoryAdapter(sorted) { workout ->
                             AnalyticsHelper.historyItemViewed(workout.type.code)
                             val bundle = Bundle().apply {
                                 putString("workoutId", workout.id)
@@ -128,6 +130,7 @@ class History_Logic : Fragment() {
         inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             val date: TextView = view.findViewById(R.id.tv_workout_date)
             val desc: TextView = view.findViewById(R.id.tv_workout_desc)
+            val typeBar: View? = view.findViewById(R.id.v_type_bar)
         }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -139,8 +142,10 @@ class History_Logic : Fragment() {
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
             val workout = workouts[position]
             holder.date.text = formatDate(workout.date)
-            holder.desc.text = "${workout.type.code.uppercase()} • ${workout.exercises.size} exercises"
-            holder.itemView.findViewById<View>(R.id.v_type_bar)?.setBackgroundResource(
+            holder.desc.text = holder.itemView.context.resources.getQuantityString(
+                R.plurals.exercise_count, workout.exercises.size, workout.exercises.size
+            )
+            holder.typeBar?.setBackgroundResource(
                 when (workout.type) {
                     WorkoutType.STRENGTH -> R.color.type_strength_top
                     WorkoutType.CARDIO -> R.color.type_cardio_top

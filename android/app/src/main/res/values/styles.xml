@@ -94,43 +94,43 @@
         <item name="android:backgroundTint">@null</item>
     </style>
 
-    <!-- Primary: accent bg, white text — main CTA -->
+    <!-- Primary: btn_bg bg, btn_text text — main CTA -->
     <style name="BtnPrimary" parent="BtnBase">
         <item name="android:background">@drawable/shape_button_primary</item>
-        <item name="android:textColor">@color/white</item>
+        <item name="android:textColor">@color/btn_text</item>
     </style>
 
-    <!-- Primary with arrow: accent bg, white text, right arrow -->
+    <!-- Primary with arrow: btn_bg bg, btn_text text, right arrow -->
     <style name="BtnPrimaryArrow" parent="BtnBase">
         <item name="android:background">@drawable/shape_button_primary</item>
-        <item name="android:textColor">@color/white</item>
+        <item name="android:textColor">@color/btn_text</item>
         <item name="android:drawableEnd">@drawable/ic_arrow_right</item>
-        <item name="android:drawableTint">@color/white</item>
+        <item name="android:drawableTint">@color/btn_text</item>
         <item name="android:drawablePadding">8dp</item>
     </style>
 
-    <!-- Secondary: surface bg, ink text, subtle border — secondary actions -->
+    <!-- Secondary: btn_bg bg, btn_text text, subtle border — secondary actions -->
     <style name="BtnSecondary" parent="BtnBase">
         <item name="android:background">@drawable/shape_button_secondary</item>
-        <item name="android:textColor">@color/ink</item>
+        <item name="android:textColor">@color/btn_text</item>
     </style>
 
-    <!-- Ghost: transparent bg, accent text — tertiary actions -->
+    <!-- Ghost: btn_bg bg, btn_text text — tertiary actions -->
     <style name="BtnGhost" parent="BtnBase">
         <item name="android:background">@drawable/shape_button_ghost</item>
-        <item name="android:textColor">@color/accent</item>
+        <item name="android:textColor">@color/btn_text</item>
     </style>
 
-    <!-- Danger: red bg, white text — destructive actions -->
+    <!-- Danger: btn_bg bg, btn_text text — destructive actions -->
     <style name="BtnDanger" parent="BtnBase">
         <item name="android:background">@drawable/shape_button_danger</item>
-        <item name="android:textColor">@color/white</item>
+        <item name="android:textColor">@color/btn_text</item>
     </style>
 
-    <!-- Outline Accent: transparent bg, accent border, accent text -->
+    <!-- Outline Accent: btn_bg bg, btn_text text -->
     <style name="BtnOutlineAccent" parent="BtnBase">
         <item name="android:background">@drawable/shape_button_outline_accent</item>
-        <item name="android:textColor">@color/accent</item>
+        <item name="android:textColor">@color/btn_text</item>
     </style>
 
     <!-- Legacy aliases (keep for backward compat) -->

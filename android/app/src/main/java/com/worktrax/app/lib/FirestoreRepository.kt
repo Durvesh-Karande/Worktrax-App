@@ -2,7 +2,7 @@ package com.worktrax.app.lib
 
 import android.content.Context
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.database.FirebaseDatabase
 import com.worktrax.app.data.BodyMeasurement
 import com.worktrax.app.data.BodyweightEntry
 import com.worktrax.app.data.Equipment
@@ -16,27 +16,24 @@ import kotlinx.coroutines.tasks.await
 
 object FirestoreRepository {
     private val auth get() = FirebaseAuth.getInstance()
-    private val db get() = FirebaseFirestore.getInstance()
+    private val rtdb get() = FirebaseDatabase.getInstance()
     private val uid get() = auth.currentUser?.uid ?: ""
+
+    private fun userRef() = rtdb.getReference("users").child(uid)
 
     // ── Settings ──
 
     suspend fun saveSettings(s: SettingsData) {
-        val data = hashMapOf(
+        userRef().child("settings").setValue(mapOf(
             "name" to s.name,
             "unit" to s.unit,
             "theme" to s.theme,
-        )
-        db.collection("users").document(uid)
-            .collection("profile").document("settings")
-            .set(data).await()
+        )).await()
     }
 
     suspend fun loadSettings(): SettingsData? {
-        val snap = db.collection("users").document(uid)
-            .collection("profile").document("settings").get().await()
-        if (!snap.exists()) return null
-        val d = snap.data ?: return null
+        val snap = userRef().child("settings").get().await()
+        val d = snap.value as? Map<*, *> ?: return null
         return SettingsData(
             name = d["name"] as? String ?: "",
             unit = d["unit"] as? String ?: "kg",
@@ -47,74 +44,77 @@ object FirestoreRepository {
     // ── Workouts ──
 
     suspend fun addWorkout(w: Workout) {
-        db.collection("users").document(uid)
-            .collection("workouts").document(w.id)
-            .set(mapOf("data" to w.toJson().toString())).await()
+        userRef().child("workouts").child(w.id)
+            .setValue(mapOf("data" to w.toJson().toString())).await()
     }
 
     suspend fun saveWorkouts(workouts: List<Workout>) {
-        val batch = db.batch()
+        val map = HashMap<String, Any>()
         workouts.forEach { w ->
-            val ref = db.collection("users").document(uid)
-                .collection("workouts").document(w.id)
-            batch.set(ref, mapOf("data" to w.toJson().toString()))
+            map["workouts/${w.id}"] = mapOf("data" to w.toJson().toString())
         }
-        batch.commit().await()
+        userRef().updateChildren(map).await()
     }
 
     suspend fun removeWorkout(id: String) {
-        db.collection("users").document(uid)
-            .collection("workouts").document(id).delete().await()
+        userRef().child("workouts").child(id).removeValue().await()
     }
 
     suspend fun loadWorkouts(): List<Workout> {
-        val snap = db.collection("users").document(uid)
-            .collection("workouts").get().await()
-        return snap.documents.mapNotNull { doc ->
-            val raw = doc.getString("data") ?: return@mapNotNull null
-            org.json.JSONObject(raw).let { workoutFromJson(it) }
+        val snap = userRef().child("workouts").get().await()
+        val children = snap.children
+        val result = mutableListOf<Workout>()
+        for (child in children) {
+            val raw = child.child("data").value as? String ?: continue
+            try {
+                result.add(workoutFromJson(org.json.JSONObject(raw)))
+            } catch (_: Exception) {}
         }
+        return result
     }
 
     // ── Bodyweight ──
 
     suspend fun saveBodyweight(entries: List<BodyweightEntry>) {
-        val batch = db.batch()
-        val col = db.collection("users").document(uid).collection("bodyweight")
-        val existing = col.get().await()
-        existing.documents.forEach { batch.delete(it.reference) }
+        val ref = userRef().child("bodyweight")
+        ref.removeValue().await()
+        val map = HashMap<String, Any>()
         entries.forEach { e ->
-            batch.set(col.document(), hashMapOf(
+            val key = ref.push().key ?: uid()
+            map[key] = mapOf(
                 "date" to e.date,
                 "weight" to e.weight,
                 "unit" to e.unit.code,
-            ))
+            )
         }
-        batch.commit().await()
+        if (map.isNotEmpty()) ref.updateChildren(map).await()
     }
 
     suspend fun loadBodyweight(): List<BodyweightEntry> {
-        val snap = db.collection("users").document(uid)
-            .collection("bodyweight").get().await()
-        return snap.documents.mapNotNull { doc ->
-            val d = doc.data ?: return@mapNotNull null
-            BodyweightEntry(
-                date = d["date"] as? String ?: return@mapNotNull null,
-                weight = (d["weight"] as? Number)?.toDouble() ?: return@mapNotNull null,
+        val snap = userRef().child("bodyweight").get().await()
+        val result = mutableListOf<BodyweightEntry>()
+        for (child in snap.children) {
+            val d = child.value as? Map<*, *> ?: continue
+            val date = d["date"] as? String ?: continue
+            val weight = (d["weight"] as? Number)?.toDouble() ?: continue
+            result.add(BodyweightEntry(
+                date = date,
+                weight = weight,
                 unit = WeightUnit.from(d["unit"] as? String ?: "kg"),
-            )
+            ))
         }
+        return result
     }
 
     // ── Measurements ──
 
     suspend fun saveMeasurements(entries: List<BodyMeasurement>) {
-        val batch = db.batch()
-        val col = db.collection("users").document(uid).collection("measurements")
-        val existing = col.get().await()
-        existing.documents.forEach { batch.delete(it.reference) }
+        val ref = userRef().child("measurements")
+        ref.removeValue().await()
+        val map = HashMap<String, Any>()
         entries.forEach { m ->
-            batch.set(col.document(), hashMapOf(
+            val key = ref.push().key ?: uid()
+            map[key] = mapOf(
                 "date" to m.date,
                 "chest" to m.chest,
                 "waist" to m.waist,
@@ -123,18 +123,19 @@ object FirestoreRepository {
                 "thigh" to m.thigh,
                 "calf" to m.calf,
                 "unit" to m.unit,
-            ))
+            )
         }
-        batch.commit().await()
+        if (map.isNotEmpty()) ref.updateChildren(map).await()
     }
 
     suspend fun loadMeasurements(): List<BodyMeasurement> {
-        val snap = db.collection("users").document(uid)
-            .collection("measurements").get().await()
-        return snap.documents.mapNotNull { doc ->
-            val d = doc.data ?: return@mapNotNull null
-            BodyMeasurement(
-                date = d["date"] as? String ?: return@mapNotNull null,
+        val snap = userRef().child("measurements").get().await()
+        val result = mutableListOf<BodyMeasurement>()
+        for (child in snap.children) {
+            val d = child.value as? Map<*, *> ?: continue
+            val date = d["date"] as? String ?: continue
+            result.add(BodyMeasurement(
+                date = date,
                 chest = (d["chest"] as? Number)?.toDouble() ?: 0.0,
                 waist = (d["waist"] as? Number)?.toDouble() ?: 0.0,
                 hips = (d["hips"] as? Number)?.toDouble() ?: 0.0,
@@ -142,76 +143,81 @@ object FirestoreRepository {
                 thigh = (d["thigh"] as? Number)?.toDouble() ?: 0.0,
                 calf = (d["calf"] as? Number)?.toDouble() ?: 0.0,
                 unit = d["unit"] as? String ?: "cm",
-            )
+            ))
         }
+        return result
     }
 
     // ── Routines ──
 
     suspend fun saveRoutines(routines: List<Routine>) {
-        val batch = db.batch()
-        val col = db.collection("users").document(uid).collection("routines")
-        val existing = col.get().await()
-        existing.documents.forEach { batch.delete(it.reference) }
+        val ref = userRef().child("routines")
+        ref.removeValue().await()
+        val map = HashMap<String, Any>()
         routines.forEach { r ->
-            batch.set(col.document(), hashMapOf(
+            val key = ref.push().key ?: uid()
+            map[key] = mapOf(
                 "id" to r.id,
                 "name" to r.name,
                 "type" to r.type.code,
                 "exerciseIds" to r.exerciseIds,
                 "createdAt" to r.createdAt,
-            ))
+            )
         }
-        batch.commit().await()
+        if (map.isNotEmpty()) ref.updateChildren(map).await()
     }
 
     suspend fun loadRoutines(): List<Routine> {
-        val snap = db.collection("users").document(uid)
-            .collection("routines").get().await()
-        return snap.documents.mapNotNull { doc ->
-            val d = doc.data ?: return@mapNotNull null
-            Routine(
-                id = d["id"] as? String ?: return@mapNotNull null,
+        val snap = userRef().child("routines").get().await()
+        val result = mutableListOf<Routine>()
+        for (child in snap.children) {
+            val d = child.value as? Map<*, *> ?: continue
+            val id = d["id"] as? String ?: continue
+            result.add(Routine(
+                id = id,
                 name = d["name"] as? String ?: "",
                 type = WorkoutType.from(d["type"] as? String ?: "strength"),
                 exerciseIds = (d["exerciseIds"] as? List<*>)?.map { it.toString() } ?: emptyList(),
                 createdAt = d["createdAt"] as? String ?: "",
-            )
+            ))
         }
+        return result
     }
 
     // ── Custom Exercises ──
 
     suspend fun saveCustomExercises(exercises: List<ExerciseDef>) {
-        val batch = db.batch()
-        val col = db.collection("users").document(uid).collection("custom_exercises")
-        val existing = col.get().await()
-        existing.documents.forEach { batch.delete(it.reference) }
+        val ref = userRef().child("custom_exercises")
+        ref.removeValue().await()
+        val map = HashMap<String, Any>()
         exercises.forEach { ex ->
-            batch.set(col.document(), hashMapOf(
+            val key = ref.push().key ?: uid()
+            map[key] = mapOf(
                 "id" to ex.id,
                 "name" to ex.name,
                 "muscle" to ex.muscle,
                 "equipment" to ex.equipment.label,
                 "type" to ex.type.code,
-            ))
+            )
         }
-        batch.commit().await()
+        if (map.isNotEmpty()) ref.updateChildren(map).await()
     }
 
     suspend fun loadCustomExercises(): List<ExerciseDef> {
-        val snap = db.collection("users").document(uid)
-            .collection("custom_exercises").get().await()
-        return snap.documents.mapNotNull { doc ->
-            val d = doc.data ?: return@mapNotNull null
-            ExerciseDef(
-                id = d["id"] as? String ?: return@mapNotNull null,
+        val snap = userRef().child("custom_exercises").get().await()
+        val result = mutableListOf<ExerciseDef>()
+        for (child in snap.children) {
+            val d = child.value as? Map<*, *> ?: continue
+            val id = d["id"] as? String ?: continue
+            result.add(ExerciseDef(
+                id = id,
                 name = d["name"] as? String ?: "",
                 muscle = d["muscle"] as? String ?: "",
                 equipment = Equipment.from(d["equipment"] as? String ?: "Barbell"),
                 type = WorkoutType.from(d["type"] as? String ?: "strength"),
-            )
+            ))
         }
+        return result
     }
 
     // ── Migration ──

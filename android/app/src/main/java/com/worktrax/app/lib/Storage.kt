@@ -60,14 +60,19 @@ fun ExerciseEntry.toJson(): JSONObject {
         put("id", id)
         put("name", name)
         put("muscle", muscle)
+        put("metricType", metricType)
         put("sets", setsArr)
     }
 }
 
 fun SetEntry.toJson(): JSONObject = JSONObject().apply {
+    put("metricType", metricType)
     put("reps", reps)
-    put("weight", weight)
+    put("weight", if (weight.isFinite()) weight else 0.0)
     put("unit", unit.code)
+    put("durationSec", durationSec)
+    put("distanceKm", if (distanceKm.isFinite()) distanceKm else 0.0)
+    put("rounds", rounds)
     put("at", at)
     if (warmup) put("warmup", true)
     if (rpe != null) put("rpe", rpe)
@@ -94,14 +99,19 @@ fun exerciseEntryFromJson(o: JSONObject): ExerciseEntry {
         id = o.optString("id"),
         name = o.optString("name"),
         muscle = o.optString("muscle"),
+        metricType = o.optString("metricType", "strength"),
         sets = sets,
     )
 }
 
 fun setEntryFromJson(o: JSONObject): SetEntry = SetEntry(
+    metricType = o.optString("metricType", "strength"),
     reps = o.optInt("reps"),
-    weight = o.optDouble("weight"),
+    weight = o.optDouble("weight", 0.0),
     unit = WeightUnit.from(o.optString("unit")),
+    durationSec = o.optInt("durationSec"),
+    distanceKm = o.optDouble("distanceKm", 0.0),
+    rounds = o.optInt("rounds"),
     at = o.optString("at"),
     warmup = o.optBoolean("warmup", false),
     rpe = if (o.has("rpe")) o.optInt("rpe", -1).let { if (it < 0) null else it } else null,
@@ -161,13 +171,13 @@ fun routinesFromJsonString(s: String?): List<Routine> {
 
 fun BodyweightEntry.toJson(): JSONObject = JSONObject().apply {
     put("date", date)
-    put("weight", weight)
+    put("weight", if (weight.isFinite()) weight else 0.0)
     put("unit", unit.code)
 }
 
 fun bodyweightFromJson(o: JSONObject): BodyweightEntry = BodyweightEntry(
     date = o.optString("date"),
-    weight = o.optDouble("weight"),
+    weight = o.optDouble("weight", 0.0),
     unit = WeightUnit.from(o.optString("unit")),
 )
 
@@ -251,12 +261,12 @@ fun measurementsToJsonString(list: List<BodyMeasurement>): String {
     for (m in list) {
         arr.put(JSONObject().apply {
             put("date", m.date)
-            if (m.chest > 0) put("chest", m.chest)
-            if (m.waist > 0) put("waist", m.waist)
-            if (m.hips > 0) put("hips", m.hips)
-            if (m.arm > 0) put("arm", m.arm)
-            if (m.thigh > 0) put("thigh", m.thigh)
-            if (m.calf > 0) put("calf", m.calf)
+            if (m.chest > 0 && m.chest.isFinite()) put("chest", m.chest)
+            if (m.waist > 0 && m.waist.isFinite()) put("waist", m.waist)
+            if (m.hips > 0 && m.hips.isFinite()) put("hips", m.hips)
+            if (m.arm > 0 && m.arm.isFinite()) put("arm", m.arm)
+            if (m.thigh > 0 && m.thigh.isFinite()) put("thigh", m.thigh)
+            if (m.calf > 0 && m.calf.isFinite()) put("calf", m.calf)
             put("unit", m.unit)
         })
     }

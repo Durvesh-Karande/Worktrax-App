@@ -47,6 +47,7 @@
     <!-- History screen -->
     <string name="your_journal">Your journal</string>
     <string name="all_logs">All logs.</string>
+    <string name="sets_done_format">Sets done = %d</string>
     <string name="empty_history">No workouts yet.\nTap Home &amp; pick a workout type to start!</string>
 
     <!-- Home screen -->
@@ -58,8 +59,8 @@
     <string name="set_label">SET</string>
     <string name="reps_label">REPS</string>
     <string name="weight_label">KG</string>
-    <string name="done_label">Done</string>
-    <string name="next_set_label">Next set</string>
+    <string name="done_label">Finish workout</string>
+    <string name="next_set_label">Log set</string>
     <string name="saved_to_log">Saved to log</string>
     <string name="nice_work">Nice work.</string>
     <string name="sets_label">Sets</string>
@@ -75,7 +76,7 @@
     <string name="save_as_routine">Save as routine</string>
     <string name="log_another">Add Exercise</string>
     <string name="finish_workout">Done</string>
-    <string name="add_exercise_label">Add Exercise</string>
+    <string name="add_exercise_label">Start next exercise</string>
 
     <!-- Share -->
     <string name="share_workout">Share</string>
@@ -102,6 +103,9 @@
     <!-- Duration -->
     <string name="rest_label">REST</string>
     <string name="skip_label">Skip</string>
+    <string name="work_timer_label">TIMER</string>
+    <string name="start_label">Start</string>
+    <string name="stop_label">Stop</string>
 
     <!-- Bodyweight -->
     <string name="add_bodyweight">Add bodyweight</string>
@@ -183,6 +187,8 @@
     <!-- Workout deleted -->
     <string name="workout_deleted">Workout deleted</string>
     <string name="undo_label">Undo</string>
+    <string name="set_undone">Set undone</string>
+    <string name="nothing_to_undo">Nothing to undo</string>
     <string name="delete_workout_title">Delete workout?</string>
     <string name="delete_workout_message">This cannot be undone.</string>
     <string name="delete_label">Delete</string>
@@ -214,4 +220,9 @@
     <string name="auth_error_password_blank">Please enter your password</string>
     <string name="auth_error_weak_password">Password must be at least 6 characters</string>
     <string name="web_client_id">981033930798-s7745upi4982letpl6njqm053cnud0g5.apps.googleusercontent.com</string>
+
+    <plurals name="exercise_count">
+        <item quantity="one">%d Exercise</item>
+        <item quantity="other">%d Exercises</item>
+    </plurals>
 </resources>
