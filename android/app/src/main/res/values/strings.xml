@@ -48,6 +48,7 @@
     <string name="your_journal">Your journal</string>
     <string name="all_logs">All logs.</string>
     <string name="sets_done_format">Sets done = %d</string>
+    <string name="header_date_format">%s — %d exercises</string>
     <string name="empty_history">No workouts yet.\nTap Home &amp; pick a workout type to start!</string>
 
     <!-- Home screen -->
