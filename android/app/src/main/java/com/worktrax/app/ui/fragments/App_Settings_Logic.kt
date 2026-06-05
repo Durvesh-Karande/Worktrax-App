@@ -177,7 +177,7 @@ class App_Settings_Logic : Fragment() {
         }
 
         binding.rowPrivacy.setOnClickListener {
-            val url = "https://www.worktrax.app/privacy"
+            val url = "https://sites.google.com/view/privacy-policy-for-worktrax/home"
             val intent = android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse(url))
             startActivity(intent)
         }

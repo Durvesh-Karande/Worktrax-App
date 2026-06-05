@@ -1,6 +1,7 @@
 package com.worktrax.app.ui.fragments
 
 import android.app.AlertDialog
+import android.media.MediaPlayer
 import android.media.RingtoneManager
 import android.os.Bundle
 import android.os.CountDownTimer
@@ -63,6 +64,7 @@ class Workout_Logger_Logic : Fragment() {
     private var workoutTimer: CountDownTimer? = null
     private var isWorkoutTimerRunning = false
     private var workoutTimerElapsedSec: Int = 0
+    private var timerEndSound: MediaPlayer? = null
 
     private fun haptic() {
         binding.root.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY)
@@ -830,18 +832,36 @@ class Workout_Logger_Logic : Fragment() {
                 isWorkoutTimerRunning = false
                 binding.btnTimerStart.isEnabled = true
                 binding.btnTimerStop.isEnabled = false
-                playCompletionSound()
                 logTimedSet()
+                showTimerEndDialog()
             }
         }.start()
     }
 
-    private fun playCompletionSound() {
+    private fun showTimerEndDialog() {
         try {
             val uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
-            val ringtone = RingtoneManager.getRingtone(requireContext(), uri)
-            ringtone.play()
+            timerEndSound = MediaPlayer.create(requireContext(), uri).apply {
+                isLooping = true
+                setVolume(0.5f, 0.5f)
+                start()
+            }
         } catch (_: Exception) {}
+
+        AlertDialog.Builder(requireContext())
+            .setTitle(getString(R.string.timer_ends))
+            .setPositiveButton(getString(R.string.cancel_label)) { _, _ -> stopTimerSound() }
+            .setOnDismissListener { stopTimerSound() }
+            .setCancelable(true)
+            .show()
+    }
+
+    private fun stopTimerSound() {
+        timerEndSound?.apply {
+            if (isPlaying) stop()
+            release()
+        }
+        timerEndSound = null
     }
 
     private fun stopWorkoutTimer() {
@@ -877,6 +897,7 @@ class Workout_Logger_Logic : Fragment() {
     override fun onDestroyView() {
         stopWorkoutTimer()
         stopRestTimer()
+        stopTimerSound()
         super.onDestroyView()
         _binding = null
     }
