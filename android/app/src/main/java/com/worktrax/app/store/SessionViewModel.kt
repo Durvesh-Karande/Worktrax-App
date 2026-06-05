@@ -127,6 +127,11 @@ fun lastSetForExercise(
     val sorted = workouts.sortedByDescending { it.date }
     for (w in sorted) {
         val ex = w.exercises.find { it.id == exerciseId } ?: continue
+        // Prefer the last "working set" (non-warmup)
+        val workingSet = ex.sets.lastOrNull { !it.warmup }
+        if (workingSet != null) return workingSet
+        
+        // Fallback to the last set if only warmups exist
         val last = ex.sets.lastOrNull() ?: continue
         return last
     }

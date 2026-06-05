@@ -335,7 +335,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/download_csv"
-                        android:textColor="@color/ink"
+                        android:textColor="@color/btn_text"
                         android:textStyle="bold"
                         android:textSize="14sp" />
                 </LinearLayout>
@@ -370,7 +370,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
                         android:text="@string/download_report"
-                        android:textColor="@color/ink"
+                        android:textColor="@color/btn_text"
                         android:textStyle="bold"
                         android:textSize="14sp" />
                 </LinearLayout>

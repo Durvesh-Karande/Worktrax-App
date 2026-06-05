@@ -37,11 +37,20 @@
                 android:layout_marginTop="4dp"
                 android:textSize="28sp" />
 
+            <TextView
+                android:id="@+id/tv_today_exercise_header"
+                style="@style/TextKicker"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="@string/today_exercise"
+                android:textColor="@color/accent" />
+
             <LinearLayout
                 android:id="@+id/layout_exercises_container"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="8dp"
                 android:orientation="vertical" />
 
         </LinearLayout>

@@ -33,8 +33,7 @@ import kotlinx.coroutines.launch
 class History_Logic : Fragment() {
 
     sealed class HistoryItem {
-        data class Header(val date: String, val totalExercises: Int) : HistoryItem()
-        data class ExerciseLog(val workout: Workout, val exercise: ExerciseEntry) : HistoryItem()
+        data class DaySummary(val dateIso: String, val workouts: List<Workout>) : HistoryItem()
     }
 
     private var _binding: HistoryDesignBinding? = null
@@ -67,12 +66,16 @@ class History_Logic : Fragment() {
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 val position = viewHolder.adapterPosition
                 val adapter = binding.rvHistory.adapter as? HistoryAdapter ?: return
-                val item = adapter.getItemAt(position) as? HistoryItem.ExerciseLog ?: return
-                val workout = item.workout
-                AnalyticsHelper.workoutDeleted(workout.type.code)
-                historyVM.remove(workout.id)
+                val item = adapter.getItemAt(position) as? HistoryItem.DaySummary ?: return
+                val workouts = item.workouts
+                
+                workouts.forEach { historyVM.remove(it.id) }
+                AnalyticsHelper.workoutDeleted("multiple_day")
+                
                 Snackbar.make(binding.root, R.string.workout_deleted, Snackbar.LENGTH_LONG)
-                    .setAction(R.string.undo_label) { historyVM.add(workout) }
+                    .setAction(R.string.undo_label) { 
+                        workouts.forEach { historyVM.add(it) } 
+                    }
                     .show()
             }
 
@@ -80,8 +83,6 @@ class History_Logic : Fragment() {
                 c: Canvas, rv: RecyclerView, vh: RecyclerView.ViewHolder,
                 dX: Float, dY: Float, actionState: Int, isCurrentlyActive: Boolean
             ) {
-                if (vh.itemViewType == 0) return
-
                 if (dX < 0) {
                     val paint = Paint().apply { color = ContextCompat.getColor(requireContext(), R.color.accent) }
                     val corner = 16f * resources.displayMetrics.density
@@ -110,42 +111,16 @@ class History_Logic : Fragment() {
                         binding.tvEmptyHistory.visibility = View.GONE
                         binding.rvHistory.visibility = View.VISIBLE
 
-                        val items = mutableListOf<HistoryItem>()
-                        var lastDate: String? = null
-                        var dateExercises = 0
-                        val dateWorkouts = mutableListOf<Workout>()
-
-                        workouts.sortedByDescending { it.date }.forEach { workout ->
-                            val dateStr = formatDate(workout.date)
-                            if (dateStr != lastDate) {
-                                if (lastDate != null) {
-                                    items.add(HistoryItem.Header(lastDate!!, dateExercises))
-                                    dateWorkouts.forEach { w ->
-                                        w.exercises.forEach { ex ->
-                                            items.add(HistoryItem.ExerciseLog(w, ex))
-                                        }
-                                    }
-                                }
-                                lastDate = dateStr
-                                dateExercises = 0
-                                dateWorkouts.clear()
-                            }
-                            dateExercises += workout.exercises.size
-                            dateWorkouts.add(workout)
-                        }
-                        if (lastDate != null) {
-                            items.add(HistoryItem.Header(lastDate!!, dateExercises))
-                            dateWorkouts.forEach { w ->
-                                w.exercises.forEach { ex ->
-                                    items.add(HistoryItem.ExerciseLog(w, ex))
-                                }
-                            }
+                        val grouped = workouts.groupBy { it.date.substring(0, 10) }
+                        val sortedDates = grouped.keys.sortedDescending()
+                        val items = sortedDates.map { dateKey ->
+                            HistoryItem.DaySummary(dateKey, grouped[dateKey]!!)
                         }
 
-                        binding.rvHistory.adapter = HistoryAdapter(items) { workout ->
-                            AnalyticsHelper.historyItemViewed(workout.type.code)
+                        binding.rvHistory.adapter = HistoryAdapter(items) { dateIso ->
+                            AnalyticsHelper.historyItemViewed("day_view")
                             val bundle = Bundle().apply {
-                                putString("workoutId", workout.id)
+                                putString("dateIso", dateIso)
                             }
                             findNavController().navigate(R.id.action_history_to_detail, bundle)
                         }
@@ -162,21 +137,10 @@ class History_Logic : Fragment() {
 
     inner class HistoryAdapter(
         private val items: List<HistoryItem>,
-        private val onClick: (Workout) -> Unit
-    ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-
-        private val TYPE_HEADER = 0
-        private val TYPE_ITEM = 1
+        private val onClick: (String) -> Unit
+    ) : RecyclerView.Adapter<HistoryAdapter.ItemViewHolder>() {
 
         fun getItemAt(position: Int): HistoryItem = items[position]
-
-        override fun getItemViewType(position: Int): Int {
-            return if (items[position] is HistoryItem.Header) TYPE_HEADER else TYPE_ITEM
-        }
-
-        inner class HeaderViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-            val title: TextView = view.findViewById(R.id.tv_header_date)
-        }
 
         inner class ItemViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             val name: TextView = view.findViewById(R.id.tv_workout_date)
@@ -184,37 +148,31 @@ class History_Logic : Fragment() {
             val typeBar: View? = view.findViewById(R.id.v_type_bar)
         }
 
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-            return if (viewType == TYPE_HEADER) {
-                HeaderViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_history_header, parent, false))
-            } else {
-                ItemViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_recent_workout, parent, false))
-            }
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
+            return ItemViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_recent_workout, parent, false))
         }
 
-        override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-            when (val item = items[position]) {
-                is HistoryItem.Header -> {
-                    val h = holder as HeaderViewHolder
-                    h.title.text = holder.itemView.context.getString(
-                        R.string.header_date_format, item.date, item.totalExercises
-                    )
+        override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
+            val item = items[position] as HistoryItem.DaySummary
+            val firstWorkout = item.workouts.first()
+            holder.name.text = formatDate(firstWorkout.date)
+            
+            val totalExercises = item.workouts.sumOf { it.exercises.size }
+            holder.desc.text = holder.itemView.context.resources.getQuantityString(
+                R.plurals.exercise_count,
+                totalExercises,
+                totalExercises
+            )
+            
+            holder.typeBar?.setBackgroundResource(
+                when (firstWorkout.type) {
+                    WorkoutType.STRENGTH -> R.color.type_strength_top
+                    WorkoutType.CARDIO -> R.color.type_cardio_top
+                    WorkoutType.AEROBIC -> R.color.type_aerobic_top
+                    WorkoutType.YOGA -> R.color.type_yoga_top
                 }
-                is HistoryItem.ExerciseLog -> {
-                    val h = holder as ItemViewHolder
-                    h.name.text = item.exercise.name
-                    h.desc.text = h.itemView.context.getString(R.string.sets_done_format, item.exercise.sets.size)
-                    h.typeBar?.setBackgroundResource(
-                        when (item.workout.type) {
-                            WorkoutType.STRENGTH -> R.color.type_strength_top
-                            WorkoutType.CARDIO -> R.color.type_cardio_top
-                            WorkoutType.AEROBIC -> R.color.type_aerobic_top
-                            WorkoutType.YOGA -> R.color.type_yoga_top
-                        }
-                    )
-                    h.itemView.setOnClickListener { onClick(item.workout) }
-                }
-            }
+            )
+            holder.itemView.setOnClickListener { onClick(item.dateIso) }
         }
 
         override fun getItemCount() = items.size

@@ -1,11 +1,13 @@
 package com.worktrax.app.ui.fragments
 
+import android.app.TimePickerDialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -45,6 +47,7 @@ class App_Settings_Logic : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         AnalyticsHelper.screenView("settings")
 
+        settingsVM.refreshNotificationState()
         setupUI()
         setupAppearanceLabels()
         setupObservers()
@@ -69,8 +72,24 @@ class App_Settings_Logic : Fragment() {
                     }
                     updateUnitUI(state.unit)
                     updateThemeUI(state.theme)
+                    updateReminderUI(state)
                 }
             }
+        }
+    }
+
+    private fun updateReminderUI(state: com.worktrax.app.store.SettingsState) {
+        binding.switchReminder.isChecked = state.reminderEnabled
+        binding.rowReminderTime.visibility = if (state.reminderEnabled) View.VISIBLE else View.GONE
+        if (state.reminderEnabled) {
+            binding.tvReminderSummary.text = getString(
+                R.string.reminder_summary_on,
+                state.reminderHour,
+                state.reminderMinute
+            )
+            binding.tvReminderTime.text = "%02d:%02d".format(state.reminderHour, state.reminderMinute)
+        } else {
+            binding.tvReminderSummary.text = getString(R.string.reminder_summary_off)
         }
     }
 
@@ -143,6 +162,44 @@ class App_Settings_Logic : Fragment() {
             androidx.appcompat.app.AppCompatDelegate.setDefaultNightMode(
                 androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_YES
             )
+        }
+
+        binding.switchReminder.setOnCheckedChangeListener { _, isChecked ->
+            settingsVM.setReminderEnabled(isChecked)
+        }
+
+        binding.rowReminderTime.setOnClickListener {
+            val h = settingsVM.state.value.reminderHour
+            val m = settingsVM.state.value.reminderMinute
+            TimePickerDialog(requireContext(), { _, hour, minute ->
+                settingsVM.setReminderTime(hour, minute)
+            }, h, m, true).show()
+        }
+
+        binding.rowPrivacy.setOnClickListener {
+            val url = "https://www.worktrax.app/privacy"
+            val intent = android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse(url))
+            startActivity(intent)
+        }
+
+        binding.rowDeleteAccount.setOnClickListener {
+            android.app.AlertDialog.Builder(requireContext())
+                .setTitle(R.string.delete_account_title)
+                .setMessage(R.string.delete_account_message)
+                .setPositiveButton(R.string.delete_account_confirm) { _, _ ->
+                    authVM.deleteAccount { success, msg ->
+                        if (success) {
+                            Storage.prefs(requireContext()).edit().clear().apply()
+                            settingsVM.reset()
+                            try {
+                                findNavController().navigate(R.id.action_settings_to_auth)
+                            } catch (_: Exception) {}
+                        }
+                        Toast.makeText(requireContext(), msg, Toast.LENGTH_LONG).show()
+                    }
+                }
+                .setNegativeButton(R.string.cancel_label, null)
+                .show()
         }
 
         binding.btnSignOut.setOnClickListener {

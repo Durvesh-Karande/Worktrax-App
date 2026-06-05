@@ -48,7 +48,6 @@
     <string name="your_journal">Your journal</string>
     <string name="all_logs">All logs.</string>
     <string name="sets_done_format">Sets done = %d</string>
-    <string name="header_date_format">%s — %d exercises</string>
     <string name="empty_history">No workouts yet.\nTap Home &amp; pick a workout type to start!</string>
 
     <!-- Home screen -->
@@ -165,6 +164,22 @@
     <string name="hi_name_format">Hi, %s</string>
     <string name="good_greeting_format">Good %s!</string>
 
+    <!-- Notifications -->
+    <string name="reminder_label">Workout Reminder</string>
+    <string name="reminder_description">Get a gentle nudge if you haven\'t worked out that day</string>
+    <string name="reminder_time_label">Reminder time</string>
+    <string name="reminder_summary_off">Reminders off</string>
+    <string name="reminder_summary_on">Daily at %1$d:%2$02d</string>
+
+    <!-- Privacy & account -->
+    <string name="privacy_policy_label">Privacy Policy</string>
+    <string name="delete_account_label">Delete Account</string>
+    <string name="delete_account_title">Delete account?</string>
+    <string name="delete_account_message">This will permanently delete all your data (workouts, bodyweight, measurements) from the cloud and sign you out. This cannot be undone.</string>
+    <string name="delete_account_confirm">Delete</string>
+    <string name="deleting_account">Deleting account…</string>
+    <string name="account_deleted">Account deleted</string>
+
     <!-- Sign out dialog -->
     <string name="sign_out_title">Sign out</string>
     <string name="sign_out_message">This will clear all local data.</string>
@@ -203,7 +218,10 @@
     <string name="cd_chart_bar">Volume bar</string>
 
     <!-- Workout detail -->
+    <string name="workout_detail_today">Today Exercise:</string>
+    <string name="today_exercise">Today Exercise:</string>
     <string name="repeat_workout">Repeat this workout</string>
+    <string name="last_time_suggestion">Last time: %1$s. Try to increase it today! 💪</string>
 
     <!-- Auth screen -->
     <string name="auth_title">Sign in</string>

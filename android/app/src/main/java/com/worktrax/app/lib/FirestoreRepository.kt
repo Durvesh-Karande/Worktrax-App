@@ -260,4 +260,10 @@ object FirestoreRepository {
 
     fun hasMigrated(ctx: Context): Boolean =
         Storage.getString(ctx, Storage.KEY_MIGRATED) == "1"
+
+    // ── Account Deletion ──
+
+    suspend fun deleteAllUserData() {
+        userRef().removeValue().await()
+    }
 }

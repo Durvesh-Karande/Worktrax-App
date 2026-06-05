@@ -49,19 +49,25 @@ class Workout_Detail_Logic : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         AnalyticsHelper.screenView("workout_detail")
         
-        val workoutId = arguments?.getString("workoutId") ?: return
+        val dateIsoOrId = arguments?.getString("dateIso") ?: arguments?.getString("workoutId") ?: return
         
-        setupObservers(workoutId)
+        setupObservers(dateIsoOrId)
         setupListeners()
     }
 
-    private fun setupObservers(workoutId: String) {
+    private fun setupObservers(dateIsoOrId: String) {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 historyVM.workouts.collectLatest { workouts ->
-                    val workout = workouts.find { it.id == workoutId }
-                    if (workout != null) {
-                        bindWorkout(workout)
+                    // dateIso is yyyy-MM-dd, workoutId is uid
+                    val relevantWorkouts = if (dateIsoOrId.length == 10 && dateIsoOrId.contains("-")) {
+                        workouts.filter { it.date.startsWith(dateIsoOrId) }.sortedBy { it.date }
+                    } else {
+                        workouts.filter { it.id == dateIsoOrId }
+                    }
+
+                    if (relevantWorkouts.isNotEmpty()) {
+                        bindWorkouts(relevantWorkouts)
                     } else {
                         findNavController().popBackStack()
                     }
@@ -70,17 +76,30 @@ class Workout_Detail_Logic : Fragment() {
         }
     }
 
-    private fun bindWorkout(workout: Workout) {
-        binding.includeTopBar.tvTopBarTitle.text = formatDate(workout.date)
+    private fun bindWorkouts(workouts: List<Workout>) {
+        val firstWorkout = workouts.first()
+        binding.includeTopBar.tvTopBarTitle.text = formatDate(firstWorkout.date)
         binding.includeTopBar.btnDelete.visibility = View.VISIBLE
         
-        binding.tvWorkoutType.text = workout.type.code.uppercase()
-        binding.tvDuration.text = formatDuration(workout.durationSec)
+        binding.tvWorkoutType.visibility = View.GONE
+        binding.tvDuration.visibility = View.GONE
         
         val allWorkouts = historyVM.workouts.value
         
         binding.layoutExercisesContainer.removeAllViews()
-        workout.exercises.forEach { exercise ->
+        
+        // Group all exercises from all workouts of the day by exercise ID
+        val groupedExercises = workouts.flatMap { it.exercises }
+            .groupBy { it.id }
+            .values
+            .map { exercises ->
+                // Merge sets for the same exercise performed multiple times in a day
+                exercises.reduce { acc, ex -> 
+                    acc.copy(sets = acc.sets + ex.sets)
+                }
+            }
+        
+        groupedExercises.forEach { exercise ->
             val exerciseView = LayoutInflater.from(requireContext())
                 .inflate(R.layout.item_exercise_detail, binding.layoutExercisesContainer, false)
             
@@ -147,24 +166,44 @@ class Workout_Detail_Logic : Fragment() {
                 setsContainer.addView(setView)
             }
             
-            // Mini progression chart (only for strength)
+            // Mini progression chart
             val chart = exerciseView.findViewById<LinearLayout>(R.id.layout_exercise_chart)
-            if (exercise.metricType != "strength") {
-                chart.visibility = View.GONE
-            } else {
-                val historySets = allWorkouts
-                    .filter { w -> w.exercises.any { it.id == exercise.id } }
-                    .sortedBy { it.date }
-                    .mapNotNull { w ->
-                        val ex = w.exercises.find { it.id == exercise.id } ?: return@mapNotNull null
-                        ex.sets.maxByOrNull { it.weight * (1 + it.reps / 30.0) }
+            val historySets = allWorkouts
+                .filter { w -> w.exercises.any { it.id == exercise.id } }
+                .sortedBy { it.date }
+                .mapNotNull { w ->
+                    val ex = w.exercises.find { it.id == exercise.id } ?: return@mapNotNull null
+                    when (exercise.metricType) {
+                        "strength" -> ex.sets.maxByOrNull { it.weight * (1 + it.reps / 30.0) }
+                        "cardio" -> ex.sets.maxByOrNull { it.distanceKm }
+                        "timed", "yoga" -> ex.sets.maxByOrNull { it.durationSec.toDouble() }
+                        "hiit" -> ex.sets.maxByOrNull { it.rounds.toDouble() * 1000 + it.reps }
+                        else -> ex.sets.firstOrNull()
                     }
+                }
+
             if (historySets.size >= 2) {
-                val maxScore = historySets.maxOf { it.weight * (1 + it.reps / 30.0) }.coerceAtLeast(1.0)
+                val maxScore = historySets.maxOf { s ->
+                    when (exercise.metricType) {
+                        "strength" -> s.weight * (1 + s.reps / 30.0)
+                        "cardio" -> s.distanceKm
+                        "timed", "yoga" -> s.durationSec.toDouble()
+                        "hiit" -> s.rounds.toDouble() * 1000 + s.reps
+                        else -> 1.0
+                    }
+                }.coerceAtLeast(1.0)
+
                 val chartH = 40f
                 val density = resources.displayMetrics.density
-                historySets.forEachIndexed { i, s ->
-                    val score = s.weight * (1 + s.reps / 30.0)
+                chart.removeAllViews()
+                historySets.forEach { s ->
+                    val score = when (exercise.metricType) {
+                        "strength" -> s.weight * (1 + s.reps / 30.0)
+                        "cardio" -> s.distanceKm
+                        "timed", "yoga" -> s.durationSec.toDouble()
+                        "hiit" -> s.rounds.toDouble() * 1000 + s.reps
+                        else -> 0.0
+                    }
                     val frac = (score / maxScore).coerceIn(0.05, 1.0)
                     val bar = View(requireContext()).apply {
                         val h = (chartH * frac).toInt()
@@ -178,7 +217,8 @@ class Workout_Detail_Logic : Fragment() {
                     chart.addView(bar)
                 }
                 chart.visibility = View.VISIBLE
-            }
+            } else {
+                chart.visibility = View.GONE
             }
             
             binding.layoutExercisesContainer.addView(exerciseView)
@@ -191,12 +231,20 @@ class Workout_Detail_Logic : Fragment() {
         }
         
         binding.includeTopBar.btnDelete.setOnClickListener {
-            val workoutId = arguments?.getString("workoutId") ?: return@setOnClickListener
+            val dateIso = arguments?.getString("dateIso")
+            val workoutId = arguments?.getString("workoutId")
+            
             AlertDialog.Builder(requireContext())
                 .setTitle(R.string.delete_workout_title)
                 .setMessage(R.string.delete_workout_message)
                 .setPositiveButton(R.string.delete_label) { _, _ ->
-                    historyVM.remove(workoutId)
+                    if (dateIso != null) {
+                        historyVM.workouts.value
+                            .filter { it.date.startsWith(dateIso) }
+                            .forEach { historyVM.remove(it.id) }
+                    } else if (workoutId != null) {
+                        historyVM.remove(workoutId)
+                    }
                     findNavController().popBackStack()
                 }
                 .setNegativeButton(R.string.cancel_label, null)
@@ -204,10 +252,20 @@ class Workout_Detail_Logic : Fragment() {
         }
 
         binding.btnRepeat.setOnClickListener {
-            val workoutId = arguments?.getString("workoutId") ?: return@setOnClickListener
-            val workout = historyVM.workouts.value.find { it.id == workoutId } ?: return@setOnClickListener
-            sessionVM.seedFromWorkout(workout)
-            findNavController().navigate(R.id.exercisePickerFragment)
+            val dateIso = arguments?.getString("dateIso")
+            val workoutId = arguments?.getString("workoutId")
+            val workouts = historyVM.workouts.value
+            val relevantWorkouts = if (dateIso != null) {
+                workouts.filter { it.date.startsWith(dateIso) }
+            } else {
+                workouts.filter { it.id == workoutId }
+            }
+            if (relevantWorkouts.isNotEmpty()) {
+                // To repeat a "day", we can just take the first workout's type or seed all.
+                // Seed from the first for now.
+                sessionVM.seedFromWorkout(relevantWorkouts.first())
+                findNavController().navigate(R.id.exercisePickerFragment)
+            }
         }
     }
 

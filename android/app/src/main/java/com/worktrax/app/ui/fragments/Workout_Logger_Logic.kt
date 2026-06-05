@@ -54,6 +54,7 @@ class Workout_Logger_Logic : Fragment() {
     private var currentDurationSec = 0
     private var currentDistance = 1.0
     private var currentRounds = 4
+    private var lastInitializedExerciseId: String? = null
 
     private var restTimer: CountDownTimer? = null
     private var restSeconds = 60
@@ -383,25 +384,72 @@ class Workout_Logger_Logic : Fragment() {
             binding.tvPreviousValues.visibility = View.GONE
             return
         }
-        val lastSet = lastSetForExercise(historyVM.workouts.value, currentEx.id) ?: run {
+        val lastSet = lastSetForExercise(historyVM.workouts.value, currentEx.id)
+
+        // Initialize state variables for this exercise once per session
+        if (lastInitializedExerciseId != currentEx.id) {
+            lastInitializedExerciseId = currentEx.id
+            if (lastSet != null) {
+                when (currentMetricType) {
+                    "strength" -> {
+                        currentWeight = if (lastSet.unit == unit) lastSet.weight
+                        else com.worktrax.app.lib.convertWeight(lastSet.weight, lastSet.unit, unit)
+                        currentReps = lastSet.reps
+                        totalSets = 4
+                    }
+                    "bodyweight" -> {
+                        currentReps = lastSet.reps
+                        totalSets = 3
+                    }
+                    "timed" -> {
+                        currentDuration = lastSet.durationSec
+                        totalSets = 3
+                    }
+                    "cardio" -> {
+                        currentDuration = lastSet.durationSec / 60
+                        currentDurationSec = lastSet.durationSec % 60
+                        currentDistance = lastSet.distanceKm
+                    }
+                    "hiit" -> {
+                        currentRounds = lastSet.rounds
+                        currentReps = lastSet.reps
+                    }
+                    "yoga" -> {
+                        currentDuration = lastSet.durationSec / 60
+                        currentDurationSec = lastSet.durationSec % 60
+                    }
+                }
+            } else {
+                resetDefaults()
+            }
+            syncStepperValues()
+        }
+
+        if (lastSet == null) {
             binding.tvPreviousValues.visibility = View.GONE
             return
         }
-        val text = when (currentMetricType) {
+
+        val lastSummary = when (currentMetricType) {
             "strength" -> {
                 val w = if (lastSet.unit == unit) lastSet.weight
                 else com.worktrax.app.lib.convertWeight(lastSet.weight, lastSet.unit, unit)
-                "Last: ${w} ${unit.code} x ${lastSet.reps} reps"
+                "${w.toInt()} ${unit.code} x ${lastSet.reps} reps"
             }
-            "bodyweight" -> "Last: ${lastSet.reps} reps"
-            "timed" -> "Last: ${lastSet.durationSec}s hold"
-            "cardio" -> "Last: ${formatDuration(lastSet.durationSec)}, ${lastSet.distanceKm} km"
-            "hiit" -> "Last: ${lastSet.rounds} rounds x ${lastSet.reps} reps"
-            "yoga" -> "Last: ${formatDuration(lastSet.durationSec)}"
+            "bodyweight" -> "${lastSet.reps} reps"
+            "timed" -> "${lastSet.durationSec}s hold"
+            "cardio" -> "${formatDuration(lastSet.durationSec)}, ${lastSet.distanceKm} km"
+            "hiit" -> "${lastSet.rounds} rds x ${lastSet.reps} reps"
+            "yoga" -> formatDuration(lastSet.durationSec)
             else -> ""
         }
-        binding.tvPreviousValues.text = text
-        binding.tvPreviousValues.visibility = if (text.isNotBlank()) View.VISIBLE else View.GONE
+
+        if (lastSummary.isNotBlank()) {
+            binding.tvPreviousValues.text = getString(R.string.last_time_suggestion, lastSummary)
+            binding.tvPreviousValues.visibility = View.VISIBLE
+        } else {
+            binding.tvPreviousValues.visibility = View.GONE
+        }
     }
 
     private fun updateTableHeaders(metricType: String) {
@@ -470,7 +518,7 @@ class Workout_Logger_Logic : Fragment() {
         for (i in 1..displayTotal) {
             val row = inflater.inflate(R.layout.item_set_row, binding.listLoggedSets, false)
             val logged = sets.getOrNull(i - 1)
-            val isCurrent = logged == null && i == displayTotal && sets.size < displayTotal
+            val isCurrent = logged == null && i == sets.size + 1
 
             row.findViewById<TextView>(R.id.tv_set_number).text = i.toString()
             val tvReps = row.findViewById<TextView>(R.id.tv_reps)

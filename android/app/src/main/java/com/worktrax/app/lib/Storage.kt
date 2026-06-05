@@ -27,6 +27,11 @@ object Storage {
     const val KEY_CUSTOM_EXERCISES = "worktrax.custom_exercises.v1"
     const val KEY_BODY_MEASUREMENTS = "worktrax.body_measurements.v1"
     const val KEY_MIGRATED = "worktrax.migrated.v1"
+    const val KEY_REMINDER_ENABLED = "worktrax.reminder_enabled"
+    const val KEY_REMINDER_HOUR = "worktrax.reminder_hour"
+    const val KEY_REMINDER_MINUTE = "worktrax.reminder_minute"
+    const val KEY_LAST_VOLUME_MILESTONE = "worktrax.last_volume_milestone"
+    const val KEY_STREAK_NOTIFIED = "worktrax.streak_notified"
 
     fun prefs(ctx: Context): SharedPreferences =
         ctx.applicationContext.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)

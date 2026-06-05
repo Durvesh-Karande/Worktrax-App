@@ -64,7 +64,7 @@ class Home_Logic : Fragment() {
 
     private fun showOnboardingIfNeeded() {
         val done = Storage.getString(requireContext(), Storage.KEY_ONBOARDING_DONE)
-        if (done != null) return
+        if (done != null || settingsVM.state.value.name.isNotBlank()) return
         val overlay = LayoutInflater.from(requireContext())
             .inflate(R.layout.overlay_onboarding, binding.root as? ViewGroup, false)
         val etName = overlay.findViewById<EditText>(R.id.et_name)
