@@ -237,6 +237,17 @@
                     android:orientation="horizontal">
 
                     <include
+                        android:id="@+id/sc_duration_hr"
+                        layout="@layout/view_stepper"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1" />
+
+                    <View
+                        android:layout_width="6dp"
+                        android:layout_height="match_parent" />
+
+                    <include
                         android:id="@+id/sc_duration_min"
                         layout="@layout/view_stepper"
                         android:layout_width="0dp"
@@ -244,7 +255,7 @@
                         android:layout_weight="1" />
 
                     <View
-                        android:layout_width="8dp"
+                        android:layout_width="6dp"
                         android:layout_height="match_parent" />
 
                     <include
@@ -266,7 +277,7 @@
                     android:layout_height="wrap_content" />
             </LinearLayout>
 
-            <!-- ─── HIIT: duration (min + sec) ─── -->
+            <!-- ─── HIIT: duration (hr + min + sec) ─── -->
             <LinearLayout
                 android:id="@+id/layout_hiit_fields"
                 android:layout_width="match_parent"
@@ -281,6 +292,17 @@
                     android:orientation="horizontal">
 
                     <include
+                        android:id="@+id/shiit_hr"
+                        layout="@layout/view_stepper"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1" />
+
+                    <View
+                        android:layout_width="6dp"
+                        android:layout_height="match_parent" />
+
+                    <include
                         android:id="@+id/shiit_min"
                         layout="@layout/view_stepper"
                         android:layout_width="0dp"
@@ -288,7 +310,7 @@
                         android:layout_weight="1" />
 
                     <View
-                        android:layout_width="10dp"
+                        android:layout_width="6dp"
                         android:layout_height="match_parent" />
 
                     <include
@@ -300,7 +322,7 @@
                 </LinearLayout>
             </LinearLayout>
 
-            <!-- ─── TIMED: duration + total sets ─── -->
+            <!-- ─── TIMED: duration (hr + min + sec) + total sets ─── -->
             <LinearLayout
                 android:id="@+id/layout_timed_fields"
                 android:layout_width="match_parent"
@@ -309,11 +331,40 @@
                 android:orientation="vertical"
                 android:visibility="gone">
 
-                <include
-                    android:id="@+id/st_duration"
-                    layout="@layout/view_stepper"
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <include
+                        android:id="@+id/st_hr"
+                        layout="@layout/view_stepper"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1" />
+
+                    <View
+                        android:layout_width="6dp"
+                        android:layout_height="match_parent" />
+
+                    <include
+                        android:id="@+id/st_min"
+                        layout="@layout/view_stepper"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1" />
+
+                    <View
+                        android:layout_width="6dp"
+                        android:layout_height="match_parent" />
+
+                    <include
+                        android:id="@+id/st_sec"
+                        layout="@layout/view_stepper"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1" />
+                </LinearLayout>
 
                 <View
                     android:layout_width="match_parent"
@@ -326,7 +377,7 @@
                     android:layout_height="wrap_content" />
             </LinearLayout>
 
-            <!-- ─── YOGA: duration only ─── -->
+            <!-- ─── YOGA: duration (hr + min + sec) ─── -->
             <LinearLayout
                 android:id="@+id/layout_yoga_fields"
                 android:layout_width="match_parent"
@@ -335,11 +386,40 @@
                 android:orientation="vertical"
                 android:visibility="gone">
 
-                <include
-                    android:id="@+id/sy_duration"
-                    layout="@layout/view_stepper"
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <include
+                        android:id="@+id/sy_hr"
+                        layout="@layout/view_stepper"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1" />
+
+                    <View
+                        android:layout_width="6dp"
+                        android:layout_height="match_parent" />
+
+                    <include
+                        android:id="@+id/sy_min"
+                        layout="@layout/view_stepper"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1" />
+
+                    <View
+                        android:layout_width="6dp"
+                        android:layout_height="match_parent" />
+
+                    <include
+                        android:id="@+id/sy_sec"
+                        layout="@layout/view_stepper"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1" />
+                </LinearLayout>
             </LinearLayout>
 
             <!-- Workout timer (timed / cardio / yoga / hiit) -->

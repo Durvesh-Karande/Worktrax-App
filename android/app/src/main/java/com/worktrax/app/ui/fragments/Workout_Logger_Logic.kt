@@ -52,6 +52,7 @@ class Workout_Logger_Logic : Fragment() {
     private var totalSets = 4
     private var currentWarmup = false
     private var currentRpe: Int? = null
+    private var currentDurationHr = 0
     private var currentDuration = 30
     private var currentDurationSec = 0
     private var currentDistance = 1.0
@@ -240,7 +241,11 @@ class Workout_Logger_Logic : Fragment() {
         ) { v -> totalSets = v; refreshTable() }
 
         // Cardio steppers
-        setupStepper("Min", currentDuration, 0, 999,
+        setupStepper("Hr", currentDurationHr, 0, 99,
+            binding.scDurationHr.tvStepperLabel, binding.scDurationHr.tvValue,
+            binding.scDurationHr.btnMinus, binding.scDurationHr.btnPlus
+        ) { v -> currentDurationHr = v }
+        setupStepper("Min", currentDuration, 0, 59,
             binding.scDurationMin.tvStepperLabel, binding.scDurationMin.tvValue,
             binding.scDurationMin.btnMinus, binding.scDurationMin.btnPlus
         ) { v -> currentDuration = v }
@@ -252,12 +257,16 @@ class Workout_Logger_Logic : Fragment() {
             binding.scDistance.tvStepperLabel, binding.scDistance.tvValue,
             binding.scDistance.btnMinus, binding.scDistance.btnPlus
         ) { v -> currentDistance = v / 10.0 }
-        // Override value click for min/sec to show quick picker
-        binding.scDurationMin.tvValue.setOnClickListener { showDurationPicker("Min", binding.scDurationMin.tvValue, 0, 999, 1) { n -> currentDuration = n; binding.scDurationMin.tvValue.text = n.toString() } }
+        binding.scDurationHr.tvValue.setOnClickListener { showDurationPicker("Hr", binding.scDurationHr.tvValue, 0, 99, 1) { n -> currentDurationHr = n; binding.scDurationHr.tvValue.text = n.toString() } }
+        binding.scDurationMin.tvValue.setOnClickListener { showDurationPicker("Min", binding.scDurationMin.tvValue, 0, 59, 1) { n -> currentDuration = n; binding.scDurationMin.tvValue.text = n.toString() } }
         binding.scDurationSec.tvValue.setOnClickListener { showDurationPicker("Sec", binding.scDurationSec.tvValue, 0, 59, 5) { n -> currentDurationSec = n; binding.scDurationSec.tvValue.text = n.toString() } }
 
         // HIIT steppers
-        setupStepper("Min", currentDuration, 0, 999,
+        setupStepper("Hr", currentDurationHr, 0, 99,
+            binding.shiitHr.tvStepperLabel, binding.shiitHr.tvValue,
+            binding.shiitHr.btnMinus, binding.shiitHr.btnPlus
+        ) { v -> currentDurationHr = v }
+        setupStepper("Min", currentDuration, 0, 59,
             binding.shiitMin.tvStepperLabel, binding.shiitMin.tvValue,
             binding.shiitMin.btnMinus, binding.shiitMin.btnPlus
         ) { v -> currentDuration = v }
@@ -265,24 +274,44 @@ class Workout_Logger_Logic : Fragment() {
             binding.shiitSec.tvStepperLabel, binding.shiitSec.tvValue,
             binding.shiitSec.btnMinus, binding.shiitSec.btnPlus
         ) { v -> currentDurationSec = v }
-        binding.shiitMin.tvValue.setOnClickListener { showDurationPicker("Min", binding.shiitMin.tvValue, 0, 999, 1) { n -> currentDuration = n; binding.shiitMin.tvValue.text = n.toString() } }
+        binding.shiitHr.tvValue.setOnClickListener { showDurationPicker("Hr", binding.shiitHr.tvValue, 0, 99, 1) { n -> currentDurationHr = n; binding.shiitHr.tvValue.text = n.toString() } }
+        binding.shiitMin.tvValue.setOnClickListener { showDurationPicker("Min", binding.shiitMin.tvValue, 0, 59, 1) { n -> currentDuration = n; binding.shiitMin.tvValue.text = n.toString() } }
         binding.shiitSec.tvValue.setOnClickListener { showDurationPicker("Sec", binding.shiitSec.tvValue, 0, 59, 5) { n -> currentDurationSec = n; binding.shiitSec.tvValue.text = n.toString() } }
 
         // Timed steppers
-        setupStepper("Hold (sec)", currentDuration, 1, 999,
-            binding.stDuration.tvStepperLabel, binding.stDuration.tvValue,
-            binding.stDuration.btnMinus, binding.stDuration.btnPlus
+        setupStepper("Hr", currentDurationHr, 0, 99,
+            binding.stHr.tvStepperLabel, binding.stHr.tvValue,
+            binding.stHr.btnMinus, binding.stHr.btnPlus
+        ) { v -> currentDurationHr = v }
+        setupStepper("Min", currentDuration, 0, 59,
+            binding.stMin.tvStepperLabel, binding.stMin.tvValue,
+            binding.stMin.btnMinus, binding.stMin.btnPlus
         ) { v -> currentDuration = v }
+        setupStepper("Sec", currentDurationSec, 0, 59,
+            binding.stSec.tvStepperLabel, binding.stSec.tvValue,
+            binding.stSec.btnMinus, binding.stSec.btnPlus
+        ) { v -> currentDurationSec = v }
         setupStepper("Sets", totalSets, 1, 12,
             binding.stTotalSets.tvStepperLabel, binding.stTotalSets.tvValue,
             binding.stTotalSets.btnMinus, binding.stTotalSets.btnPlus
         ) { v -> totalSets = v; refreshTable() }
+        binding.stHr.tvValue.setOnClickListener { showDurationPicker("Hr", binding.stHr.tvValue, 0, 99, 1) { n -> currentDurationHr = n; binding.stHr.tvValue.text = n.toString() } }
+        binding.stMin.tvValue.setOnClickListener { showDurationPicker("Min", binding.stMin.tvValue, 0, 59, 1) { n -> currentDuration = n; binding.stMin.tvValue.text = n.toString() } }
+        binding.stSec.tvValue.setOnClickListener { showDurationPicker("Sec", binding.stSec.tvValue, 0, 59, 5) { n -> currentDurationSec = n; binding.stSec.tvValue.text = n.toString() } }
 
         // Yoga steppers
-        setupStepper("Duration (min)", currentDuration, 1, 999,
-            binding.syDuration.tvStepperLabel, binding.syDuration.tvValue,
-            binding.syDuration.btnMinus, binding.syDuration.btnPlus
+        setupStepper("Hr", currentDurationHr, 0, 99,
+            binding.syHr.tvStepperLabel, binding.syHr.tvValue,
+            binding.syHr.btnMinus, binding.syHr.btnPlus
+        ) { v -> currentDurationHr = v }
+        setupStepper("Min", currentDuration, 0, 59,
+            binding.syMin.tvStepperLabel, binding.syMin.tvValue,
+            binding.syMin.btnMinus, binding.syMin.btnPlus
         ) { v -> currentDuration = v }
+        setupStepper("Sec", currentDurationSec, 0, 59,
+            binding.sySec.tvStepperLabel, binding.sySec.tvValue,
+            binding.sySec.btnMinus, binding.sySec.btnPlus
+        ) { v -> currentDurationSec = v }
     }
 
     private fun showNumberInput(
@@ -408,20 +437,25 @@ class Workout_Logger_Logic : Fragment() {
                         totalSets = 3
                     }
                     "timed" -> {
-                        currentDuration = lastSet.durationSec
+                        currentDurationHr = lastSet.durationSec / 3600
+                        currentDuration = (lastSet.durationSec % 3600) / 60
+                        currentDurationSec = lastSet.durationSec % 60
                         totalSets = 3
                     }
                     "cardio" -> {
-                        currentDuration = lastSet.durationSec / 60
+                        currentDurationHr = lastSet.durationSec / 3600
+                        currentDuration = (lastSet.durationSec % 3600) / 60
                         currentDurationSec = lastSet.durationSec % 60
                         currentDistance = lastSet.distanceKm
                     }
                     "hiit" -> {
-                        currentDuration = lastSet.durationSec / 60
+                        currentDurationHr = lastSet.durationSec / 3600
+                        currentDuration = (lastSet.durationSec % 3600) / 60
                         currentDurationSec = lastSet.durationSec % 60
                     }
                     "yoga" -> {
-                        currentDuration = lastSet.durationSec / 60
+                        currentDurationHr = lastSet.durationSec / 3600
+                        currentDuration = (lastSet.durationSec % 3600) / 60
                         currentDurationSec = lastSet.durationSec % 60
                     }
                 }
@@ -476,10 +510,10 @@ class Workout_Logger_Logic : Fragment() {
         when (currentMetricType) {
             "strength" -> { currentReps = 8; currentWeight = 80.0; totalSets = 4; currentWarmup = false; currentRpe = null }
             "bodyweight" -> { currentReps = 10; totalSets = 3 }
-            "timed" -> { currentDuration = 30; totalSets = 3 }
-            "cardio" -> { currentDuration = 30; currentDurationSec = 0; currentDistance = 5.0 }
-            "hiit" -> { currentDuration = 5; currentDurationSec = 0 }
-            "yoga" -> { currentDuration = 5; currentDurationSec = 0 }
+            "timed" -> { currentDurationHr = 0; currentDuration = 30; currentDurationSec = 0; totalSets = 3 }
+            "cardio" -> { currentDurationHr = 0; currentDuration = 30; currentDurationSec = 0; currentDistance = 5.0 }
+            "hiit" -> { currentDurationHr = 0; currentDuration = 5; currentDurationSec = 0 }
+            "yoga" -> { currentDurationHr = 0; currentDuration = 5; currentDurationSec = 0 }
         }
         syncStepperValues()
     }
@@ -490,14 +524,20 @@ class Workout_Logger_Logic : Fragment() {
         binding.stepperTotalSets.tvValue.text = totalSets.toString()
         binding.sbwReps.tvValue.text = currentReps.toString()
         binding.sbwTotalSets.tvValue.text = totalSets.toString()
+        binding.scDurationHr.tvValue.text = currentDurationHr.toString()
         binding.scDurationMin.tvValue.text = currentDuration.toString()
         binding.scDurationSec.tvValue.text = currentDurationSec.toString()
         binding.scDistance.tvValue.text = (currentDistance * 10).toInt().toString()
+        binding.shiitHr.tvValue.text = currentDurationHr.toString()
         binding.shiitMin.tvValue.text = currentDuration.toString()
         binding.shiitSec.tvValue.text = currentDurationSec.toString()
-        binding.stDuration.tvValue.text = currentDuration.toString()
+        binding.stHr.tvValue.text = currentDurationHr.toString()
+        binding.stMin.tvValue.text = currentDuration.toString()
+        binding.stSec.tvValue.text = currentDurationSec.toString()
         binding.stTotalSets.tvValue.text = totalSets.toString()
-        binding.syDuration.tvValue.text = currentDuration.toString()
+        binding.syHr.tvValue.text = currentDurationHr.toString()
+        binding.syMin.tvValue.text = currentDuration.toString()
+        binding.sySec.tvValue.text = currentDurationSec.toString()
     }
 
     private fun refreshTable() {
@@ -573,7 +613,7 @@ class Workout_Logger_Logic : Fragment() {
                 Triple(set.reps.toString(), "${set.weight}$rpe", set.unit.code)
             }
             "bodyweight" -> Triple("${set.reps} reps", "", "")
-            "timed" -> Triple("${set.durationSec}s", "", "")
+            "timed" -> Triple(formatDuration(set.durationSec), "", "")
             "cardio" -> Triple(formatDuration(set.durationSec), "${set.distanceKm} km", "")
             "hiit" -> Triple(formatDuration(set.durationSec), "", "")
             "yoga" -> Triple(formatDuration(set.durationSec), "", "")
@@ -582,16 +622,21 @@ class Workout_Logger_Logic : Fragment() {
     }
 
     private fun formatPendingRow(metricType: String, unit: WeightUnit): Triple<String, String, String> {
+        val durationStr = buildString {
+            if (currentDurationHr > 0) append("${currentDurationHr}h ")
+            if (currentDuration > 0 || currentDurationHr > 0) append("${currentDuration} min ")
+            append("${currentDurationSec} sec")
+        }
         return when (metricType) {
             "strength" -> {
                 val rpe = if (currentRpe != null) " @${currentRpe}" else ""
                 Triple(currentReps.toString(), "${currentWeight.toInt()}$rpe", unit.code)
             }
             "bodyweight" -> Triple("${currentReps} reps", "", "")
-            "timed" -> Triple("${currentDuration}s", "", "")
-            "cardio" -> Triple("${currentDuration} min ${currentDurationSec} sec", "${currentDistance} km", "")
-            "hiit" -> Triple("${currentDuration} min ${currentDurationSec} sec", "", "")
-            "yoga" -> Triple("${currentDuration} min ${currentDurationSec} sec", "", "")
+            "timed" -> Triple(durationStr, "", "")
+            "cardio" -> Triple(durationStr, "${currentDistance} km", "")
+            "hiit" -> Triple(durationStr, "", "")
+            "yoga" -> Triple(durationStr, "", "")
             else -> Triple(currentReps.toString(), currentWeight.toInt().toString(), unit.code)
         }
     }
@@ -630,16 +675,16 @@ class Workout_Logger_Logic : Fragment() {
                         AnalyticsHelper.setLogged(currentEx.name, currentReps, 0.0, false, null)
                     }
                     "timed" -> {
-                        sessionVM.addSet(durationSec = currentDuration)
+                        sessionVM.addSet(durationSec = currentDurationHr * 3600 + currentDuration * 60 + currentDurationSec)
                     }
                     "cardio" -> {
-                        sessionVM.addSet(durationSec = currentDuration, distanceKm = currentDistance)
+                        sessionVM.addSet(durationSec = currentDurationHr * 3600 + currentDuration * 60 + currentDurationSec, distanceKm = currentDistance)
                     }
                     "hiit" -> {
-                        sessionVM.addSet(durationSec = currentDuration)
+                        sessionVM.addSet(durationSec = currentDurationHr * 3600 + currentDuration * 60 + currentDurationSec)
                     }
                     "yoga" -> {
-                        sessionVM.addSet(durationSec = currentDuration)
+                        sessionVM.addSet(durationSec = currentDurationHr * 3600 + currentDuration * 60 + currentDurationSec)
                     }
                 }
                 startRestTimer()
@@ -770,9 +815,14 @@ class Workout_Logger_Logic : Fragment() {
     }
 
     private fun formatDuration(sec: Int): String {
-        val m = sec / 60
+        val h = sec / 3600
+        val m = (sec % 3600) / 60
         val s = sec % 60
-        return if (m > 0) "${m} min ${s} sec" else "${s} sec"
+        return when {
+            h > 0 -> "${h}h ${m}m ${s}s"
+            m > 0 -> "${m} min ${s} sec"
+            else -> "${s} sec"
+        }
     }
 
     private fun formatTimerDisplay(sec: Int): String {
@@ -808,12 +858,7 @@ class Workout_Logger_Logic : Fragment() {
 
     private fun startWorkoutTimer() {
         stopWorkoutTimer()
-        val target = when (currentMetricType) {
-            "cardio" -> (currentDuration * 60 + currentDurationSec).coerceAtLeast(1)
-            "hiit" -> (currentDuration * 60 + currentDurationSec).coerceAtLeast(1)
-            "yoga" -> (currentDuration * 60 + currentDurationSec).coerceAtLeast(1)
-            else -> currentDuration.coerceAtLeast(1)
-        }
+        val target = (currentDurationHr * 3600 + currentDuration * 60 + currentDurationSec).coerceAtLeast(1)
         workoutTimerElapsedSec = 0
         isWorkoutTimerRunning = true
         binding.btnTimerStart.isEnabled = false
@@ -873,22 +918,11 @@ class Workout_Logger_Logic : Fragment() {
     }
 
     private fun logTimedSet() {
+        val totalSec = if (workoutTimerElapsedSec > 0) workoutTimerElapsedSec
+        else currentDurationHr * 3600 + currentDuration * 60 + currentDurationSec
         when (currentMetricType) {
-            "timed" -> {
-                sessionVM.addSet(durationSec = currentDuration)
-            }
-            "cardio" -> {
-                val totalSec = if (workoutTimerElapsedSec > 0) workoutTimerElapsedSec else currentDuration * 60 + currentDurationSec
-                sessionVM.addSet(durationSec = totalSec, distanceKm = currentDistance)
-            }
-            "hiit" -> {
-                val totalSec = if (workoutTimerElapsedSec > 0) workoutTimerElapsedSec else currentDuration * 60 + currentDurationSec
-                sessionVM.addSet(durationSec = totalSec)
-            }
-            "yoga" -> {
-                val totalSec = if (workoutTimerElapsedSec > 0) workoutTimerElapsedSec else currentDuration * 60 + currentDurationSec
-                sessionVM.addSet(durationSec = totalSec)
-            }
+            "cardio" -> sessionVM.addSet(durationSec = totalSec, distanceKm = currentDistance)
+            else -> sessionVM.addSet(durationSec = totalSec)
         }
         stopRestTimer()
         startRestTimer()
