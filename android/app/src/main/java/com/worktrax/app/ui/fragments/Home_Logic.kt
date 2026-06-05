@@ -55,8 +55,8 @@ class Home_Logic : Fragment() {
         binding.tvDateKicker.text = formatTopDate()
         setupGrid()
         setupObservers()
-        binding.btnProfile.setOnClickListener {
-            findNavController().navigate(R.id.action_home_to_profile)
+        binding.btnStats.setOnClickListener {
+            findNavController().navigate(R.id.action_home_to_stats)
         }
         setupThemeToggle()
         showOnboardingIfNeeded()

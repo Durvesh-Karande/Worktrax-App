@@ -52,7 +52,7 @@
                     android:id="@+id/btn_theme_toggle"
                     android:layout_width="48dp"
                     android:layout_height="48dp"
-                    android:layout_toStartOf="@id/btn_profile"
+                    android:layout_toStartOf="@id/btn_stats"
                     android:layout_marginEnd="12dp"
                     android:layout_centerVertical="true"
                     android:background="@drawable/shape_circle_card"
@@ -68,7 +68,7 @@
                 </FrameLayout>
 
                 <FrameLayout
-                    android:id="@+id/btn_profile"
+                    android:id="@+id/btn_stats"
                     android:layout_width="48dp"
                     android:layout_height="48dp"
                     android:layout_alignParentEnd="true"
@@ -80,8 +80,8 @@
                         android:layout_width="20dp"
                         android:layout_height="20dp"
                         android:layout_gravity="center"
-                        android:src="@drawable/ic_user"
-                        android:contentDescription="@string/cd_profile"
+                        android:src="@drawable/ic_chart"
+                        android:contentDescription="@string/statistics_title"
                         app:tint="@color/ink" />
                 </FrameLayout>
             </RelativeLayout>

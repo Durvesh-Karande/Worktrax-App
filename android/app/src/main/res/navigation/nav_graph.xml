@@ -26,8 +26,8 @@
             android:id="@+id/action_home_to_history"
             app:destination="@id/historyFragment" />
         <action
-            android:id="@+id/action_home_to_profile"
-            app:destination="@id/profileFragment" />
+            android:id="@+id/action_home_to_stats"
+            app:destination="@id/statisticsFragment" />
         <action
             android:id="@+id/action_home_to_exercise"
             app:destination="@id/exercisePickerFragment"
@@ -50,6 +50,12 @@
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right" />
     </fragment>
+
+    <fragment
+        android:id="@+id/statisticsFragment"
+        android:name="com.worktrax.app.ui.fragments.Statistics_Logic"
+        android:label="Statistics"
+        tools:layout="@layout/statistics_design" />
 
     <fragment
         android:id="@+id/profileFragment"

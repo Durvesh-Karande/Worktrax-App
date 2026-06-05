@@ -116,8 +116,8 @@ fun totalRepsOf(w: Workout): Int {
     var total = 0
     for (ex in w.exercises) {
         for (s in ex.sets) {
-            if (s.metricType in listOf("strength", "bodyweight", "hiit")) {
-                total += s.reps * if (s.metricType == "hiit" && s.rounds > 0) s.rounds else 1
+            if (s.metricType in listOf("strength", "bodyweight")) {
+                total += s.reps
             }
         }
     }

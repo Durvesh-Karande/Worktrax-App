@@ -89,7 +89,7 @@
                 android:id="@+id/tv_previous_values"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="14dp"
+                android:layout_marginBottom="10dp"
                 android:textSize="12sp"
                 android:textColor="@color/ink_3"
                 android:textStyle="bold"
@@ -100,6 +100,7 @@
                 android:id="@+id/layout_strength_fields"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
                 android:orientation="vertical">
 
                 <LinearLayout
@@ -200,6 +201,7 @@
                 android:id="@+id/layout_bodyweight_fields"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
                 android:orientation="vertical"
                 android:visibility="gone">
 
@@ -225,6 +227,7 @@
                 android:id="@+id/layout_cardio_fields"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
                 android:orientation="vertical"
                 android:visibility="gone">
 
@@ -263,11 +266,12 @@
                     android:layout_height="wrap_content" />
             </LinearLayout>
 
-            <!-- ─── HIIT: rounds + reps/duration ─── -->
+            <!-- ─── HIIT: duration (min + sec) ─── -->
             <LinearLayout
                 android:id="@+id/layout_hiit_fields"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
                 android:orientation="vertical"
                 android:visibility="gone">
 
@@ -277,7 +281,7 @@
                     android:orientation="horizontal">
 
                     <include
-                        android:id="@+id/shiit_rounds"
+                        android:id="@+id/shiit_min"
                         layout="@layout/view_stepper"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -288,7 +292,7 @@
                         android:layout_height="match_parent" />
 
                     <include
-                        android:id="@+id/shiit_reps"
+                        android:id="@+id/shiit_sec"
                         layout="@layout/view_stepper"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -301,6 +305,7 @@
                 android:id="@+id/layout_timed_fields"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
                 android:orientation="vertical"
                 android:visibility="gone">
 
@@ -326,6 +331,7 @@
                 android:id="@+id/layout_yoga_fields"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
                 android:orientation="vertical"
                 android:visibility="gone">
 
@@ -336,11 +342,12 @@
                     android:layout_height="wrap_content" />
             </LinearLayout>
 
-            <!-- Workout timer (timed / cardio / yoga) -->
+            <!-- Workout timer (timed / cardio / yoga / hiit) -->
             <FrameLayout
                 android:id="@+id/container_workout_timer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
                 android:visibility="gone">
 
                 <LinearLayout
@@ -398,13 +405,14 @@
 
             <View
                 android:layout_width="match_parent"
-                android:layout_height="8dp" />
+                android:layout_height="10dp" />
 
             <!-- Rest timer -->
             <FrameLayout
                 android:id="@+id/container_rest_timer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
                 android:visibility="gone">
 
                 <LinearLayout
@@ -444,6 +452,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
                 android:orientation="vertical"
                 android:background="@drawable/shape_field">
 
@@ -498,7 +507,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="14dp"
+                android:layout_marginTop="10dp"
                 android:orientation="horizontal">
 
                 <Button
@@ -527,7 +536,7 @@
                 style="@style/BtnOutlineAccent"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="10dp"
                 android:text="@string/add_exercise_label" />
 
             <Button
@@ -535,7 +544,7 @@
                 style="@style/BtnGhost"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
+                android:layout_marginTop="10dp"
                 android:text="@string/undo_label" />
 
             <Button
@@ -543,7 +552,7 @@
                 style="@style/BtnGhost"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
+                android:layout_marginTop="10dp"
                 android:text="@string/plate_calculator" />
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>

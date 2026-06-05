@@ -17,9 +17,13 @@
     <string name="nav_history">History</string>
     <string name="nav_profile">Profile</string>
 
+    <!-- Statistics screen -->
+    <string name="statistics_title">Statistics</string>
+
     <!-- Profile screen -->
     <string name="profile_title">Profile</string>
-    <string name="profile_since">Since April 2024</string>
+    <string name="profile_since">Since</string>
+    <string name="profile_just_started">Just started</string>
     <string name="profile_sessions">sessions</string>
     <string name="day_streak">Day streak</string>
     <string name="sessions_label">Sessions</string>

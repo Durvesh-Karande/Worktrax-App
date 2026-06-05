@@ -112,7 +112,7 @@ class Workout_Detail_Logic : Fragment() {
                 "bodyweight" -> "Reps" to ""
                 "timed" -> "Hold" to ""
                 "cardio" -> "Duration" to "Distance"
-                "hiit" -> "Rounds" to "Reps"
+                "hiit" -> "Duration" to ""
                 "yoga" -> "Duration" to ""
                 else -> "Reps" to "Weight"
             }
@@ -177,7 +177,7 @@ class Workout_Detail_Logic : Fragment() {
                         "strength" -> ex.sets.maxByOrNull { it.weight * (1 + it.reps / 30.0) }
                         "cardio" -> ex.sets.maxByOrNull { it.distanceKm }
                         "timed", "yoga" -> ex.sets.maxByOrNull { it.durationSec.toDouble() }
-                        "hiit" -> ex.sets.maxByOrNull { it.rounds.toDouble() * 1000 + it.reps }
+                        "hiit" -> ex.sets.maxByOrNull { it.durationSec.toDouble() }
                         else -> ex.sets.firstOrNull()
                     }
                 }
@@ -188,7 +188,7 @@ class Workout_Detail_Logic : Fragment() {
                         "strength" -> s.weight * (1 + s.reps / 30.0)
                         "cardio" -> s.distanceKm
                         "timed", "yoga" -> s.durationSec.toDouble()
-                        "hiit" -> s.rounds.toDouble() * 1000 + s.reps
+                        "hiit" -> s.durationSec.toDouble()
                         else -> 1.0
                     }
                 }.coerceAtLeast(1.0)
@@ -201,7 +201,7 @@ class Workout_Detail_Logic : Fragment() {
                         "strength" -> s.weight * (1 + s.reps / 30.0)
                         "cardio" -> s.distanceKm
                         "timed", "yoga" -> s.durationSec.toDouble()
-                        "hiit" -> s.rounds.toDouble() * 1000 + s.reps
+                        "hiit" -> s.durationSec.toDouble()
                         else -> 0.0
                     }
                     val frac = (score / maxScore).coerceIn(0.05, 1.0)
@@ -284,7 +284,7 @@ class Workout_Detail_Logic : Fragment() {
             "bodyweight" -> Triple("${set.reps} reps", "", "")
             "timed" -> Triple("${set.durationSec}s hold", "", "")
             "cardio" -> Triple(formatDurationDetail(set.durationSec), "${set.distanceKm} km", "")
-            "hiit" -> Triple("${set.rounds} rounds", "${set.reps} reps", "")
+            "hiit" -> Triple(formatDurationDetail(set.durationSec), "", "")
             "yoga" -> Triple(formatDurationDetail(set.durationSec), "", "")
             else -> Triple(set.reps.toString(), set.weight.toString(), set.unit.code)
         }

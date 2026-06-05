@@ -25,12 +25,15 @@ import com.worktrax.app.lib.AnalyticsHelper
 import com.worktrax.app.lib.NotifHelper
 import com.worktrax.app.lib.Storage
 import com.worktrax.app.lib.WorkScheduler
+import com.worktrax.app.store.HistoryViewModel
 import com.worktrax.app.store.SettingsViewModel
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
     private val settingsVM: SettingsViewModel by viewModels()
+    private val historyVM: HistoryViewModel by viewModels()
     private var lastTheme: ThemeMode? = null
 
     private val notifPermissionLauncher = registerForActivityResult(
@@ -60,6 +63,14 @@ class MainActivity : AppCompatActivity() {
             bottomNav.visibility = if (dest.id == R.id.authFragment) View.GONE else View.VISIBLE
             if (dest.id == R.id.homeFragment) {
                 settingsVM.sync()
+            }
+        }
+
+        FirebaseAuth.getInstance().addAuthStateListener { auth ->
+            if (auth.currentUser != null) {
+                historyVM.startSync()
+            } else {
+                historyVM.stopSync()
             }
         }
 

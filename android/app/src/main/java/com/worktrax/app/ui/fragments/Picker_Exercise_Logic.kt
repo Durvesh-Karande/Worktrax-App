@@ -8,6 +8,8 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -309,6 +311,14 @@ class Picker_Exercise_Logic : Fragment() {
         })
         binding.btnClearSearch.setOnClickListener {
             binding.etSearch.text?.clear()
+        }
+        binding.etSearch.setOnEditorActionListener { _, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_SEARCH || actionId == EditorInfo.IME_ACTION_DONE) {
+                val imm = requireContext().getSystemService(InputMethodManager::class.java)
+                imm?.hideSoftInputFromWindow(binding.etSearch.windowToken, 0)
+                binding.etSearch.clearFocus()
+                true
+            } else false
         }
     }
 

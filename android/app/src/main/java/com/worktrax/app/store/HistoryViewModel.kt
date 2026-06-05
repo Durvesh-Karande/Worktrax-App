@@ -2,11 +2,14 @@ package com.worktrax.app.store
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.FirebaseDatabase
 import com.worktrax.app.data.Workout
 import com.worktrax.app.lib.FirestoreRepository
 import com.worktrax.app.lib.NotifHelper
 import com.worktrax.app.lib.Storage
 import com.worktrax.app.lib.convertWeight
+import com.worktrax.app.lib.workoutFromJson
 import com.worktrax.app.lib.workoutsFromJsonString
 import com.worktrax.app.lib.workoutsToJsonString
 import kotlinx.coroutines.CoroutineScope
@@ -15,6 +18,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import org.json.JSONObject
 
 private val VOLUME_MULTIPLIERS = listOf(10, 25, 50, 100, 250, 500, 1000, 2000)
 private const val MIN_MILESTONE = 100
@@ -23,6 +27,9 @@ class HistoryViewModel(app: Application) : AndroidViewModel(app) {
     private val _workouts = MutableStateFlow(load())
     val workouts: StateFlow<List<Workout>> = _workouts.asStateFlow()
 
+    private var remoteListener: com.google.firebase.database.ValueEventListener? = null
+    private var isSyncing = false
+
     private fun load(): List<Workout> {
         val raw = Storage.getString(getApplication(), Storage.KEY_HISTORY)
         return workoutsFromJsonString(raw)
@@ -30,6 +37,40 @@ class HistoryViewModel(app: Application) : AndroidViewModel(app) {
 
     private fun persist(list: List<Workout>) {
         Storage.putString(getApplication(), Storage.KEY_HISTORY, workoutsToJsonString(list))
+    }
+
+    fun startSync() {
+        val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return
+        if (isSyncing) return
+        isSyncing = true
+        val ref = FirebaseDatabase.getInstance().getReference("users").child(uid).child("workouts")
+        val listener = object : com.google.firebase.database.ValueEventListener {
+            override fun onDataChange(snapshot: com.google.firebase.database.DataSnapshot) {
+                val parsed = mutableListOf<Workout>()
+                for (child in snapshot.children) {
+                    val raw = child.child("data").value as? String ?: continue
+                    try {
+                        parsed.add(workoutFromJson(JSONObject(raw)))
+                    } catch (_: Exception) {}
+                }
+                parsed.sortByDescending { it.date }
+                _workouts.value = parsed
+                persist(parsed)
+            }
+
+            override fun onCancelled(error: com.google.firebase.database.DatabaseError) {}
+        }
+        ref.addValueEventListener(listener)
+        remoteListener = listener
+    }
+
+    fun stopSync() {
+        val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return
+        isSyncing = false
+        val l = remoteListener ?: return
+        remoteListener = null
+        FirebaseDatabase.getInstance().getReference("users").child(uid).child("workouts")
+            .removeEventListener(l)
     }
 
     fun add(w: Workout) {
@@ -100,5 +141,10 @@ class HistoryViewModel(app: Application) : AndroidViewModel(app) {
 
     fun refresh() {
         _workouts.value = load()
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        stopSync()
     }
 }

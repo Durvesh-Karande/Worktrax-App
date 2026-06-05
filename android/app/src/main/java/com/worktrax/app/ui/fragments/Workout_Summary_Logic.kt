@@ -81,6 +81,13 @@ class Workout_Summary_Logic : Fragment() {
                 binding.tvSumRepsLabel.text = "Distance (km)"
                 binding.tvSumVolume.text = if (totalDurMin > 0) "${(totalDist / totalDurMin).toInt()}" else "0"
                 binding.tvSumVolumeLabel.text = "Pace (min/km)"
+            } else if (workout.type == com.worktrax.app.data.WorkoutType.AEROBIC) {
+                binding.tvSumSets.text = totalDurMin.toString()
+                binding.tvSumSetsLabel.text = "Duration (min)"
+                binding.tvSumReps.text = totalDurSec.toString()
+                binding.tvSumRepsLabel.text = "Total (sec)"
+                binding.tvSumVolume.text = sets.toString()
+                binding.tvSumVolumeLabel.text = "Sets"
             } else {
                 binding.tvSumSets.text = sets.toString()
                 binding.tvSumReps.text = reps.toString()
