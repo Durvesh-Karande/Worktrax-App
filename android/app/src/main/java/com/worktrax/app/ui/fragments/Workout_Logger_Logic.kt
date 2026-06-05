@@ -1,6 +1,7 @@
 package com.worktrax.app.ui.fragments
 
 import android.app.AlertDialog
+import android.media.RingtoneManager
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.view.HapticFeedbackConstants
@@ -829,9 +830,18 @@ class Workout_Logger_Logic : Fragment() {
                 isWorkoutTimerRunning = false
                 binding.btnTimerStart.isEnabled = true
                 binding.btnTimerStop.isEnabled = false
+                playCompletionSound()
                 logTimedSet()
             }
         }.start()
+    }
+
+    private fun playCompletionSound() {
+        try {
+            val uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+            val ringtone = RingtoneManager.getRingtone(requireContext(), uri)
+            ringtone.play()
+        } catch (_: Exception) {}
     }
 
     private fun stopWorkoutTimer() {
