@@ -6,6 +6,8 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="28" />
+    <uses-permission android:name="com.google.android.gms.permission.AD_ID" />
+
 
     <application
         android:allowBackup="true"
@@ -16,9 +18,11 @@
         android:theme="@style/Theme.Worktrax">
 
 
+
+
         <meta-data
             android:name="firebase_analytics_collection_ad_id"
-            android:value="false" />
+            android:value="true" />
 
         <activity
             android:name=".MainActivity"
