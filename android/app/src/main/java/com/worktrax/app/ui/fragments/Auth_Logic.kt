@@ -43,6 +43,7 @@ class Auth_Logic : Fragment() {
                 binding.tvError.visibility = View.VISIBLE
             }
         } catch (e: ApiException) {
+            binding.tvError.text = "Google Sign-In failed (Status Code: ${e.statusCode}). Please check your SHA-1 and Client ID configuration."
             binding.tvError.visibility = View.VISIBLE
         }
     }

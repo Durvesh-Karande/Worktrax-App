@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "981033930798",
+    "firebase_url": "https://worktrax-app-default-rtdb.firebaseio.com",
     "project_id": "worktrax-app",
     "storage_bucket": "worktrax-app.firebasestorage.app"
   },
@@ -13,6 +14,14 @@
         }
       },
       "oauth_client": [
+        {
+          "client_id": "981033930798-id0oqkv6dhstkfvbk25hdn53ai37tb6d.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.worktrax.app",
+            "certificate_hash": "4a360b0c3d41d49133dc8eb81bb25c7a2b736999"
+          }
+        },
         {
           "client_id": "981033930798-s7745upi4982letpl6njqm053cnud0g5.apps.googleusercontent.com",
           "client_type": 3
