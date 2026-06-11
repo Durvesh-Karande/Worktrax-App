@@ -279,7 +279,7 @@
 
             <!-- ─── HIIT: duration (hr + min + sec) ─── -->
             <LinearLayout
-                android:id="@+id/layout_hiit_fields"
+                android:id="@+id/layout_aerobic_fields"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"

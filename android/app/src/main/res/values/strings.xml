@@ -161,7 +161,7 @@
     <string name="keep_logging_button">Keep logging</string>
     <string name="no_exercise_selected">No Exercise Selected</string>
     <string name="all_sets_done">All sets done. Tap Done to save.</string>
-    <string name="set_counter_format">Set %1$d of %2$d · enter values, then Next.</string>
+    <string name="set_counter_format">Set %1$d of %2$d · enter values, then Log set.</string>
     <string name="type_logging_suffix">· LOGGING</string>
     <string name="muscle_logging_placeholder">TYPE</string>
 

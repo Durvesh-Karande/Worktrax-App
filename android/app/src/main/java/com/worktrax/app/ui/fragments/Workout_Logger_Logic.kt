@@ -2,7 +2,7 @@ package com.worktrax.app.ui.fragments
 
 import android.app.AlertDialog
 import android.media.MediaPlayer
-import android.media.RingtoneManager
+import android.net.Uri
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.view.HapticFeedbackConstants
@@ -94,13 +94,13 @@ class Workout_Logger_Logic : Fragment() {
         binding.layoutBodyweightFields.visibility = if (metricType == "bodyweight") View.VISIBLE else View.GONE
         binding.layoutTimedFields.visibility = if (metricType == "timed") View.VISIBLE else View.GONE
         binding.layoutCardioFields.visibility = if (metricType == "cardio") View.VISIBLE else View.GONE
-        binding.layoutHiitFields.visibility = if (metricType == "hiit") View.VISIBLE else View.GONE
+        binding.layoutAerobicFields.visibility = if (metricType == "aerobic") View.VISIBLE else View.GONE
         binding.layoutYogaFields.visibility = if (metricType == "yoga") View.VISIBLE else View.GONE
 
-        binding.tvUnit.visibility = if (metricType in listOf("strength", "bodyweight")) View.VISIBLE else View.GONE
+        binding.tvUnit.visibility = if (metricType in listOf("strength")) View.VISIBLE else View.GONE
         binding.btnPlateCalc.visibility = if (metricType == "strength") View.VISIBLE else View.GONE
 
-        val isTimedType = metricType in listOf("timed", "cardio", "yoga", "hiit")
+        val isTimedType = metricType in listOf("timed", "cardio", "yoga", "aerobic")
         binding.containerWorkoutTimer.visibility = if (isTimedType) View.VISIBLE else View.GONE
         binding.btnLogSet.visibility = if (isTimedType) View.GONE else View.VISIBLE
         if (isTimedType) stopWorkoutTimer()
@@ -253,7 +253,8 @@ class Workout_Logger_Logic : Fragment() {
             binding.scDurationSec.tvStepperLabel, binding.scDurationSec.tvValue,
             binding.scDurationSec.btnMinus, binding.scDurationSec.btnPlus
         ) { v -> currentDurationSec = v }
-        setupStepper("Distance (km)", (currentDistance * 10).toInt(), 0, 999,
+        val distLabel = if (settingsVM.state.value.unit == WeightUnit.LB) "Distance (mi)" else "Distance (km)"
+        setupStepper(distLabel, (currentDistance * 10).toInt(), 0, 999,
             binding.scDistance.tvStepperLabel, binding.scDistance.tvValue,
             binding.scDistance.btnMinus, binding.scDistance.btnPlus
         ) { v -> currentDistance = v / 10.0 }
@@ -392,7 +393,7 @@ class Workout_Logger_Logic : Fragment() {
                     val loggedCount = currentEx?.sets?.size ?: 0
 
                     val hasLimit = currentMetricType in listOf("strength", "bodyweight", "timed")
-                    val displayTotal = if (hasLimit) totalSets else 1
+                    val displayTotal = if (hasLimit) totalSets else (loggedCount + 1).coerceAtLeast(1)
                     val currentIndex = loggedCount + 1
                     binding.tvSetCounter.text =
                         if (hasLimit && currentIndex > displayTotal) getString(R.string.all_sets_done)
@@ -448,7 +449,7 @@ class Workout_Logger_Logic : Fragment() {
                         currentDurationSec = lastSet.durationSec % 60
                         currentDistance = lastSet.distanceKm
                     }
-                    "hiit" -> {
+                    "aerobic" -> {
                         currentDurationHr = lastSet.durationSec / 3600
                         currentDuration = (lastSet.durationSec % 3600) / 60
                         currentDurationSec = lastSet.durationSec % 60
@@ -478,8 +479,8 @@ class Workout_Logger_Logic : Fragment() {
             }
             "bodyweight" -> "${lastSet.reps} reps"
             "timed" -> "${lastSet.durationSec}s hold"
-            "cardio" -> "${formatDuration(lastSet.durationSec)}, ${lastSet.distanceKm} km"
-            "hiit" -> formatDuration(lastSet.durationSec)
+            "cardio" -> "${formatDuration(lastSet.durationSec)}, ${formatDistance(lastSet.distanceKm, unit)}"
+            "aerobic" -> formatDuration(lastSet.durationSec)
             "yoga" -> formatDuration(lastSet.durationSec)
             else -> ""
         }
@@ -498,7 +499,7 @@ class Workout_Logger_Logic : Fragment() {
             "bodyweight" -> Pair("Reps", "")
             "timed" -> Pair("Hold", "")
             "cardio" -> Pair("Duration", "Distance")
-            "hiit" -> Pair("Duration", "")
+            "aerobic" -> Pair("Duration", "")
             "yoga" -> Pair("Duration", "")
             else -> Pair("Reps", "Weight")
         }
@@ -512,7 +513,7 @@ class Workout_Logger_Logic : Fragment() {
             "bodyweight" -> { currentReps = 10; totalSets = 3 }
             "timed" -> { currentDurationHr = 0; currentDuration = 30; currentDurationSec = 0; totalSets = 3 }
             "cardio" -> { currentDurationHr = 0; currentDuration = 30; currentDurationSec = 0; currentDistance = 5.0 }
-            "hiit" -> { currentDurationHr = 0; currentDuration = 5; currentDurationSec = 0 }
+            "aerobic" -> { currentDurationHr = 0; currentDuration = 5; currentDurationSec = 0 }
             "yoga" -> { currentDurationHr = 0; currentDuration = 5; currentDurationSec = 0 }
         }
         syncStepperValues()
@@ -559,7 +560,7 @@ class Workout_Logger_Logic : Fragment() {
         val inflater = LayoutInflater.from(requireContext())
 
         val hasLimit = metricType in listOf("strength", "bodyweight", "timed")
-        val displayTotal = if (hasLimit) totalSets else 1
+        val displayTotal = if (hasLimit) totalSets else (sets.size + 1).coerceAtLeast(1)
 
         for (i in 1..displayTotal) {
             val row = inflater.inflate(R.layout.item_set_row, binding.listLoggedSets, false)
@@ -614,8 +615,8 @@ class Workout_Logger_Logic : Fragment() {
             }
             "bodyweight" -> Triple("${set.reps} reps", "", "")
             "timed" -> Triple(formatDuration(set.durationSec), "", "")
-            "cardio" -> Triple(formatDuration(set.durationSec), "${set.distanceKm} km", "")
-            "hiit" -> Triple(formatDuration(set.durationSec), "", "")
+            "cardio" -> Triple(formatDuration(set.durationSec), formatDistance(set.distanceKm, unit), "")
+            "aerobic" -> Triple(formatDuration(set.durationSec), "", "")
             "yoga" -> Triple(formatDuration(set.durationSec), "", "")
             else -> Triple(set.reps.toString(), set.weight.toString(), set.unit.code)
         }
@@ -634,8 +635,8 @@ class Workout_Logger_Logic : Fragment() {
             }
             "bodyweight" -> Triple("${currentReps} reps", "", "")
             "timed" -> Triple(durationStr, "", "")
-            "cardio" -> Triple(durationStr, "${currentDistance} km", "")
-            "hiit" -> Triple(durationStr, "", "")
+            "cardio" -> Triple(durationStr, formatDistance(currentDistance, unit), "")
+            "aerobic" -> Triple(durationStr, "", "")
             "yoga" -> Triple(durationStr, "", "")
             else -> Triple(currentReps.toString(), currentWeight.toInt().toString(), unit.code)
         }
@@ -680,7 +681,7 @@ class Workout_Logger_Logic : Fragment() {
                     "cardio" -> {
                         sessionVM.addSet(durationSec = currentDurationHr * 3600 + currentDuration * 60 + currentDurationSec, distanceKm = currentDistance)
                     }
-                    "hiit" -> {
+                    "aerobic" -> {
                         sessionVM.addSet(durationSec = currentDurationHr * 3600 + currentDuration * 60 + currentDurationSec)
                     }
                     "yoga" -> {
@@ -814,14 +815,18 @@ class Workout_Logger_Logic : Fragment() {
         binding.containerRestTimer.visibility = View.GONE
     }
 
+    private fun formatDistance(km: Double, unit: WeightUnit): String {
+        return if (unit == WeightUnit.LB) "${"%.1f".format(km * 0.621371)} mi" else "$km km"
+    }
+
     private fun formatDuration(sec: Int): String {
         val h = sec / 3600
         val m = (sec % 3600) / 60
         val s = sec % 60
         return when {
             h > 0 -> "${h}h ${m}m ${s}s"
-            m > 0 -> "${m} min ${s} sec"
-            else -> "${s} sec"
+            m > 0 -> "${m}m ${s}s"
+            else -> "${s}s"
         }
     }
 
@@ -878,14 +883,14 @@ class Workout_Logger_Logic : Fragment() {
                 binding.btnTimerStart.isEnabled = true
                 binding.btnTimerStop.isEnabled = false
                 logTimedSet()
-                showTimerEndDialog()
+                showTimerEndDialog(target)
             }
         }.start()
     }
 
-    private fun showTimerEndDialog() {
+    private fun showTimerEndDialog(durationSec: Int) {
         try {
-            val uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+            val uri = Uri.parse("android.resource://${requireContext().packageName}/raw/timer_end")
             timerEndSound = MediaPlayer.create(requireContext(), uri).apply {
                 isLooping = true
                 setVolume(0.5f, 0.5f)
@@ -895,6 +900,7 @@ class Workout_Logger_Logic : Fragment() {
 
         AlertDialog.Builder(requireContext())
             .setTitle(getString(R.string.timer_ends))
+            .setMessage("Set logged — ${formatDuration(durationSec)}")
             .setPositiveButton(getString(R.string.cancel_label)) { _, _ -> stopTimerSound() }
             .setOnDismissListener { stopTimerSound() }
             .setCancelable(true)
@@ -924,6 +930,7 @@ class Workout_Logger_Logic : Fragment() {
             "cardio" -> sessionVM.addSet(durationSec = totalSec, distanceKm = currentDistance)
             else -> sessionVM.addSet(durationSec = totalSec)
         }
+        Toast.makeText(requireContext(), "Set logged", Toast.LENGTH_SHORT).show()
         stopRestTimer()
         startRestTimer()
     }

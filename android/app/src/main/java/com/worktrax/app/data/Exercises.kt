@@ -9,6 +9,10 @@ val EXERCISES: List<ExerciseDef> = listOf(
     ExerciseDef("chest-press-machine", "Chest Press", Muscles.CHEST, Equipment.MACHINE),
     ExerciseDef("push-up", "Push-Up", Muscles.CHEST, Equipment.BODYWEIGHT),
     ExerciseDef("cable-crossover", "Cable Crossover", Muscles.CHEST, Equipment.CABLE),
+    ExerciseDef("decline-bench-press", "Decline Bench Press", Muscles.CHEST, Equipment.BARBELL),
+    ExerciseDef("incline-barbell-press", "Incline Barbell Press", Muscles.CHEST, Equipment.BARBELL),
+    ExerciseDef("pec-deck", "Pec Deck Fly", Muscles.CHEST, Equipment.MACHINE),
+    ExerciseDef("chest-dip", "Chest Dip", Muscles.CHEST, Equipment.BODYWEIGHT),
 
     // Back
     ExerciseDef("deadlift", "Deadlift", Muscles.BACK, Equipment.BARBELL),
@@ -17,6 +21,10 @@ val EXERCISES: List<ExerciseDef> = listOf(
     ExerciseDef("lat-pulldown", "Lat Pulldown", Muscles.BACK, Equipment.CABLE),
     ExerciseDef("seated-row", "Seated Row", Muscles.BACK, Equipment.MACHINE),
     ExerciseDef("pull-up", "Pull-Up", Muscles.BACK, Equipment.BODYWEIGHT),
+    ExerciseDef("t-bar-row", "T-Bar Row", Muscles.BACK, Equipment.BARBELL),
+    ExerciseDef("chin-up", "Chin-Up", Muscles.BACK, Equipment.BODYWEIGHT),
+    ExerciseDef("straight-arm-pulldown", "Straight-Arm Pulldown", Muscles.BACK, Equipment.CABLE),
+    ExerciseDef("shrug", "Barbell Shrug", Muscles.BACK, Equipment.BARBELL),
 
     // Shoulders
     ExerciseDef("ohp", "Overhead Press", Muscles.SHOULDERS, Equipment.BARBELL),
@@ -25,6 +33,9 @@ val EXERCISES: List<ExerciseDef> = listOf(
     ExerciseDef("rear-delt-fly", "Rear Delt Fly", Muscles.SHOULDERS, Equipment.DUMBBELL),
     ExerciseDef("face-pull", "Face Pull", Muscles.SHOULDERS, Equipment.CABLE),
     ExerciseDef("shoulder-press-machine", "Shoulder Press", Muscles.SHOULDERS, Equipment.MACHINE),
+    ExerciseDef("arnold-press", "Arnold Press", Muscles.SHOULDERS, Equipment.DUMBBELL),
+    ExerciseDef("front-raise", "Front Raise", Muscles.SHOULDERS, Equipment.DUMBBELL),
+    ExerciseDef("upright-row", "Upright Row", Muscles.SHOULDERS, Equipment.BARBELL),
 
     // Biceps
     ExerciseDef("barbell-curl", "Barbell Curl", Muscles.BICEPS, Equipment.BARBELL),
@@ -32,6 +43,9 @@ val EXERCISES: List<ExerciseDef> = listOf(
     ExerciseDef("hammer-curl", "Hammer Curl", Muscles.BICEPS, Equipment.DUMBBELL),
     ExerciseDef("cable-curl", "Cable Curl", Muscles.BICEPS, Equipment.CABLE),
     ExerciseDef("preacher-curl", "Preacher Curl", Muscles.BICEPS, Equipment.MACHINE),
+    ExerciseDef("concentration-curl", "Concentration Curl", Muscles.BICEPS, Equipment.DUMBBELL),
+    ExerciseDef("incline-curl", "Incline Dumbbell Curl", Muscles.BICEPS, Equipment.DUMBBELL),
+    ExerciseDef("reverse-curl", "Reverse Curl", Muscles.BICEPS, Equipment.BARBELL),
 
     // Triceps
     ExerciseDef("close-grip-bench", "Close-Grip Bench", Muscles.TRICEPS, Equipment.BARBELL),
@@ -39,6 +53,9 @@ val EXERCISES: List<ExerciseDef> = listOf(
     ExerciseDef("tricep-pushdown", "Tricep Pushdown", Muscles.TRICEPS, Equipment.CABLE),
     ExerciseDef("overhead-tricep-ext", "Overhead Extension", Muscles.TRICEPS, Equipment.DUMBBELL),
     ExerciseDef("dip", "Dip", Muscles.TRICEPS, Equipment.BODYWEIGHT),
+    ExerciseDef("tricep-kickback", "Tricep Kickback", Muscles.TRICEPS, Equipment.DUMBBELL),
+    ExerciseDef("jm-press", "JM Press", Muscles.TRICEPS, Equipment.BARBELL),
+    ExerciseDef("diamond-push-up", "Diamond Push-Up", Muscles.TRICEPS, Equipment.BODYWEIGHT),
 
     // Quads
     ExerciseDef("back-squat", "Back Squat", Muscles.QUADS, Equipment.BARBELL),
@@ -47,24 +64,35 @@ val EXERCISES: List<ExerciseDef> = listOf(
     ExerciseDef("lunge", "Lunge", Muscles.QUADS, Equipment.DUMBBELL),
     ExerciseDef("leg-extension", "Leg Extension", Muscles.QUADS, Equipment.MACHINE),
     ExerciseDef("bulgarian-split-squat", "Bulgarian Split Squat", Muscles.QUADS, Equipment.DUMBBELL),
+    ExerciseDef("hack-squat", "Hack Squat", Muscles.QUADS, Equipment.MACHINE),
+    ExerciseDef("goblet-squat", "Goblet Squat", Muscles.QUADS, Equipment.DUMBBELL),
+    ExerciseDef("walking-lunge", "Walking Lunge", Muscles.QUADS, Equipment.DUMBBELL),
 
     // Hamstrings
     ExerciseDef("romanian-deadlift", "Romanian Deadlift", Muscles.HAMSTRINGS, Equipment.BARBELL),
     ExerciseDef("leg-curl", "Leg Curl", Muscles.HAMSTRINGS, Equipment.MACHINE),
     ExerciseDef("good-morning", "Good Morning", Muscles.HAMSTRINGS, Equipment.BARBELL),
     ExerciseDef("nordic-curl", "Nordic Curl", Muscles.HAMSTRINGS, Equipment.BODYWEIGHT),
+    ExerciseDef("seated-leg-curl", "Seated Leg Curl", Muscles.HAMSTRINGS, Equipment.MACHINE),
+    ExerciseDef("single-leg-rdl", "Single-Leg RDL", Muscles.HAMSTRINGS, Equipment.DUMBBELL),
+    ExerciseDef("reverse-hyper", "Reverse Hyper", Muscles.HAMSTRINGS, Equipment.MACHINE),
 
     // Glutes
     ExerciseDef("hip-thrust", "Hip Thrust", Muscles.GLUTES, Equipment.BARBELL),
     ExerciseDef("glute-bridge", "Glute Bridge", Muscles.GLUTES, Equipment.BODYWEIGHT),
     ExerciseDef("cable-kickback", "Cable Kickback", Muscles.GLUTES, Equipment.CABLE),
     ExerciseDef("glute-machine", "Glute Machine", Muscles.GLUTES, Equipment.MACHINE),
+    ExerciseDef("sumo-deadlift", "Sumo Deadlift", Muscles.GLUTES, Equipment.BARBELL),
+    ExerciseDef("frog-pump", "Frog Pump", Muscles.GLUTES, Equipment.BODYWEIGHT),
+    ExerciseDef("donkey-kick", "Donkey Kick", Muscles.GLUTES, Equipment.BODYWEIGHT),
 
     // Calves
     ExerciseDef("standing-calf-raise", "Standing Calf Raise", Muscles.CALVES, Equipment.MACHINE),
     ExerciseDef("seated-calf-raise", "Seated Calf Raise", Muscles.CALVES, Equipment.MACHINE),
     ExerciseDef("db-calf-raise", "Dumbbell Calf Raise", Muscles.CALVES, Equipment.DUMBBELL),
     ExerciseDef("bw-calf-raise", "Bodyweight Calf Raise", Muscles.CALVES, Equipment.BODYWEIGHT),
+    ExerciseDef("donkey-calf-raise", "Donkey Calf Raise", Muscles.CALVES, Equipment.MACHINE),
+    ExerciseDef("leg-press-calf-raise", "Leg Press Calf Raise", Muscles.CALVES, Equipment.MACHINE),
 
     // Core
     ExerciseDef("plank", "Plank", Muscles.CORE, Equipment.BODYWEIGHT),
@@ -73,6 +101,11 @@ val EXERCISES: List<ExerciseDef> = listOf(
     ExerciseDef("cable-crunch", "Cable Crunch", Muscles.CORE, Equipment.CABLE),
     ExerciseDef("russian-twist", "Russian Twist", Muscles.CORE, Equipment.DUMBBELL),
     ExerciseDef("sit-up", "Sit-Up", Muscles.CORE, Equipment.BODYWEIGHT),
+    ExerciseDef("crunch", "Crunch", Muscles.CORE, Equipment.BODYWEIGHT),
+    ExerciseDef("bicycle-crunch", "Bicycle Crunch", Muscles.CORE, Equipment.BODYWEIGHT),
+    ExerciseDef("dead-bug", "Dead Bug", Muscles.CORE, Equipment.BODYWEIGHT),
+    ExerciseDef("side-plank", "Side Plank", Muscles.CORE, Equipment.BODYWEIGHT),
+    ExerciseDef("pallof-press", "Pallof Press", Muscles.CORE, Equipment.CABLE),
 
     // ─────────── CARDIO ───────────
     ExerciseDef("treadmill-run", "Treadmill Run", "Run", Equipment.MACHINE, WorkoutType.CARDIO),
@@ -85,6 +118,10 @@ val EXERCISES: List<ExerciseDef> = listOf(
     ExerciseDef("stair-climber", "Stair Climber", "Run", Equipment.MACHINE, WorkoutType.CARDIO),
     ExerciseDef("brisk-walk", "Brisk Walk", "Run", Equipment.BODYWEIGHT, WorkoutType.CARDIO),
     ExerciseDef("incline-treadmill", "Incline Treadmill", "Run", Equipment.MACHINE, WorkoutType.CARDIO),
+    ExerciseDef("assault-bike", "Assault Bike", "Bike", Equipment.MACHINE, WorkoutType.CARDIO),
+    ExerciseDef("ski-erg", "Ski Erg", "Row", Equipment.MACHINE, WorkoutType.CARDIO),
+    ExerciseDef("sled-push", "Sled Push", "Run", Equipment.BODYWEIGHT, WorkoutType.CARDIO),
+    ExerciseDef("skipping", "Skipping", "Run", Equipment.BODYWEIGHT, WorkoutType.CARDIO),
 
     // ─────────── AEROBIC (HIIT & intervals) ───────────
     ExerciseDef("burpees", "Burpees", "HIIT", Equipment.BODYWEIGHT, WorkoutType.AEROBIC),
@@ -99,6 +136,10 @@ val EXERCISES: List<ExerciseDef> = listOf(
     ExerciseDef("jump-rope", "Jump Rope", "Plyo", Equipment.BODYWEIGHT, WorkoutType.AEROBIC),
     ExerciseDef("step-ups", "Step-Ups", "Plyo", Equipment.BODYWEIGHT, WorkoutType.AEROBIC),
     ExerciseDef("bear-crawl", "Bear Crawl", "HIIT", Equipment.BODYWEIGHT, WorkoutType.AEROBIC),
+    ExerciseDef("tuck-jump", "Tuck Jump", "Plyo", Equipment.BODYWEIGHT, WorkoutType.AEROBIC),
+    ExerciseDef("broad-jump", "Broad Jump", "Plyo", Equipment.BODYWEIGHT, WorkoutType.AEROBIC),
+    ExerciseDef("wall-ball", "Wall Ball", "HIIT", Equipment.DUMBBELL, WorkoutType.AEROBIC),
+    ExerciseDef("thruster", "Thruster", "HIIT", Equipment.DUMBBELL, WorkoutType.AEROBIC),
 
     // ─────────── YOGA ───────────
     ExerciseDef("sun-salutation", "Sun Salutation", "Flow", Equipment.BODYWEIGHT, WorkoutType.YOGA),
@@ -113,4 +154,11 @@ val EXERCISES: List<ExerciseDef> = listOf(
     ExerciseDef("savasana", "Savasana", "Restorative", Equipment.BODYWEIGHT, WorkoutType.YOGA),
     ExerciseDef("triangle-pose", "Triangle Pose", "Pose", Equipment.BODYWEIGHT, WorkoutType.YOGA),
     ExerciseDef("chair-pose", "Chair Pose", "Pose", Equipment.BODYWEIGHT, WorkoutType.YOGA),
+    ExerciseDef("mountain-pose", "Mountain Pose", "Pose", Equipment.BODYWEIGHT, WorkoutType.YOGA),
+    ExerciseDef("cat-cow", "Cat-Cow", "Flow", Equipment.BODYWEIGHT, WorkoutType.YOGA),
+    ExerciseDef("upward-dog", "Upward Dog", "Pose", Equipment.BODYWEIGHT, WorkoutType.YOGA),
+    ExerciseDef("warrior-one", "Warrior I", "Pose", Equipment.BODYWEIGHT, WorkoutType.YOGA),
+    ExerciseDef("warrior-three", "Warrior III", "Pose", Equipment.BODYWEIGHT, WorkoutType.YOGA),
+    ExerciseDef("crow-pose", "Crow Pose", "Balance", Equipment.BODYWEIGHT, WorkoutType.YOGA),
+    ExerciseDef("happy-baby", "Happy Baby", "Restorative", Equipment.BODYWEIGHT, WorkoutType.YOGA),
 )

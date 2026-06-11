@@ -17,10 +17,12 @@ import androidx.navigation.fragment.findNavController
 import com.worktrax.app.R
 import com.worktrax.app.data.SetEntry
 import com.worktrax.app.data.Workout
+import com.worktrax.app.data.WeightUnit
 import com.worktrax.app.databinding.WorkoutDetailDesignBinding
 import com.worktrax.app.lib.AnalyticsHelper
 import com.worktrax.app.lib.formatDate
 import com.worktrax.app.lib.formatDuration
+import com.worktrax.app.store.SettingsViewModel
 import com.worktrax.app.store.bestSetForExercise
 import com.worktrax.app.store.estimated1rm
 import com.worktrax.app.store.HistoryViewModel
@@ -35,6 +37,7 @@ class Workout_Detail_Logic : Fragment() {
 
     private val historyVM: HistoryViewModel by viewModels({ requireActivity() })
     private val sessionVM: SessionViewModel by viewModels({ requireActivity() })
+    private val settingsVM: SettingsViewModel by viewModels({ requireActivity() })
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -112,7 +115,7 @@ class Workout_Detail_Logic : Fragment() {
                 "bodyweight" -> "Reps" to ""
                 "timed" -> "Hold" to ""
                 "cardio" -> "Duration" to "Distance"
-                "hiit" -> "Duration" to ""
+                "aerobic" -> "Duration" to ""
                 "yoga" -> "Duration" to ""
                 else -> "Reps" to "Weight"
             }
@@ -177,7 +180,7 @@ class Workout_Detail_Logic : Fragment() {
                         "strength" -> ex.sets.maxByOrNull { it.weight * (1 + it.reps / 30.0) }
                         "cardio" -> ex.sets.maxByOrNull { it.distanceKm }
                         "timed", "yoga" -> ex.sets.maxByOrNull { it.durationSec.toDouble() }
-                        "hiit" -> ex.sets.maxByOrNull { it.durationSec.toDouble() }
+                        "aerobic" -> ex.sets.maxByOrNull { it.durationSec.toDouble() }
                         else -> ex.sets.firstOrNull()
                     }
                 }
@@ -188,7 +191,7 @@ class Workout_Detail_Logic : Fragment() {
                         "strength" -> s.weight * (1 + s.reps / 30.0)
                         "cardio" -> s.distanceKm
                         "timed", "yoga" -> s.durationSec.toDouble()
-                        "hiit" -> s.durationSec.toDouble()
+                        "aerobic" -> s.durationSec.toDouble()
                         else -> 1.0
                     }
                 }.coerceAtLeast(1.0)
@@ -201,7 +204,7 @@ class Workout_Detail_Logic : Fragment() {
                         "strength" -> s.weight * (1 + s.reps / 30.0)
                         "cardio" -> s.distanceKm
                         "timed", "yoga" -> s.durationSec.toDouble()
-                        "hiit" -> s.durationSec.toDouble()
+                        "aerobic" -> s.durationSec.toDouble()
                         else -> 0.0
                     }
                     val frac = (score / maxScore).coerceIn(0.05, 1.0)
@@ -270,9 +273,14 @@ class Workout_Detail_Logic : Fragment() {
     }
 
     private fun formatDurationDetail(sec: Int): String {
-        val m = sec / 60
+        val h = sec / 3600
+        val m = (sec % 3600) / 60
         val s = sec % 60
-        return if (m > 0) "${m} min ${s} sec" else "${s} sec"
+        return when {
+            h > 0 -> "${h}h ${m}m ${s}s"
+            m > 0 -> "${m}m ${s}s"
+            else -> "${s}s"
+        }
     }
 
     private fun formatDetailSetRow(set: SetEntry): Triple<String, String, String> {
@@ -283,8 +291,11 @@ class Workout_Detail_Logic : Fragment() {
             }
             "bodyweight" -> Triple("${set.reps} reps", "", "")
             "timed" -> Triple("${set.durationSec}s hold", "", "")
-            "cardio" -> Triple(formatDurationDetail(set.durationSec), "${set.distanceKm} km", "")
-            "hiit" -> Triple(formatDurationDetail(set.durationSec), "", "")
+            "cardio" -> {
+                val dist = if (settingsVM.state.value.unit == WeightUnit.LB) "${"%.1f".format(set.distanceKm * 0.621371)} mi" else "${set.distanceKm} km"
+                Triple(formatDurationDetail(set.durationSec), dist, "")
+            }
+            "aerobic" -> Triple(formatDurationDetail(set.durationSec), "", "")
             "yoga" -> Triple(formatDurationDetail(set.durationSec), "", "")
             else -> Triple(set.reps.toString(), set.weight.toString(), set.unit.code)
         }

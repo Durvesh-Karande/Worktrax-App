@@ -75,12 +75,14 @@ class Workout_Summary_Logic : Fragment() {
             val totalDist = totalDistanceOf(workout)
 
             if (workout.type == com.worktrax.app.data.WorkoutType.CARDIO) {
+                val unit = settingsVM.state.value.unit
+                val isImperial = unit == com.worktrax.app.data.WeightUnit.LB
                 binding.tvSumSets.text = totalDurMin.toString()
                 binding.tvSumSetsLabel.text = "Duration (min)"
-                binding.tvSumReps.text = "%.1f".format(totalDist)
-                binding.tvSumRepsLabel.text = "Distance (km)"
+                binding.tvSumReps.text = if (isImperial) "%.1f".format(totalDist * 0.621371) else "%.1f".format(totalDist)
+                binding.tvSumRepsLabel.text = if (isImperial) "Distance (mi)" else "Distance (km)"
                 binding.tvSumVolume.text = if (totalDurMin > 0) "${(totalDist / totalDurMin).toInt()}" else "0"
-                binding.tvSumVolumeLabel.text = "Pace (min/km)"
+                binding.tvSumVolumeLabel.text = if (isImperial) "Pace (min/mi)" else "Pace (min/km)"
             } else if (workout.type == com.worktrax.app.data.WorkoutType.AEROBIC) {
                 binding.tvSumSets.text = totalDurMin.toString()
                 binding.tvSumSetsLabel.text = "Duration (min)"

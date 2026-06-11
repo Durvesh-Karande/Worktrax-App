@@ -50,7 +50,7 @@ data class SetEntry(
     val rpe: Int? = null,
 )
 
-val TIMED_CORE_IDS = setOf("plank", "hanging-leg-raise")
+val TIMED_CORE_IDS = setOf("plank", "hanging-leg-raise", "side-plank")
 
 fun ExerciseDef.metricType(): String = when (type) {
     WorkoutType.STRENGTH -> when {
@@ -59,7 +59,7 @@ fun ExerciseDef.metricType(): String = when (type) {
         else -> "strength"
     }
     WorkoutType.CARDIO -> "cardio"
-    WorkoutType.AEROBIC -> "hiit"
+    WorkoutType.AEROBIC -> "aerobic"
     WorkoutType.YOGA -> "yoga"
 }
 
