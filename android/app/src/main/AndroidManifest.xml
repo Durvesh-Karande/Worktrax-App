@@ -21,6 +21,10 @@
 
 
         <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-2162470152606094~4911617723" />
+
+        <meta-data
             android:name="firebase_analytics_collection_ad_id"
             android:value="true" />
 

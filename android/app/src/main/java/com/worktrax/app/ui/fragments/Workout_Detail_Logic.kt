@@ -20,6 +20,7 @@ import com.worktrax.app.data.Workout
 import com.worktrax.app.data.WeightUnit
 import com.worktrax.app.databinding.WorkoutDetailDesignBinding
 import com.worktrax.app.lib.AnalyticsHelper
+import com.worktrax.app.lib.loadBannerAd
 import com.worktrax.app.lib.formatDate
 import com.worktrax.app.lib.formatDuration
 import com.worktrax.app.store.SettingsViewModel
@@ -56,6 +57,7 @@ class Workout_Detail_Logic : Fragment() {
         
         setupObservers(dateIsoOrId)
         setupListeners()
+        binding.includeBanner.adView.loadBannerAd()
     }
 
     private fun setupObservers(dateIsoOrId: String) {

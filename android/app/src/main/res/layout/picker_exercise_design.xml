@@ -138,5 +138,9 @@
         android:layout_marginTop="8dp"
         android:paddingHorizontal="20dp"
         android:clipToPadding="false"
-        android:paddingBottom="24dp" />
+        android:paddingBottom="4dp" />
+
+    <include
+        android:id="@+id/include_banner"
+        layout="@layout/view_banner_ad" />
 </LinearLayout>

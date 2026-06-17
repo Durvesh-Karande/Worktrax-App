@@ -25,6 +25,7 @@ import com.worktrax.app.data.BodyweightEntry
 import com.worktrax.app.data.WeightUnit
 import com.worktrax.app.databinding.ProfileDesignBinding
 import com.worktrax.app.lib.AnalyticsHelper
+import com.worktrax.app.lib.loadBannerAd
 import com.worktrax.app.lib.isoEpochMs
 import com.worktrax.app.lib.Storage
 import com.worktrax.app.lib.bodyweightFromJsonString
@@ -86,6 +87,7 @@ class Profile_Logic : Fragment() {
         binding.btnAddBodyweight.setOnClickListener { addBodyweightDialog() }
         binding.btnAddMeasurement.setOnClickListener { addMeasurementDialog() }
         loadBodyweight()
+        binding.includeBanner.adView.loadBannerAd()
     }
 
     private var bodyweightEntries: List<BodyweightEntry> = emptyList()

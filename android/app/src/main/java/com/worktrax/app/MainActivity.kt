@@ -19,6 +19,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavDestination
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
+import com.google.android.gms.ads.MobileAds
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.worktrax.app.data.ThemeMode
 import com.worktrax.app.lib.AnalyticsHelper
@@ -42,6 +43,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         AnalyticsHelper.init(this)
+        MobileAds.initialize(this)
         lastTheme = settingsVM.state.value.theme
         applyTheme(settingsVM.state.value.theme)
         super.onCreate(savedInstanceState)

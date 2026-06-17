@@ -22,6 +22,7 @@ import com.worktrax.app.data.Workout
 import com.worktrax.app.data.WorkoutType
 import com.worktrax.app.databinding.StatisticsDesignBinding
 import com.worktrax.app.lib.AnalyticsHelper
+import com.worktrax.app.lib.loadBannerAd
 import com.worktrax.app.lib.ReportOptions
 import com.worktrax.app.lib.ReportRange
 import com.worktrax.app.lib.buildAndSaveCsv
@@ -136,6 +137,7 @@ class Statistics_Logic : Fragment() {
 
         binding.btnDownloadPdf.setOnClickListener { downloadReport() }
         binding.btnDownloadCsv.setOnClickListener { downloadCsv() }
+        binding.includeBanner.adView.loadBannerAd()
     }
 
     private fun setupRangeChips() {

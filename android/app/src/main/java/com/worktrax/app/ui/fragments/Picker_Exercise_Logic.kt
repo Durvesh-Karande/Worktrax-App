@@ -41,6 +41,7 @@ import com.worktrax.app.lib.AnalyticsHelper
 import com.worktrax.app.lib.Storage
 import com.worktrax.app.lib.customExercisesFromJsonString
 import com.worktrax.app.lib.customExercisesToJsonString
+import com.worktrax.app.lib.loadBannerAd
 import com.worktrax.app.lib.uid
 import com.worktrax.app.store.SessionViewModel
 import kotlinx.coroutines.flow.collectLatest
@@ -173,6 +174,7 @@ class Picker_Exercise_Logic : Fragment() {
         setupMuscleChips()
         setupObservers()
         setupListeners()
+        binding.includeBanner.adView.loadBannerAd()
     }
 
     private fun setupMuscleChips() {

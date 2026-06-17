@@ -25,6 +25,7 @@ import com.worktrax.app.lib.AnalyticsHelper
 import com.worktrax.app.lib.Storage
 import com.worktrax.app.lib.formatTopDate
 import com.worktrax.app.lib.greeting
+import com.worktrax.app.lib.loadBannerAd
 import com.worktrax.app.lib.routinesFromJsonString
 import com.worktrax.app.store.SessionViewModel
 import com.worktrax.app.store.SettingsViewModel
@@ -60,6 +61,7 @@ class Home_Logic : Fragment() {
         }
         setupThemeToggle()
         showOnboardingIfNeeded()
+        binding.includeBanner.adView.loadBannerAd()
     }
 
     private fun showOnboardingIfNeeded() {

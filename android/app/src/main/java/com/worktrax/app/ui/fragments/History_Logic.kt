@@ -25,6 +25,7 @@ import com.worktrax.app.data.Workout
 import com.worktrax.app.data.WorkoutType
 import com.worktrax.app.databinding.HistoryDesignBinding
 import com.worktrax.app.lib.AnalyticsHelper
+import com.worktrax.app.lib.loadBannerAd
 import com.worktrax.app.lib.formatDate
 import com.worktrax.app.store.HistoryViewModel
 import kotlinx.coroutines.flow.collectLatest
@@ -57,6 +58,7 @@ class History_Logic : Fragment() {
         binding.rvHistory.layoutManager = LinearLayoutManager(requireContext())
         setupSwipeToDelete()
         setupObservers()
+        binding.includeBanner.adView.loadBannerAd()
     }
 
     private fun setupSwipeToDelete() {

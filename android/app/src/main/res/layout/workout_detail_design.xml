@@ -68,4 +68,8 @@
             android:layout_height="wrap_content"
             android:text="@string/repeat_workout" />
     </FrameLayout>
+
+    <include
+        android:id="@+id/include_banner"
+        layout="@layout/view_banner_ad" />
 </LinearLayout>
