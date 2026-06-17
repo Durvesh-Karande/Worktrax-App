@@ -17,6 +17,7 @@ import com.worktrax.app.R
 import com.worktrax.app.data.Routine
 import com.worktrax.app.databinding.WorkoutSummaryDesignBinding
 import com.worktrax.app.lib.AnalyticsHelper
+import com.worktrax.app.lib.loadBannerAd
 import com.worktrax.app.lib.Storage
 import com.worktrax.app.lib.buildShareImage
 import com.worktrax.app.lib.formatShortDate
@@ -53,6 +54,7 @@ class Workout_Summary_Logic : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         AnalyticsHelper.screenView("workout_summary")
+        binding.includeBanner.adView.loadBannerAd()
 
         val workoutId = arguments?.getString("workoutId")
         val workout = historyVM.workouts.value.firstOrNull { it.id == workoutId }

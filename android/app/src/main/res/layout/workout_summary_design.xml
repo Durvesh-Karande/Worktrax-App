@@ -224,4 +224,8 @@
                 android:text="@string/finish_workout" />
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
+
+    <include
+        android:id="@+id/include_banner"
+        layout="@layout/view_banner_ad" />
 </LinearLayout>

@@ -297,6 +297,12 @@
                     android:textColor="@color/btn_text" />
             </FrameLayout>
 
+            <FrameLayout
+                android:id="@+id/container_native_ad"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp" />
+
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 </LinearLayout>

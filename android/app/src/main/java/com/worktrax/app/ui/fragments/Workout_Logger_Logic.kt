@@ -26,6 +26,9 @@ import com.worktrax.app.data.SetEntry
 import com.worktrax.app.data.WeightUnit
 import com.worktrax.app.databinding.WorkoutLoggerDesignBinding
 import com.worktrax.app.lib.AnalyticsHelper
+import com.worktrax.app.lib.loadBannerAd
+import com.worktrax.app.lib.loadInterstitial
+import com.worktrax.app.lib.showInterstitial
 import com.worktrax.app.lib.volumeOf
 import com.worktrax.app.lib.weightStep
 import com.worktrax.app.store.lastSetForExercise
@@ -87,6 +90,8 @@ class Workout_Logger_Logic : Fragment() {
         setupWarmupRpe()
         setupObservers()
         setupListeners()
+        binding.includeBanner.adView.loadBannerAd()
+        loadInterstitial(requireActivity(), "ca-app-pub-2162470152606094/4947815742")
     }
 
     private fun showFieldsForType(metricType: String) {
@@ -704,11 +709,8 @@ class Workout_Logger_Logic : Fragment() {
                     val vol = volumeOf(workout, settingsVM.state.value.unit)
                     AnalyticsHelper.workoutCompleted(workout.type.code, workout.exercises.size, vol.toDouble(), workout.durationSec)
                 } catch (_: Exception) {}
-                try {
-                    val bundle = Bundle().apply { putString("workoutId", workout.id) }
-                    findNavController().navigate(R.id.action_log_to_summary, bundle)
-                } catch (e: Exception) {
-                    findNavController().popBackStack()
+                showInterstitial(requireActivity()) {
+                    navigateToSummary(workout.id)
                 }
             } else {
                 try {
@@ -933,6 +935,15 @@ class Workout_Logger_Logic : Fragment() {
         Toast.makeText(requireContext(), "Set logged", Toast.LENGTH_SHORT).show()
         stopRestTimer()
         startRestTimer()
+    }
+
+    private fun navigateToSummary(workoutId: String) {
+        try {
+            val bundle = Bundle().apply { putString("workoutId", workoutId) }
+            findNavController().navigate(R.id.action_log_to_summary, bundle)
+        } catch (e: Exception) {
+            findNavController().popBackStack()
+        }
     }
 
     override fun onDestroyView() {

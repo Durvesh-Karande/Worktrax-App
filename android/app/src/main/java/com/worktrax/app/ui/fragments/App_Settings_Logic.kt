@@ -21,6 +21,8 @@ import com.worktrax.app.data.WeightUnit
 import com.worktrax.app.databinding.AppSettingsDesignBinding
 import com.worktrax.app.lib.AnalyticsHelper
 import com.worktrax.app.lib.Storage
+import com.worktrax.app.lib.loadNativeAd
+import com.worktrax.app.lib.populateNativeAdView
 import com.worktrax.app.store.AuthViewModel
 import com.worktrax.app.store.SettingsViewModel
 import kotlinx.coroutines.flow.collectLatest
@@ -33,6 +35,7 @@ class App_Settings_Logic : Fragment() {
 
     private val settingsVM: SettingsViewModel by viewModels({ requireActivity() })
     private val authVM: AuthViewModel by viewModels({ requireActivity() })
+    private var settingsNativeAd: com.google.android.gms.ads.nativead.NativeAd? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -52,6 +55,14 @@ class App_Settings_Logic : Fragment() {
         setupAppearanceLabels()
         setupObservers()
         setupListeners()
+        loadNativeAd(requireActivity(), "ca-app-pub-2162470152606094/9929808986", { ad ->
+            settingsNativeAd = ad
+            val view = android.view.LayoutInflater.from(requireContext())
+                .inflate(R.layout.view_native_ad_settings, binding.containerNativeAd, false) as com.google.android.gms.ads.nativead.NativeAdView
+            populateNativeAdView(ad, view)
+            binding.containerNativeAd.removeAllViews()
+            binding.containerNativeAd.addView(view)
+        })
     }
 
     private fun setupAppearanceLabels() {
@@ -219,6 +230,8 @@ class App_Settings_Logic : Fragment() {
     }
 
     override fun onDestroyView() {
+        settingsNativeAd?.destroy()
+        settingsNativeAd = null
         super.onDestroyView()
         _binding = null
     }

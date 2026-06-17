@@ -79,7 +79,7 @@
     <!-- Summary -->
     <string name="save_as_routine">Save as routine</string>
     <string name="log_another">Add Exercise</string>
-    <string name="finish_workout">Done</string>
+    <string name="finish_workout">Go to home</string>
     <string name="add_exercise_label">Start next exercise</string>
 
     <!-- Share -->
